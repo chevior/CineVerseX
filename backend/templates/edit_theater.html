@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2>Edit Theater</h2>
+
+    <form method="POST">
+
+        <input
+            type="text"
+            name="name"
+            value="{{ theater.name }}"
+            class="form-control mb-3"
+        >
+
+        <input
+            type="text"
+            name="city"
+            value="{{ theater.city }}"
+            class="form-control mb-3"
+        >
+
+        <button class="btn btn-success">
+            Update Theater
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

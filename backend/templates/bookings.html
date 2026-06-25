@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2>🎟 My Bookings</h2>
+
+    <table class="table table-bordered">
+
+        <tr>
+            <th>ID</th>
+            <th>Show ID</th>
+            <th>Seats</th>
+            <th>Amount</th>
+            <th>Status</th>
+        </tr>
+
+        {% for booking in bookings %}
+
+        <tr>
+            <td>{{ booking.id }}</td>
+            <td>{{ booking.show_id }}</td>
+            <td>{{ booking.seats }}</td>
+            <td>₹{{ booking.total_amount }}</td>
+            <td>{{ booking.status }}</td>
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2>
+        Search Results for "{{ query }}"
+    </h2>
+
+    <div class="row mt-4">
+
+        {% for movie in movies %}
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card h-100">
+
+                <img
+                    src="{{ url_for('static', filename=movie.poster_url) }}"
+                    class="card-img-top"
+                    style="height:350px;object-fit:cover;"
+                >
+
+                <div class="card-body">
+
+                    <h5>{{ movie.title }}</h5>
+
+                    <p>
+                        ⭐ {{ movie.rating }}
+                    </p>
+
+                    <a
+                        href="/movie/{{ movie.id }}"
+                        class="btn btn-warning">
+
+                        View Details
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

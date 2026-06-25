@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Add Screen</h2>
+
+<form method="POST">
+
+    <select name="theater_id" class="form-control mb-3" required>
+        <option value="">Select Theater</option>
+
+        {% for theater in theaters %}
+            <option value="{{ theater.id }}">
+                {{ theater.name }} - {{ theater.city }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <input
+        name="screen_name"
+        class="form-control mb-3"
+        placeholder="Screen Name"
+        required
+    >
+
+    <input
+        type="number"
+        name="total_seats"
+        class="form-control mb-3"
+        placeholder="Total Seats"
+        required
+    >
+
+    <button class="btn btn-success" type="submit">
+        Add Screen
+    </button>
+
+</form>
+
+{% endblock %}

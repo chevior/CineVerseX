@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<h2>Add Theater</h2>
+
+<form method="POST">
+
+    <input
+        name="name"
+        class="form-control mb-3"
+        placeholder="Theater Name"
+        required
+    >
+
+    <input
+        name="city"
+        class="form-control mb-3"
+        placeholder="City"
+        required
+    >
+
+    <textarea
+        name="address"
+        class="form-control mb-3"
+        placeholder="Address"
+    ></textarea>
+
+    <input
+        type="number"
+        name="total_screens"
+        class="form-control mb-3"
+        placeholder="Total Screens"
+    >
+
+    <button
+        class="btn btn-success"
+        type="submit"
+    >
+        Add Theater
+    </button>
+
+</form>
+
+</div>
+
+{% endblock %}

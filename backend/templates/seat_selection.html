@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2>🎟 Select Seats</h2>
+
+    <p><strong>Show ID:</strong> {{ show.id }}</p>
+    <p><strong>Price per seat:</strong> ₹{{ show.price }}</p>
+
+    <form method="POST" action="/book/{{ show.id }}">
+
+        <div class="mb-4">
+
+            {% for seat in seats %}
+
+                {% if seat in booked_seats %}
+
+                    <button type="button" class="btn btn-danger m-1" disabled>
+                        {{ seat }}
+                    </button>
+
+                {% else %}
+
+                    <label class="btn btn-outline-success m-1">
+                        <input
+                            type="checkbox"
+                            name="selected_seats"
+                            value="{{ seat }}"
+                            onchange="calculateTotal()">
+                        {{ seat }}
+                    </label>
+
+                {% endif %}
+
+            {% endfor %}
+
+        </div>
+
+        <input type="hidden" name="seats" id="seatsInput">
+        <input type="hidden" name="total_amount" id="totalAmountInput">
+
+        <h4>Total: ₹<span id="totalAmount">0</span></h4>
+
+        <button class="btn btn-primary mt-3" type="submit">
+            Confirm Booking
+        </button>
+
+    </form>
+
+</div>
+
+<script>
+    var seatPrice = Number("{{ show.price }}");
+
+    function calculateTotal() {
+        var selected = document.querySelectorAll(
+            'input[name="selected_seats"]:checked'
+        );
+
+        var seats = [];
+
+        selected.forEach(function(item) {
+            seats.push(item.value);
+        });
+
+        document.getElementById("seatsInput").value = seats.join(",");
+
+        var total = seats.length * seatPrice;
+
+        document.getElementById("totalAmount").innerText = total;
+        document.getElementById("totalAmountInput").value = total;
+    }
+</script>
+
+{% endblock %}

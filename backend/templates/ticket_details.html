@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow-lg">
+
+        <div class="card-header bg-dark text-white text-center">
+            <h3>🎟 CineVerse X Ticket</h3>
+        </div>
+
+        <div class="card-body text-center">
+
+            <h4>Booking ID: {{ booking.id }}</h4>
+
+            <p><strong>Show ID:</strong> {{ booking.show_id }}</p>
+
+            <p><strong>Seats:</strong> {{ booking.seats }}</p>
+
+            <p><strong>Total Amount:</strong> ₹{{ booking.total_amount }}</p>
+
+            <p><strong>Status:</strong> {{ booking.status }}</p>
+
+            <hr>
+
+            <a href="/bookings" class="btn btn-secondary">
+                Back to Bookings
+            </a>
+
+            <a href="/my-tickets" class="btn btn-primary">
+                My Tickets
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

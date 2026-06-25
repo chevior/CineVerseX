@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Screens</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>ID</th>
+        <th>Theater ID</th>
+        <th>Screen Name</th>
+        <th>Total Seats</th>
+    </tr>
+
+    {% for screen in screens %}
+    <tr>
+        <td>{{ screen.id }}</td>
+        <td>{{ screen.theater_id }}</td>
+        <td>{{ screen.screen_name }}</td>
+        <td>{{ screen.total_seats }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

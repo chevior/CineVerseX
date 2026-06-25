@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Add Show</h2>
+
+<form method="POST">
+
+    <select name="movie_id" class="form-control mb-3" required>
+        <option value="">Select Movie</option>
+        {% for movie in movies %}
+        <option value="{{ movie.id }}">{{ movie.title }}</option>
+        {% endfor %}
+    </select>
+
+    <select name="theater_id" class="form-control mb-3" required>
+        <option value="">Select Theater</option>
+        {% for theater in theaters %}
+        <option value="{{ theater.id }}">{{ theater.name }} - {{ theater.city }}</option>
+        {% endfor %}
+    </select>
+
+    <select name="screen_id" class="form-control mb-3" required>
+        <option value="">Select Screen</option>
+        {% for screen in screens %}
+        <option value="{{ screen.id }}">
+            {{ screen.screen_name }} | Seats: {{ screen.total_seats }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <input
+        name="show_time"
+        class="form-control mb-3"
+        placeholder="Show Time e.g. 10:00 AM"
+        required
+    >
+
+    <input
+        name="price"
+        type="number"
+        step="0.01"
+        class="form-control mb-3"
+        placeholder="Ticket Price"
+        required
+    >
+
+    <button class="btn btn-success" type="submit">
+        Add Show
+    </button>
+
+</form>
+
+{% endblock %}

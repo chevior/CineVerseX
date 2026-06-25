@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+```
+<h2 class="mb-4">
+    🎟 My Tickets
+</h2>
+
+<div class="row">
+
+    {% for ticket in tickets %}
+
+    <div class="col-lg-6 mb-4">
+
+        <div class="card shadow-lg border-0">
+
+            <div class="card-header bg-dark text-white">
+
+                <div class="d-flex justify-content-between">
+
+                    <h5 class="mb-0">
+                        🎬 {{ ticket.movie_name }}
+                    </h5>
+
+                    <span class="badge bg-success">
+                        {{ ticket.status }}
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-md-8">
+
+                        <p>
+                            <strong>Ticket ID:</strong>
+                            {{ ticket.id }}
+                        </p>
+
+                        <p>
+                            <strong>Theatre:</strong>
+                            {{ ticket.theatre_name }}
+                        </p>
+
+                        <p>
+                            <strong>Show Time:</strong>
+                            {{ ticket.show_time }}
+                        </p>
+
+                        <p>
+                            <strong>Seats:</strong>
+
+                            <span class="badge bg-primary">
+                                {{ ticket.seat_numbers }}
+                            </span>
+                        </p>
+
+                        <p>
+                            <strong>Amount:</strong>
+
+                            <span class="text-success fw-bold">
+                                ₹{{ ticket.total_amount }}
+                            </span>
+                        </p>
+
+                    </div>
+
+                    <div class="col-md-4 text-center">
+
+                        {% if ticket.qr_code %}
+
+                        <img
+                            src="{{ url_for('static', filename=ticket.qr_code) }}"
+                            class="img-fluid rounded"
+                            width="140"
+                        >
+
+                        {% else %}
+
+                        <div class="alert alert-warning">
+                            No QR
+                        </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-between">
+
+                    <a
+                        href="/download-ticket/{{ ticket.id }}"
+                        class="btn btn-warning">
+
+                        📄 Download PDF
+
+                    </a>
+
+                    <button
+                        class="btn btn-outline-success">
+
+                        ✔ Valid Ticket
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+```
+
+</div>
+
+{% endblock %}

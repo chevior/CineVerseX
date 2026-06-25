@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h1 class="mb-4 text-center">
+        🎬 CineVerse X Admin Dashboard
+    </h1>
+
+    <div class="row">
+
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body text-center">
+                    <h5>Total Users</h5>
+                    <h1>{{ total_users }}</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body text-center">
+                    <h5>Total Movies</h5>
+                    <h1>{{ total_movies }}</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-dark shadow">
+                <div class="card-body text-center">
+                    <h5>Total Theaters</h5>
+                    <h1>{{ total_theaters }}</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card bg-danger text-white shadow">
+                <div class="card-body text-center">
+                    <h5>Total Bookings</h5>
+                    <h1>{{ total_bookings }}</h1>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card shadow mt-4">
+        <div class="card-body text-center">
+            <h3>Total Revenue</h3>
+            <h1 class="text-success">₹{{ total_revenue }}</h1>
+        </div>
+    </div>
+
+    <div class="card shadow mt-4">
+        <div class="card-body">
+            <h3 class="text-center mb-4">📊 Platform Analytics</h3>
+            <canvas id="revenueChart" style="max-height: 350px;"></canvas>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+
+        <div class="col-md-3 mb-3">
+            <a href="/movies" class="btn btn-dark w-100">
+                🎬 Manage Movies
+            </a>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <a href="/theaters" class="btn btn-dark w-100">
+                🎭 Manage Theaters
+            </a>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <a href="/shows" class="btn btn-dark w-100">
+                🎟 Manage Shows
+            </a>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <a href="/bookings" class="btn btn-dark w-100">
+                📋 View Bookings
+            </a>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <a href="/admin/users" class="btn btn-dark w-100">
+                👥 Manage Users
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ctx = document.getElementById("revenueChart");
+
+    const chartData = [
+        Number("{{ total_users }}"),
+        Number("{{ total_movies }}"),
+        Number("{{ total_theaters }}"),
+        Number("{{ total_bookings }}")
+    ];
+
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: ["Users", "Movies", "Theaters", "Bookings"],
+            datasets: [{
+                label: "CineVerse X Statistics",
+                data: chartData,
+                backgroundColor: [
+                    "#0d6efd",
+                    "#198754",
+                    "#ffc107",
+                    "#dc3545"
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: "white"
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: "white"
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: "white"
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>🎬 Available Shows</h2>
+
+        <a href="/add-show" class="btn btn-success">
+            Add New Show
+        </a>
+    </div>
+
+    <table class="table table-striped table-bordered shadow">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Movie ID</th>
+                <th>Theater ID</th>
+                <th>Screen ID</th>
+                <th>Show Time</th>
+                <th>Price</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for show in shows %}
+            <tr>
+                <td>{{ show.id }}</td>
+                <td>{{ show.movie_id }}</td>
+                <td>{{ show.theater_id }}</td>
+                <td>{{ show.screen_id }}</td>
+                <td>{{ show.show_time }}</td>
+                <td>₹{{ show.price }}</td>
+                <td>
+                    <a href="/show/{{ show.id }}/seats" class="btn btn-primary btn-sm">
+                        🎟 Book
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}
