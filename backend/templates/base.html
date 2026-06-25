@@ -82,6 +82,16 @@
                    style="width:250px;">
         </form>
 
+        {% if system_settings and system_settings.support_discord_link %}
+        <a
+           href="{{ system_settings.support_discord_link }}"
+           class="btn btn-outline-info me-2"
+           target="_blank"
+           rel="noopener noreferrer">
+            <i class="fa-brands fa-discord"></i>
+        </a>
+        {% endif %}
+
         {% if session.get("user_id") %}
 
         <div class="dropdown">

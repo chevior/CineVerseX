@@ -14,6 +14,15 @@ from models.setting import SystemSetting
 admin_bp = Blueprint("admin_bp", __name__)
 
 
+def normalize_url(value):
+    value = (value or "").strip()
+
+    if value and not value.startswith(("http://", "https://")):
+        return f"https://{value}"
+
+    return value
+
+
 @admin_bp.route("/admin/dashboard")
 @admin_required
 def admin_dashboard():
@@ -84,7 +93,9 @@ def system_settings():
 
     if request.method == "POST":
         settings.site_name = request.form.get("site_name", "CineVerseX").strip()
-        settings.support_discord_link = request.form.get("support_discord_link", "").strip()
+        settings.support_discord_link = normalize_url(
+            request.form.get("support_discord_link", "")
+        )
         settings.support_phone = request.form.get("support_phone", "").strip()
 
         settings.maintenance_mode = "maintenance_mode" in request.form

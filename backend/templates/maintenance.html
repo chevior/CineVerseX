@@ -7,6 +7,17 @@
         <h1>Site Under Maintenance</h1>
         <p class="lead">CineVerseX is temporarily unavailable.</p>
         <p>Please try again later.</p>
+
+        {% if system_settings and system_settings.support_discord_link %}
+        <a
+            href="{{ system_settings.support_discord_link }}"
+            class="btn btn-info mt-3"
+            target="_blank"
+            rel="noopener noreferrer">
+            <i class="fa-brands fa-discord"></i>
+            Contact Support on Discord
+        </a>
+        {% endif %}
     </div>
 </div>
 

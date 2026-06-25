@@ -67,6 +67,13 @@ def health():
     return "CineVerseX Flask is running", 200
 
 
+@app.context_processor
+def inject_system_settings():
+    return {
+        "system_settings": SystemSetting.query.first()
+    }
+
+
 def create_default_admin():
     admin_email = "nchethan066@gmail.com"
     admin_password = "admin123"

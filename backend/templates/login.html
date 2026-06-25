@@ -32,6 +32,18 @@
                     <div class="text-center mt-3">
                         <a href="/reset-password">Forgot Password?</a>
                     </div>
+
+                    {% if system_settings and system_settings.support_discord_link %}
+                    <div class="text-center mt-3">
+                        <a
+                            href="{{ system_settings.support_discord_link }}"
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            <i class="fa-brands fa-discord"></i>
+                            Need help? Join Discord
+                        </a>
+                    </div>
+                    {% endif %}
                     
                 </form>
 
