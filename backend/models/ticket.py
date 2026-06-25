@@ -6,6 +6,7 @@ class Ticket(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    booking_id = db.Column(db.Integer, db.ForeignKey("bookings.id"))
 
     movie_name = db.Column(db.String(100), nullable=False)
     theatre_name = db.Column(db.String(100), nullable=False)

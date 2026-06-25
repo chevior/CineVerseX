@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, redirect, url_for
+from flask import Blueprint, flash, render_template, session, redirect, url_for
 
 from models.ticket import Ticket
 import os
@@ -31,6 +31,10 @@ def download_ticket(ticket_id):
 
     if ticket.user_id != session["user_id"] and session.get("user_role") != "admin":
         return "Access denied", 403
+
+    if ticket.status == "Cancelled":
+        flash("Cancelled ticket cannot be downloaded.", "danger")
+        return redirect(url_for("ticket_bp.my_tickets"))
 
     pdf_folder = os.path.join(
         current_app.root_path,

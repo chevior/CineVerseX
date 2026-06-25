@@ -5,6 +5,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from auth.guards import login_required
 from extensions import db
+from models.setting import SystemSetting
 from models.user import User
 
 auth_bp = Blueprint("auth_bp", __name__)
@@ -26,6 +27,11 @@ def password_matches(user, password):
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
+        settings = SystemSetting.query.first()
+        if settings and not settings.registration_enabled:
+            flash("New registration is currently disabled.", "warning")
+            return redirect(url_for("auth_bp.login"))
+
         name = request.form["name"]
         email = request.form["email"].strip().lower()
         password = request.form["password"]

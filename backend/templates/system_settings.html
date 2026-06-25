@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>System Settings</h2>
+        <a href="/admin/dashboard" class="btn btn-outline-light">
+            Back to Dashboard
+        </a>
+    </div>
+
+    <form method="POST" class="card p-4 shadow">
+        <h5>Basic Settings</h5>
+
+        <label class="form-label">Site Name</label>
+        <input
+            type="text"
+            name="site_name"
+            class="form-control mb-3"
+            value="{{ settings.site_name }}"
+            required
+        >
+
+        <label class="form-label">Support Email</label>
+        <input
+            type="email"
+            name="support_email"
+            class="form-control mb-3"
+            value="{{ settings.support_email }}"
+        >
+
+        <label class="form-label">Support Phone</label>
+        <input
+            type="text"
+            name="support_phone"
+            class="form-control mb-3"
+            value="{{ settings.support_phone or '' }}"
+        >
+
+        <hr>
+
+        <h5>Feature Controls</h5>
+
+        <div class="form-check mb-2">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                name="maintenance_mode"
+                id="maintenanceMode"
+                {% if settings.maintenance_mode %}checked{% endif %}
+            >
+            <label class="form-check-label" for="maintenanceMode">
+                Maintenance Mode
+            </label>
+        </div>
+
+        <div class="form-check mb-2">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                name="booking_enabled"
+                id="bookingEnabled"
+                {% if settings.booking_enabled %}checked{% endif %}
+            >
+            <label class="form-check-label" for="bookingEnabled">
+                Booking Enabled
+            </label>
+        </div>
+
+        <div class="form-check mb-3">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                name="registration_enabled"
+                id="registrationEnabled"
+                {% if settings.registration_enabled %}checked{% endif %}
+            >
+            <label class="form-check-label" for="registrationEnabled">
+                Registration Enabled
+            </label>
+        </div>
+
+        <hr>
+
+        <h5>Booking Rules</h5>
+
+        <label class="form-label">Max Seats Per Booking</label>
+        <input
+            type="number"
+            min="1"
+            name="max_seats_per_booking"
+            class="form-control mb-3"
+            value="{{ settings.max_seats_per_booking }}"
+        >
+
+        <label class="form-label">Cancel Hours Before Show</label>
+        <input
+            type="number"
+            min="0"
+            name="cancel_hours_before_show"
+            class="form-control mb-3"
+            value="{{ settings.cancel_hours_before_show }}"
+        >
+
+        <label class="form-label">Booking Fee</label>
+        <input
+            type="number"
+            min="0"
+            step="0.01"
+            name="booking_fee"
+            class="form-control mb-3"
+            value="{{ settings.booking_fee }}"
+        >
+
+        <label class="form-label">Tax Percentage</label>
+        <input
+            type="number"
+            min="0"
+            step="0.01"
+            name="tax_percentage"
+            class="form-control mb-3"
+            value="{{ settings.tax_percentage }}"
+        >
+
+        <hr>
+
+        <h5>Future Features</h5>
+
+        <div class="form-check mb-2">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                name="payment_gateway_enabled"
+                id="paymentGatewayEnabled"
+                {% if settings.payment_gateway_enabled %}checked{% endif %}
+            >
+            <label class="form-check-label" for="paymentGatewayEnabled">
+                Payment Gateway Enabled
+            </label>
+        </div>
+
+        <div class="form-check mb-3">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                name="email_notifications_enabled"
+                id="emailNotificationsEnabled"
+                {% if settings.email_notifications_enabled %}checked{% endif %}
+            >
+            <label class="form-check-label" for="emailNotificationsEnabled">
+                Email Notifications Enabled
+            </label>
+        </div>
+
+        <button class="btn btn-warning mt-3" type="submit">
+            Save Settings
+        </button>
+    </form>
+</div>
+
+{% endblock %}

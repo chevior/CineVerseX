@@ -3,7 +3,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request, session
 from flask_login import LoginManager
 from werkzeug.security import generate_password_hash
 
@@ -102,8 +102,85 @@ def create_default_admin():
         db.session.commit()
 
 
+def create_default_settings():
+    if not SystemSetting.query.first():
+        settings = SystemSetting()
+        db.session.add(settings)
+        db.session.commit()
+
+
+def ensure_schema_updates():
+    with db.engine.connect() as connection:
+        booking_columns = {
+            row[1]
+            for row in connection.exec_driver_sql("PRAGMA table_info(bookings)")
+        }
+        ticket_columns = {
+            row[1]
+            for row in connection.exec_driver_sql("PRAGMA table_info(tickets)")
+        }
+        setting_columns = {
+            row[1]
+            for row in connection.exec_driver_sql("PRAGMA table_info(system_settings)")
+        }
+
+        if "booked_at" not in booking_columns:
+            connection.exec_driver_sql("ALTER TABLE bookings ADD COLUMN booked_at DATETIME")
+
+        if "cancelled_at" not in booking_columns:
+            connection.exec_driver_sql("ALTER TABLE bookings ADD COLUMN cancelled_at DATETIME")
+
+        if "booking_id" not in ticket_columns:
+            connection.exec_driver_sql("ALTER TABLE tickets ADD COLUMN booking_id INTEGER")
+
+        setting_updates = {
+            "site_name": "ALTER TABLE system_settings ADD COLUMN site_name VARCHAR(100) DEFAULT 'CineVerseX'",
+            "support_email": "ALTER TABLE system_settings ADD COLUMN support_email VARCHAR(120) DEFAULT 'support@cineversex.com'",
+            "support_phone": "ALTER TABLE system_settings ADD COLUMN support_phone VARCHAR(20) DEFAULT ''",
+            "booking_enabled": "ALTER TABLE system_settings ADD COLUMN booking_enabled BOOLEAN DEFAULT 1",
+            "registration_enabled": "ALTER TABLE system_settings ADD COLUMN registration_enabled BOOLEAN DEFAULT 1",
+            "max_seats_per_booking": "ALTER TABLE system_settings ADD COLUMN max_seats_per_booking INTEGER DEFAULT 6",
+            "cancel_hours_before_show": "ALTER TABLE system_settings ADD COLUMN cancel_hours_before_show INTEGER DEFAULT 2",
+            "booking_fee": "ALTER TABLE system_settings ADD COLUMN booking_fee FLOAT DEFAULT 0.0",
+            "tax_percentage": "ALTER TABLE system_settings ADD COLUMN tax_percentage FLOAT DEFAULT 0.0",
+            "payment_gateway_enabled": "ALTER TABLE system_settings ADD COLUMN payment_gateway_enabled BOOLEAN DEFAULT 0",
+            "email_notifications_enabled": "ALTER TABLE system_settings ADD COLUMN email_notifications_enabled BOOLEAN DEFAULT 0",
+        }
+
+        for column, statement in setting_updates.items():
+            if column not in setting_columns:
+                connection.exec_driver_sql(statement)
+
+        connection.commit()
+
+
+@app.before_request
+def check_maintenance_mode():
+    settings = SystemSetting.query.first()
+
+    if not settings or not settings.maintenance_mode:
+        return None
+
+    allowed_endpoints = {
+        "auth_bp.login",
+        "auth_bp.logout",
+        "static",
+        "health"
+    }
+
+    if request.endpoint in allowed_endpoints:
+        return None
+
+    if session.get("user_role") == "admin":
+        return None
+
+    return render_template("maintenance.html"), 503
+
+
 with app.app_context():
     db.create_all()
+    ensure_schema_updates()
+    create_default_settings()
     create_default_admin()
 
 

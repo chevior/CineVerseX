@@ -4,126 +4,110 @@
 
 <div class="container mt-4">
 
-<h2 class="mb-4">
-    🎟 My Tickets
-</h2>
+    <h2 class="mb-4">My Tickets</h2>
 
-<div class="row">
+    <div class="row">
 
-    {% for ticket in tickets %}
+        {% for ticket in tickets %}
 
-    <div class="col-lg-6 mb-4">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-dark text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ ticket.movie_name }}</h5>
 
-        <div class="card shadow-lg border-0">
-
-            <div class="card-header bg-dark text-white">
-
-                <div class="d-flex justify-content-between">
-
-                    <h5 class="mb-0">
-                        🎬 {{ ticket.movie_name }}
-                    </h5>
-
-                    <span class="badge bg-success">
-                        {{ ticket.status }}
-                    </span>
-
+                        <span class="badge {{ 'bg-secondary' if ticket.status == 'Cancelled' else 'bg-success' }}">
+                            {{ ticket.status }}
+                        </span>
+                    </div>
                 </div>
 
-            </div>
-
-            <div class="card-body">
-
-                <div class="row">
-
-                    <div class="col-md-8">
-
-                        <p>
-                            <strong>Ticket ID:</strong>
-                            {{ ticket.id }}
-                        </p>
-
-                        <p>
-                            <strong>Theatre:</strong>
-                            {{ ticket.theatre_name }}
-                        </p>
-
-                        <p>
-                            <strong>Show Time:</strong>
-                            {{ ticket.show_time }}
-                        </p>
-
-                        <p>
-                            <strong>Seats:</strong>
-
-                            <span class="badge bg-primary">
-                                {{ ticket.seat_numbers }}
-                            </span>
-                        </p>
-
-                        <p>
-                            <strong>Amount:</strong>
-
-                            <span class="text-success fw-bold">
-                                ₹{{ ticket.total_amount }}
-                            </span>
-                        </p>
-
-                    </div>
-
-                    <div class="col-md-4 text-center">
-
-                        {% if ticket.qr_code %}
-
-                        <img
-                            src="{{ url_for('static', filename=ticket.qr_code) }}"
-                            class="img-fluid rounded"
-                            width="140"
-                        >
-
-                        {% else %}
-
-                        <div class="alert alert-warning">
-                            No QR
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <p><strong>Ticket ID:</strong> {{ ticket.id }}</p>
+                            <p><strong>Theatre:</strong> {{ ticket.theatre_name }}</p>
+                            <p><strong>Show Time:</strong> {{ ticket.show_time }}</p>
+                            <p>
+                                <strong>Seats:</strong>
+                                <span class="badge bg-primary">
+                                    {{ ticket.seat_numbers }}
+                                </span>
+                            </p>
+                            <p>
+                                <strong>Amount:</strong>
+                                <span class="text-success fw-bold">
+                                    Rs. {{ ticket.total_amount }}
+                                </span>
+                            </p>
                         </div>
 
-                        {% endif %}
-
+                        <div class="col-md-4 text-center">
+                            {% if ticket.status == "Cancelled" %}
+                                <div class="alert alert-secondary">
+                                    Cancelled
+                                </div>
+                            {% elif ticket.qr_code %}
+                                <img
+                                    src="{{ url_for('static', filename=ticket.qr_code) }}"
+                                    class="img-fluid rounded"
+                                    width="140"
+                                    alt="Ticket QR code"
+                                >
+                            {% else %}
+                                <div class="alert alert-warning">
+                                    No QR
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
 
+                    <hr>
+
+                    <div class="d-flex justify-content-between gap-2 flex-wrap">
+                        {% if ticket.status == "Cancelled" %}
+                            <span class="btn btn-secondary disabled">
+                                Cancelled
+                            </span>
+                        {% else %}
+                            <a
+                                href="/download-ticket/{{ ticket.id }}"
+                                class="btn btn-warning">
+                                Download PDF
+                            </a>
+
+                            {% if ticket.booking_id %}
+                            <form
+                                method="POST"
+                                action="{{ url_for('booking_bp.cancel_ticket', booking_id=ticket.booking_id) }}"
+                                onsubmit="return confirm('Are you sure you want to cancel this ticket?');">
+
+                                <button type="submit" class="btn btn-danger">
+                                    Cancel Ticket
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="btn btn-outline-success disabled">
+                                Valid Ticket
+                            </span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
                 </div>
-
-                <hr>
-
-                <div class="d-flex justify-content-between">
-
-                    <a
-                        href="/download-ticket/{{ ticket.id }}"
-                        class="btn btn-warning">
-
-                        📄 Download PDF
-
-                    </a>
-
-                    <button
-                        class="btn btn-outline-success">
-
-                        ✔ Valid Ticket
-
-                    </button>
-
-                </div>
-
             </div>
-
         </div>
 
+        {% else %}
+
+        <div class="col-12">
+            <div class="alert alert-info">
+                No tickets found.
+            </div>
+        </div>
+
+        {% endfor %}
+
     </div>
-
-    {% endfor %}
-
-</div>
-
 </div>
 
 {% endblock %}

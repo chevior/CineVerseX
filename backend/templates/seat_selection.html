@@ -10,6 +10,14 @@
     <p><strong>Theater:</strong> {{ show.theater.name if show.theater else "Unknown Theater" }}</p>
     <p><strong>Show Time:</strong> {{ show.show_time }}</p>
     <p><strong>Price per seat:</strong> Rs. {{ show.price }}</p>
+    <p><strong>Max seats per booking:</strong> {{ settings.max_seats_per_booking }}</p>
+
+    {% if settings.booking_fee or settings.tax_percentage %}
+    <p class="text-warning">
+        Booking fee: Rs. {{ settings.booking_fee }} |
+        Tax: {{ settings.tax_percentage }}%
+    </p>
+    {% endif %}
 
     <form method="POST" action="/book/{{ show.id }}">
 
@@ -30,7 +38,7 @@
                             type="checkbox"
                             name="selected_seats"
                             value="{{ seat }}"
-                            onchange="calculateTotal()">
+                            onchange="calculateTotal(this)">
                         {{ seat }}
                     </label>
 
@@ -44,6 +52,7 @@
         <input type="hidden" name="total_amount" id="totalAmountInput">
 
         <h4>Total: Rs. <span id="totalAmount">0</span></h4>
+        <p class="text-danger" id="seatLimitMessage"></p>
 
         <button class="btn btn-primary mt-3" type="submit">
             Confirm Booking
@@ -55,11 +64,25 @@
 
 <script>
     var seatPrice = Number("{{ show.price }}");
+    var bookingFee = Number("{{ settings.booking_fee or 0 }}");
+    var taxPercentage = Number("{{ settings.tax_percentage or 0 }}");
+    var maxSeats = Number("{{ settings.max_seats_per_booking or 6 }}");
 
-    function calculateTotal() {
+    function calculateTotal(changedInput) {
         var selected = document.querySelectorAll(
             'input[name="selected_seats"]:checked'
         );
+
+        if (selected.length > maxSeats) {
+            changedInput.checked = false;
+            selected = document.querySelectorAll(
+                'input[name="selected_seats"]:checked'
+            );
+            document.getElementById("seatLimitMessage").innerText =
+                "Maximum " + maxSeats + " seats allowed per booking.";
+        } else {
+            document.getElementById("seatLimitMessage").innerText = "";
+        }
 
         var seats = [];
 
@@ -69,10 +92,16 @@
 
         document.getElementById("seatsInput").value = seats.join(",");
 
-        var total = seats.length * seatPrice;
+        var subtotal = seats.length * seatPrice;
+        var taxAmount = subtotal * taxPercentage / 100;
+        var total = subtotal + bookingFee + taxAmount;
 
-        document.getElementById("totalAmount").innerText = total;
-        document.getElementById("totalAmountInput").value = total;
+        if (seats.length === 0) {
+            total = 0;
+        }
+
+        document.getElementById("totalAmount").innerText = total.toFixed(2);
+        document.getElementById("totalAmountInput").value = total.toFixed(2);
     }
 </script>
 
