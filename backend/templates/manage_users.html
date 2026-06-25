@@ -4,39 +4,108 @@
 
 <div class="container mt-4">
 
-    <h2>👥 User Management</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-    <table class="table table-bordered table-hover">
+        <h2>👥 User Management</h2>
 
-        <thead class="table-dark">
+        <span class="badge bg-primary fs-6">
+            Total Users: {{ users|length }}
+        </span>
 
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-            </tr>
+    </div>
 
-        </thead>
+    <div class="card shadow">
 
-        <tbody>
+        <div class="card-body">
 
-            {% for user in users %}
+            <div class="table-responsive">
 
-            <tr>
+                <table class="table table-bordered table-hover align-middle">
 
-                <td>{{ user.id }}</td>
-                <td>{{ user.name }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.role }}</td>
+                    <thead class="table-dark">
 
-            </tr>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th width="150">Action</th>
+                        </tr>
 
-            {% endfor %}
+                    </thead>
 
-        </tbody>
+                    <tbody>
 
-    </table>
+                        {% for user in users %}
+
+                        <tr>
+
+                            <td>{{ user.id }}</td>
+
+                            <td>
+                                <strong>{{ user.name }}</strong>
+                            </td>
+
+                            <td>{{ user.email }}</td>
+
+                            <td>
+
+                                {% if user.role == "admin" %}
+
+                                <span class="badge bg-success">
+                                    Admin
+                                </span>
+
+                                {% else %}
+
+                                <span class="badge bg-secondary">
+                                    User
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {% if user.role != "admin" %}
+
+                                <a
+                                    href="/admin/delete-user/{{ user.id }}"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Are you sure you want to delete this user?')">
+
+                                    🗑 Delete
+
+                                </a>
+
+                                {% else %}
+
+                                <button
+                                    class="btn btn-success btn-sm"
+                                    disabled>
+
+                                    👑 Admin
+
+                                </button>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 

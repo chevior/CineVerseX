@@ -1,9 +1,14 @@
 venv/
-__pycache__/
+**pycache**/
 *.pyc
-.env
-node_modules/
-instance/
+
+backend/**pycache**/
+backend/models/**pycache**/
+backend/routes/**pycache**/
 
 backend/static/qrcodes/
 backend/static/tickets/
+
+.env
+instance/
+node_modules/
