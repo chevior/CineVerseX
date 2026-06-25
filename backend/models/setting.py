@@ -7,6 +7,7 @@ class SystemSetting(db.Model):
 
     site_name = db.Column(db.String(100), default="CineVerseX")
     support_email = db.Column(db.String(120), default="support@cineversex.com")
+    support_discord_link = db.Column(db.String(255), default="")
     support_phone = db.Column(db.String(20), default="")
 
     maintenance_mode = db.Column(db.Boolean, default=False)

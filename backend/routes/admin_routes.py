@@ -84,7 +84,7 @@ def system_settings():
 
     if request.method == "POST":
         settings.site_name = request.form.get("site_name", "CineVerseX").strip()
-        settings.support_email = request.form.get("support_email", "").strip()
+        settings.support_discord_link = request.form.get("support_discord_link", "").strip()
         settings.support_phone = request.form.get("support_phone", "").strip()
 
         settings.maintenance_mode = "maintenance_mode" in request.form
