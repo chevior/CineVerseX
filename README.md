@@ -1,6 +1,6 @@
 # CineVerseX
 
-CineVerseX is a movie ticket booking web application built with Flask, MySQL, HTML, CSS, Bootstrap, and JavaScript.
+CineVerseX is a movie ticket booking web application built with Flask, SQLite, HTML, CSS, Bootstrap, and JavaScript.
 
 ## Features
 
@@ -20,7 +20,7 @@ CineVerseX is a movie ticket booking web application built with Flask, MySQL, HT
 ## Tech Stack
 
 - Python Flask
-- MySQL
+- SQLite
 - HTML
 - CSS
 - Bootstrap
