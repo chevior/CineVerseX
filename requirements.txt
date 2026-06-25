@@ -5,3 +5,5 @@ Flask-Migrate
 PyMySQL
 bcrypt
 gunicorn
+qrcode
+Pillow
