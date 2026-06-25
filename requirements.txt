@@ -4,7 +4,7 @@ Flask-Login
 Flask-Migrate
 PyMySQL
 bcrypt
-gunicorn
 qrcode
 Pillow
 reportlab
+gunicorn
