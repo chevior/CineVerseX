@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, flash, render_template, request, redirect, url_for, session
 import bcrypt
 from flask_login import login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -31,7 +31,8 @@ def register():
         password = request.form["password"]
 
         if User.query.filter_by(email=email).first():
-            return "User already exists"
+            flash("An account already exists with that email.", "warning")
+            return redirect(url_for("auth_bp.register"))
 
         user = User(
             name=name,
@@ -42,6 +43,7 @@ def register():
         db.session.add(user)
         db.session.commit()
 
+        flash("Account created. You can log in now.", "success")
         return redirect(url_for("auth_bp.login"))
 
     return render_template("register.html")
@@ -56,7 +58,8 @@ def login():
         user = User.query.filter_by(email=email).first()
 
         if not user:
-            return "User not found"
+            flash("No account found with that email.", "danger")
+            return redirect(url_for("auth_bp.login"))
 
         if password_matches(user, password):
             login_user(user)
@@ -66,7 +69,8 @@ def login():
 
             return redirect(url_for("auth_bp.dashboard"))
 
-        return "Incorrect password"
+        flash("Incorrect password.", "danger")
+        return redirect(url_for("auth_bp.login"))
 
     return render_template("login.html")
 
@@ -85,6 +89,7 @@ def dashboard():
 def logout():
     logout_user()
     session.clear()
+    flash("You have been logged out.", "info")
     return redirect(url_for("auth_bp.login"))
 
 
@@ -96,19 +101,23 @@ def reset_password():
         confirm_password = request.form["confirm_password"]
 
         if new_password != confirm_password:
-            return "Passwords do not match", 400
+            flash("Passwords do not match.", "danger")
+            return redirect(url_for("auth_bp.reset_password"))
 
         if len(new_password) < 6:
-            return "Password must be at least 6 characters", 400
+            flash("Password must be at least 6 characters.", "danger")
+            return redirect(url_for("auth_bp.reset_password"))
 
         user = User.query.filter_by(email=email).first()
 
         if not user:
-            return "User not found"
+            flash("No account found with that email.", "danger")
+            return redirect(url_for("auth_bp.reset_password"))
 
         user.password = generate_password_hash(new_password)
         db.session.commit()
 
+        flash("Password reset. You can log in with the new password.", "success")
         return redirect(url_for("auth_bp.login"))
 
     return render_template("reset_password.html")
@@ -125,17 +134,21 @@ def change_password():
         confirm_password = request.form["confirm_password"]
 
         if not password_matches(user, current_password):
-            return "Current password is incorrect", 400
+            flash("Current password is incorrect.", "danger")
+            return redirect(url_for("auth_bp.change_password"))
 
         if new_password != confirm_password:
-            return "New passwords do not match", 400
+            flash("New passwords do not match.", "danger")
+            return redirect(url_for("auth_bp.change_password"))
 
         if len(new_password) < 6:
-            return "Password must be at least 6 characters", 400
+            flash("Password must be at least 6 characters.", "danger")
+            return redirect(url_for("auth_bp.change_password"))
 
         user.password = generate_password_hash(new_password)
         db.session.commit()
 
+        flash("Password changed successfully.", "success")
         return redirect(url_for("auth_bp.dashboard"))
 
     return render_template("change_password.html")

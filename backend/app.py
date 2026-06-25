@@ -70,12 +70,24 @@ def health():
 def create_default_admin():
     admin_email = "nchethan066@gmail.com"
     admin_password = "admin123"
+    old_admin_email = "nchethan066@gmai.com"
+
+    old_admin = User.query.filter_by(email=old_admin_email).first()
+    if old_admin:
+        Ticket.query.filter_by(user_id=old_admin.id).delete()
+        old_bookings = Booking.query.filter_by(user_id=old_admin.id).all()
+
+        for booking in old_bookings:
+            Payment.query.filter_by(booking_id=booking.id).delete()
+            db.session.delete(booking)
+
+        db.session.delete(old_admin)
+        db.session.commit()
 
     existing_admin = User.query.filter_by(email=admin_email).first()
 
     if existing_admin:
         existing_admin.name = "Admin"
-        existing_admin.password = generate_password_hash(admin_password)
         existing_admin.role = "admin"
         db.session.commit()
     else:

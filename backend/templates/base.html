@@ -158,6 +158,17 @@
 
 <main class="page-content container-fluid">
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="toast-zone">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} shadow-sm mb-2">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
 
 {% block content %}
 {% endblock %}
