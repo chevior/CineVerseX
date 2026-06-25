@@ -5,6 +5,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from flask import Flask, render_template
 from flask_login import LoginManager
+from werkzeug.security import generate_password_hash
 
 from config import Config
 from extensions import db
@@ -26,7 +27,12 @@ from routes.show_routes import show_bp
 from routes.ticket_routes import ticket_bp
 
 
-app = Flask(__name__, template_folder="templates", static_folder="static")
+app = Flask(
+    __name__,
+    template_folder="templates",
+    static_folder="static"
+)
+
 app.config.from_object(Config)
 app.secret_key = Config.SECRET_KEY
 
@@ -58,13 +64,30 @@ def home():
 
 @app.route("/health")
 def health():
-    return "CineVerseX Flask is running"
+    return "CineVerseX Flask is running", 200
 
 
-# Only create tables locally, not on Vercel
-if os.environ.get("VERCEL") != "1":
-    with app.app_context():
-        db.create_all()
+def create_default_admin():
+    admin_email = "ncheth066@gmail.com"
+    admin_password = "admin123"
+
+    existing_admin = User.query.filter_by(email=admin_email).first()
+
+    if not existing_admin:
+        admin = User(
+            name="Admin",
+            email=admin_email,
+            password=generate_password_hash(admin_password),
+            role="admin"
+        )
+
+        db.session.add(admin)
+        db.session.commit()
+
+
+with app.app_context():
+    db.create_all()
+    create_default_admin()
 
 
 if __name__ == "__main__":
