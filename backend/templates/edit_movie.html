@@ -51,6 +51,14 @@
             class="form-control mb-3"
         >
 
+        <label class="form-label">YouTube Trailer URL</label>
+        <input
+            type="url"
+            name="trailer_url"
+            value="{{ trailer_watch_url or movie.trailer_url or '' }}"
+            class="form-control mb-3"
+            placeholder="https://www.youtube.com/watch?v=xxxx">
+
         <button class="btn btn-success">
             Update Movie
         </button>

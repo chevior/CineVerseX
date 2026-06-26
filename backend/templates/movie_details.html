@@ -54,8 +54,41 @@
             <p class="fs-5">
                 {{ movie.description }}
             </p>
+
+            {% if movie.trailer_url %}
+            <div class="d-flex gap-2 flex-wrap mt-4">
+                <a
+                    href="#movieTrailer"
+                    class="btn btn-danger">
+                    <i class="fa-brands fa-youtube"></i> Watch Trailer
+                </a>
+
+                <a
+                    href="{{ trailer_watch_url or movie.trailer_url }}"
+                    class="btn btn-outline-danger"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    Open in YouTube
+                </a>
+            </div>
+            {% endif %}
         </div>
     </div>
+
+    {% if movie.trailer_url %}
+    <section id="movieTrailer" class="mt-5">
+        <h2 class="mb-3">Trailer</h2>
+
+        <div class="ratio ratio-16x9">
+            <iframe
+                src="{{ movie.trailer_url }}"
+                title="{{ movie.title }} trailer"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+            </iframe>
+        </div>
+    </section>
+    {% endif %}
 
     <hr class="my-5">
 

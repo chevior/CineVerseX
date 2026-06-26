@@ -167,6 +167,10 @@ def ensure_schema_updates():
             row[1]
             for row in connection.exec_driver_sql("PRAGMA table_info(system_settings)")
         }
+        movie_columns = {
+            row[1]
+            for row in connection.exec_driver_sql("PRAGMA table_info(movies)")
+        }
 
         if "booked_at" not in booking_columns:
             connection.exec_driver_sql("ALTER TABLE bookings ADD COLUMN booked_at DATETIME")
@@ -176,6 +180,9 @@ def ensure_schema_updates():
 
         if "booking_id" not in ticket_columns:
             connection.exec_driver_sql("ALTER TABLE tickets ADD COLUMN booking_id INTEGER")
+
+        if "trailer_url" not in movie_columns:
+            connection.exec_driver_sql("ALTER TABLE movies ADD COLUMN trailer_url VARCHAR(300)")
 
         setting_updates = {
             "site_name": "ALTER TABLE system_settings ADD COLUMN site_name VARCHAR(100) DEFAULT 'CineVerseX'",

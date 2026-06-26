@@ -1,4 +1,5 @@
 import os
+from urllib.parse import parse_qs, urlparse
 from uuid import uuid4
 
 from flask import Blueprint, flash, render_template, request, current_app, redirect, url_for
@@ -53,6 +54,42 @@ def movies():
     )
 
 
+def normalize_youtube_embed_url(url):
+    url = (url or "").strip()
+
+    if not url:
+        return ""
+
+    parsed = urlparse(url)
+    host = parsed.netloc.lower().replace("www.", "")
+    video_id = ""
+
+    if host in {"youtube.com", "m.youtube.com"}:
+        if parsed.path == "/watch":
+            video_id = parse_qs(parsed.query).get("v", [""])[0]
+        elif parsed.path.startswith("/embed/"):
+            video_id = parsed.path.split("/embed/", 1)[1].split("/", 1)[0]
+        elif parsed.path.startswith("/shorts/"):
+            video_id = parsed.path.split("/shorts/", 1)[1].split("/", 1)[0]
+    elif host == "youtu.be":
+        video_id = parsed.path.strip("/").split("/", 1)[0]
+
+    if video_id:
+        return f"https://www.youtube.com/embed/{video_id}"
+
+    return url
+
+
+def youtube_watch_url(embed_url):
+    embed_url = (embed_url or "").strip()
+
+    if "/embed/" not in embed_url:
+        return embed_url
+
+    video_id = embed_url.split("/embed/", 1)[1].split("?", 1)[0].split("/", 1)[0]
+    return f"https://www.youtube.com/watch?v={video_id}"
+
+
 @movie_bp.route("/add-movie", methods=["GET", "POST"])
 @admin_required
 def add_movie():
@@ -65,6 +102,7 @@ def add_movie():
         genre = request.form.get("genre", "").strip()
         release_date = request.form["release_date"].strip()
         rating = float(request.form["rating"] or 0)
+        trailer_url = normalize_youtube_embed_url(request.form.get("trailer_url"))
 
         existing_movie = Movie.query.filter_by(title=title).first()
 
@@ -108,7 +146,8 @@ def add_movie():
             language=language,
             genre=genre,
             release_date=release_date,
-            rating=rating
+            rating=rating,
+            trailer_url=trailer_url
         )
 
         db.session.add(movie)
@@ -153,7 +192,8 @@ def movie_details(movie_id):
         movie=movie,
         theaters=theaters,
         reviews=reviews,
-        avg_rating=round(avg_rating, 1) if avg_rating else 0
+        avg_rating=round(avg_rating, 1) if avg_rating else 0,
+        trailer_watch_url=youtube_watch_url(movie.trailer_url)
     )
 
 
@@ -223,6 +263,7 @@ def edit_movie(movie_id):
         movie.genre = request.form.get("genre", "").strip()
         movie.release_date = request.form["release_date"]
         movie.rating = float(request.form["rating"])
+        movie.trailer_url = normalize_youtube_embed_url(request.form.get("trailer_url"))
 
         db.session.commit()
 
@@ -231,7 +272,8 @@ def edit_movie(movie_id):
     return render_template(
         "edit_movie.html",
         movie=movie,
-        genres=GENRES
+        genres=GENRES,
+        trailer_watch_url=youtube_watch_url(movie.trailer_url)
     )
 @movie_bp.route("/delete-movie/<int:movie_id>")
 @admin_required

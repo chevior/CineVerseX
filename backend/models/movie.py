@@ -39,6 +39,8 @@ class Movie(db.Model):
         default=0
     )
 
+    trailer_url = db.Column(db.String(300))
+
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
