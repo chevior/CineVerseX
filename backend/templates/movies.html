@@ -16,6 +16,41 @@
         {% endif %}
     </div>
 
+    {% if session.get('user_role') == 'admin' %}
+    <form
+        method="POST"
+        action="{{ url_for('movie_bp.import_tmdb_movies') }}"
+        class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-6">
+                    <label class="form-label">Import Movie List From TMDb</label>
+                    <p class="text-muted mb-0">
+                        Requires <code>TMDB_API_KEY</code> or <code>TMDB_BEARER_TOKEN</code>.
+                    </p>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Pages</label>
+                    <select name="pages" class="form-control">
+                        <option value="1">1 page</option>
+                        <option value="2">2 pages</option>
+                        <option value="3">3 pages</option>
+                        <option value="4">4 pages</option>
+                        <option value="5">5 pages</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <button class="btn btn-primary w-100">
+                        Import Popular Movies
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+    {% endif %}
+
     <form method="GET" action="{{ url_for('movie_bp.movies') }}" class="mb-4">
         <div class="row g-2">
             <div class="col-md-4">
@@ -51,7 +86,7 @@
             <div class="movie-card">
                 {% if movie.poster_url %}
                 <img
-                    src="{{ url_for('static', filename=movie.poster_url) }}"
+                    src="{{ movie.poster_url if movie.poster_url.startswith('http') else url_for('static', filename=movie.poster_url) }}"
                     class="movie-poster"
                     alt="{{ movie.title }}">
                 {% else %}

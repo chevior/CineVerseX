@@ -40,7 +40,10 @@ class Movie(db.Model):
     )
 
     trailer_url = db.Column(db.String(300))
-    imdb_url = db.Column(db.String(300))
+    tmdb_id = db.Column(db.Integer)
+    tmdb_url = db.Column(db.String(300))
+    justwatch_url = db.Column(db.String(300))
+    bookmyshow_url = db.Column(db.String(300))
 
     created_at = db.Column(
         db.DateTime,

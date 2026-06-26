@@ -8,7 +8,7 @@
         <div class="col-lg-4">
             {% if movie.poster_url %}
             <img
-                src="{{ url_for('static', filename=movie.poster_url) }}"
+                src="{{ movie.poster_url if movie.poster_url.startswith('http') else url_for('static', filename=movie.poster_url) }}"
                 class="img-fluid rounded shadow"
                 style="width:100%; max-height:600px; object-fit:cover;"
                 alt="{{ movie.title }}">
@@ -73,13 +73,33 @@
 
                 {% endif %}
 
-                {% if movie.imdb_url %}
+                {% if movie.tmdb_url %}
                 <a
-                    href="{{ movie.imdb_url }}"
-                    class="btn btn-warning"
+                    href="{{ movie.tmdb_url }}"
+                    class="btn btn-outline-warning"
                     target="_blank"
                     rel="noopener noreferrer">
-                    <i class="fas fa-star"></i> View on IMDb
+                    <i class="fas fa-database"></i> View on TMDb
+                </a>
+                {% endif %}
+
+                {% if movie.justwatch_url %}
+                <a
+                    href="{{ movie.justwatch_url }}"
+                    class="btn btn-outline-info"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    <i class="fas fa-tv"></i> Stream on JustWatch
+                </a>
+                {% endif %}
+
+                {% if movie.bookmyshow_url %}
+                <a
+                    href="{{ movie.bookmyshow_url }}"
+                    class="btn btn-primary"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    <i class="fas fa-ticket-alt"></i> Book on BookMyShow
                 </a>
                 {% endif %}
             </div>

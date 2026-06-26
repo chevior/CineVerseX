@@ -184,8 +184,16 @@ def ensure_schema_updates():
         if "trailer_url" not in movie_columns:
             connection.exec_driver_sql("ALTER TABLE movies ADD COLUMN trailer_url VARCHAR(300)")
 
-        if "imdb_url" not in movie_columns:
-            connection.exec_driver_sql("ALTER TABLE movies ADD COLUMN imdb_url VARCHAR(300)")
+        movie_updates = {
+            "tmdb_id": "ALTER TABLE movies ADD COLUMN tmdb_id INTEGER",
+            "tmdb_url": "ALTER TABLE movies ADD COLUMN tmdb_url VARCHAR(300)",
+            "justwatch_url": "ALTER TABLE movies ADD COLUMN justwatch_url VARCHAR(300)",
+            "bookmyshow_url": "ALTER TABLE movies ADD COLUMN bookmyshow_url VARCHAR(300)",
+        }
+
+        for column, statement in movie_updates.items():
+            if column not in movie_columns:
+                connection.exec_driver_sql(statement)
 
         setting_updates = {
             "site_name": "ALTER TABLE system_settings ADD COLUMN site_name VARCHAR(100) DEFAULT 'CineVerseX'",

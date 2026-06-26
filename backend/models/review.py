@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from extensions import db
+from models.user import User
 
 
 class Review(db.Model):
