@@ -5,85 +5,88 @@
 <div class="container-fluid px-4">
 
     <section class="home-banner">
-
         <div class="banner-content">
 
-            <span class="badge bg-warning text-dark mb-3">
-                🎟 Smart Movie Booking Platform
+            <span class="badge bg-warning mb-3">
+                Smart Movie Booking Platform
             </span>
 
             <h1>
-                Book Your Movie Tickets Easily
+                CineVerse X
             </h1>
 
             <p>
-                Discover movies, check shows, select seats, and get instant QR tickets with CineVerse X.
+                Discover movies, compare shows, reserve seats, and keep every ticket organized in one polished booking workspace.
             </p>
 
-            <div class="mt-4">
-                <a href="/movies" class="btn btn-warning btn-lg me-2">
-                    🎬 Browse Movies
+            <div class="mt-4 d-flex gap-2 flex-wrap">
+                <a href="/movies" class="btn btn-warning btn-lg">
+                    <i class="fas fa-film"></i> Browse Movies
                 </a>
 
+                {% if session.get("user_id") %}
                 <a href="/my-tickets" class="btn btn-outline-light btn-lg">
-                    🎟 My Tickets
+                    <i class="fas fa-qrcode"></i> My Tickets
                 </a>
+                {% else %}
+                <a href="/login" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-right-to-bracket"></i> Login
+                </a>
+                {% endif %}
             </div>
 
         </div>
-
     </section>
 
     <section class="mt-5">
-
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Recommended for You</h2>
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+                <h2 class="mb-1">Explore CineVerse X</h2>
+                <p class="text-muted mb-0">Fast paths for browsing, booking, and managing cinema operations.</p>
+            </div>
 
             <a href="/movies" class="btn btn-outline-warning btn-sm">
-                View All
+                View All Movies
             </a>
         </div>
 
         <div class="row">
-
             <div class="col-lg-3 col-md-6 mb-4">
                 <div class="quick-card upgraded-card">
-                    <div class="quick-icon">🎬</div>
+                    <div class="quick-icon"></div>
                     <h4>Movies</h4>
-                    <p>Browse movies with posters, ratings, language, genre and details.</p>
+                    <p>Browse posters, ratings, language, genre, and movie details.</p>
                     <a href="/movies" class="btn btn-warning btn-sm">View Movies</a>
                 </div>
             </div>
 
             <div class="col-lg-3 col-md-6 mb-4">
                 <div class="quick-card upgraded-card">
-                    <div class="quick-icon">🎭</div>
+                    <div class="quick-icon"></div>
                     <h4>Theaters</h4>
-                    <p>Find available theaters and check screens connected to shows.</p>
+                    <p>Find theater locations and screens connected to active shows.</p>
                     <a href="/theaters" class="btn btn-warning btn-sm">View Theaters</a>
                 </div>
             </div>
 
             <div class="col-lg-3 col-md-6 mb-4">
                 <div class="quick-card upgraded-card">
-                    <div class="quick-icon">💺</div>
-                    <h4>Seat Booking</h4>
-                    <p>Select your preferred seats with an easy visual seat layout.</p>
-                    <a href="/shows" class="btn btn-warning btn-sm">Book Seats</a>
+                    <div class="quick-icon"></div>
+                    <h4>Shows</h4>
+                    <p>Compare available show times and start a seat booking quickly.</p>
+                    <a href="/shows" class="btn btn-warning btn-sm">View Shows</a>
                 </div>
             </div>
 
             <div class="col-lg-3 col-md-6 mb-4">
                 <div class="quick-card upgraded-card">
-                    <div class="quick-icon">📱</div>
-                    <h4>QR Tickets</h4>
-                    <p>Access booked tickets, QR codes, and PDF ticket downloads.</p>
+                    <div class="quick-icon"></div>
+                    <h4>Tickets</h4>
+                    <p>Access QR tickets, booking history, and PDF downloads after login.</p>
                     <a href="/my-tickets" class="btn btn-warning btn-sm">My Tickets</a>
                 </div>
             </div>
-
         </div>
-
     </section>
 
 </div>

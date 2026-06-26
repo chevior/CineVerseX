@@ -7,177 +7,166 @@
     <title>CineVerse X</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
-
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
-<body>
+<body data-theme="classic">
 
 <nav class="navbar navbar-expand-lg navbar-dark cine-navbar fixed-top">
+    <div class="container-fluid px-4">
 
+        <a class="navbar-brand cine-logo" href="{{ url_for('home') }}">
+            <i class="fas fa-clapperboard"></i> CineVerse X
+        </a>
 
-<div class="container-fluid px-4">
-
-    <a class="navbar-brand cine-logo" href="/">
-        🎬 CineVerse X
-    </a>
-
-    <button class="navbar-toggler"
+        <button
+            class="navbar-toggler"
             type="button"
             data-bs-toggle="collapse"
-            data-bs-target="#navMenu">
+            data-bs-target="#navMenu"
+            aria-controls="navMenu"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-        <span class="navbar-toggler-icon"></span>
+        <div class="collapse navbar-collapse" id="navMenu">
 
-    </button>
-
-    <div class="collapse navbar-collapse" id="navMenu">
-
-        <ul class="navbar-nav ms-4">
-
-            <li class="nav-item">
-                <a class="nav-link" href="/theaters">
-                    <i class="fas fa-building"></i> Theaters
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="/movies">
-                    <i class="fas fa-film"></i> Movies
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="/shows">
-                    <i class="fas fa-ticket-alt"></i> Shows
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="/my-tickets">
-                    <i class="fas fa-qrcode"></i> My Tickets
-                </a>
-            </li>
-
-            {% if session.get("user_id") %}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('booking_bp.booking_history') }}">
-                    <i class="fas fa-clock-rotate-left"></i> Booking History
-                </a>
-            </li>
-            {% endif %}
-
-            {% if session.get('user_role') == 'admin' %}
-            <li class="nav-item">
-                <a class="nav-link text-warning" href="/admin/dashboard">
-                    <i class="fas fa-chart-line"></i> Admin
-                </a>
-            </li>
-            {% endif %}
-
-        </ul>
-
-        <form class="d-flex ms-auto me-3" action="/search"method="GET">
-            <input class="form-control"
-                   type="search"
-                   name="q"
-                   placeholder="Search Movies..."
-                   style="width:250px;">
-        </form>
-
-        {% if system_settings and system_settings.support_discord_link %}
-        <a
-           href="{{ system_settings.support_discord_link }}"
-           class="btn btn-outline-info me-2"
-           target="_blank"
-           rel="noopener noreferrer">
-            <i class="fa-brands fa-discord"></i>
-        </a>
-        {% endif %}
-
-        {% if session.get("user_id") %}
-
-        <div class="dropdown">
-
-            <button class="btn btn-outline-light dropdown-toggle"
-                    data-bs-toggle="dropdown">
-
-                <i class="fas fa-user-circle"></i>
-                {{ session.get("user_name", "User") }}
-
-            </button>
-
-            <ul class="dropdown-menu dropdown-menu-end">
-
-                <li>
-                    <a class="dropdown-item" href="/dashboard">
-                        Dashboard
+            <ul class="navbar-nav ms-4">
+                <li class="nav-item">
+                    <a class="nav-link" href="/theaters">
+                        <i class="fas fa-building"></i> Theaters
                     </a>
                 </li>
 
-                <li>
-                    <a class="dropdown-item" href="/my-tickets">
-                        My Tickets
+                <li class="nav-item">
+                    <a class="nav-link" href="/movies">
+                        <i class="fas fa-film"></i> Movies
                     </a>
                 </li>
 
-                <li>
-                    <a class="dropdown-item" href="{{ url_for('booking_bp.booking_history') }}">
-                        Booking History
+                <li class="nav-item">
+                    <a class="nav-link" href="/shows">
+                        <i class="fas fa-ticket-alt"></i> Shows
                     </a>
                 </li>
 
-                <li>
-                    <a class="dropdown-item" href="/change-password">
-                        Change Password
+                {% if session.get("user_id") %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/my-tickets">
+                        <i class="fas fa-qrcode"></i> My Tickets
                     </a>
                 </li>
 
-                {% if session.get('user_role') == 'admin' %}
-                <li>
-                    <a class="dropdown-item" href="/admin/dashboard">
-                        Admin Panel
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('booking_bp.booking_history') }}">
+                        <i class="fas fa-clock-rotate-left"></i> Booking History
                     </a>
                 </li>
                 {% endif %}
 
-                <li><hr class="dropdown-divider"></li>
-
-                <li>
-                    <a class="dropdown-item text-danger"
-                       href="/logout">
-                        Logout
+                {% if session.get('user_role') == 'admin' %}
+                <li class="nav-item">
+                    <a class="nav-link text-warning" href="/admin/dashboard">
+                        <i class="fas fa-chart-line"></i> Admin
                     </a>
                 </li>
-
+                {% endif %}
             </ul>
 
+            <form class="d-flex ms-auto me-3" action="/search" method="GET">
+                <input
+                    class="form-control"
+                    type="search"
+                    name="q"
+                    placeholder="Search movies"
+                    style="width:250px;">
+            </form>
+
+            {% if system_settings and system_settings.support_discord_link %}
+            <a
+                href="{{ system_settings.support_discord_link }}"
+                class="btn btn-outline-info me-2"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Support">
+                <i class="fa-brands fa-discord"></i>
+            </a>
+            {% endif %}
+
+            <div class="theme-switcher me-2" aria-label="Theme selector">
+                <button class="theme-choice" type="button" data-theme-choice="classic" title="Classic theme">
+                    <i class="fas fa-sun"></i>
+                </button>
+                <button class="theme-choice" type="button" data-theme-choice="obsidian" title="Obsidian theme">
+                    <i class="fas fa-circle-half-stroke"></i>
+                </button>
+                <button class="theme-choice" type="button" data-theme-choice="midnight" title="Midnight theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+
+            {% if session.get("user_id") %}
+            <div class="dropdown">
+                <button
+                    class="btn btn-outline-light dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    type="button"
+                    aria-expanded="false">
+                    <i class="fas fa-user-circle"></i>
+                    {{ session.get("user_name", "User") }}
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href="/dashboard">
+                            Dashboard
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item" href="/my-tickets">
+                            My Tickets
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item" href="{{ url_for('booking_bp.booking_history') }}">
+                            Booking History
+                        </a>
+                    </li>
+
+                    {% if session.get('user_role') == 'admin' %}
+                    <li>
+                        <a class="dropdown-item" href="/admin/dashboard">
+                            Admin Panel
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <li><hr class="dropdown-divider"></li>
+
+                    <li>
+                        <a class="dropdown-item text-danger" href="/logout">
+                            Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            {% else %}
+            <a href="/login" class="btn btn-outline-light me-2">
+                Login
+            </a>
+
+            <a href="/register" class="btn btn-warning">
+                Register
+            </a>
+            {% endif %}
+
         </div>
-
-        {% else %}
-
-        <a href="/login"
-           class="btn btn-outline-light me-2">
-            Login
-        </a>
-
-        <a href="/register"
-           class="btn btn-warning">
-            Register
-        </a>
-
-        {% endif %}
-
     </div>
-
-</div>
-
-
 </nav>
 
 <main class="page-content container-fluid">
@@ -197,11 +186,35 @@
 {% block content %}
 {% endblock %}
 
-
 </main>
 
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function () {
+        const themeButtons = document.querySelectorAll("[data-theme-choice]");
+
+        const applyTheme = function (theme) {
+            document.body.dataset.theme = theme;
+            localStorage.setItem("cineverse-theme", theme);
+
+            themeButtons.forEach(function (button) {
+                button.classList.toggle(
+                    "is-active",
+                    button.dataset.themeChoice === theme
+                );
+            });
+        };
+
+        const savedTheme = localStorage.getItem("cineverse-theme") || "classic";
+        applyTheme(savedTheme);
+
+        themeButtons.forEach(function (button) {
+            button.addEventListener("click", function () {
+                applyTheme(button.dataset.themeChoice);
+            });
+        });
+    }());
+</script>
 
 </body>
 </html>
