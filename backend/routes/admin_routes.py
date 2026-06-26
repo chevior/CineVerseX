@@ -39,13 +39,35 @@ def admin_dashboard():
     for ticket in tickets:
         total_revenue += ticket.total_amount
 
+    popular_movie = db.session.query(
+        Movie.title,
+        func.count(Booking.id).label("booking_count")
+    ).join(Show, Show.movie_id == Movie.id)\
+     .join(Booking, Booking.show_id == Show.id)\
+     .filter(Booking.status == "Booked")\
+     .group_by(Movie.title)\
+     .order_by(func.count(Booking.id).desc())\
+     .first()
+
+    popular_theater = db.session.query(
+        Theater.name,
+        func.count(Booking.id).label("booking_count")
+    ).join(Show, Show.theater_id == Theater.id)\
+     .join(Booking, Booking.show_id == Show.id)\
+     .filter(Booking.status == "Booked")\
+     .group_by(Theater.name)\
+     .order_by(func.count(Booking.id).desc())\
+     .first()
+
     return render_template(
         "admin_dashboard.html",
         total_users=total_users,
         total_movies=total_movies,
         total_theaters=total_theaters,
         total_bookings=total_bookings,
-        total_revenue=total_revenue
+        total_revenue=total_revenue,
+        popular_movie=popular_movie,
+        popular_theater=popular_theater
     )
 
 
