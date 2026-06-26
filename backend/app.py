@@ -27,6 +27,9 @@ from routes.show_routes import show_bp
 from routes.ticket_routes import ticket_bp
 
 
+DEFAULT_DISCORD_LINK = "https://discord.gg/rFrDA6veF"
+
+
 app = Flask(
     __name__,
     template_folder="templates",
@@ -110,9 +113,16 @@ def create_default_admin():
 
 
 def create_default_settings():
-    if not SystemSetting.query.first():
+    settings = SystemSetting.query.first()
+
+    if not settings:
         settings = SystemSetting()
         db.session.add(settings)
+        db.session.commit()
+        return
+
+    if not settings.support_discord_link:
+        settings.support_discord_link = DEFAULT_DISCORD_LINK
         db.session.commit()
 
 
@@ -143,7 +153,7 @@ def ensure_schema_updates():
         setting_updates = {
             "site_name": "ALTER TABLE system_settings ADD COLUMN site_name VARCHAR(100) DEFAULT 'CineVerseX'",
             "support_email": "ALTER TABLE system_settings ADD COLUMN support_email VARCHAR(120) DEFAULT 'support@cineversex.com'",
-            "support_discord_link": "ALTER TABLE system_settings ADD COLUMN support_discord_link VARCHAR(255) DEFAULT ''",
+            "support_discord_link": f"ALTER TABLE system_settings ADD COLUMN support_discord_link VARCHAR(255) DEFAULT '{DEFAULT_DISCORD_LINK}'",
             "support_phone": "ALTER TABLE system_settings ADD COLUMN support_phone VARCHAR(20) DEFAULT ''",
             "booking_enabled": "ALTER TABLE system_settings ADD COLUMN booking_enabled BOOLEAN DEFAULT 1",
             "registration_enabled": "ALTER TABLE system_settings ADD COLUMN registration_enabled BOOLEAN DEFAULT 1",
