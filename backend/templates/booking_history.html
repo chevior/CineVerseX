@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h2 class="mb-0">Booking History</h2>
+
+        <a href="{{ url_for('ticket_bp.my_tickets') }}" class="btn btn-outline-light">
+            <i class="fas fa-qrcode"></i> My Tickets
+        </a>
+    </div>
+
+    {% if bookings %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Movie</th>
+                    <th>Theater</th>
+                    <th>Show Time</th>
+                    <th>Seats</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Booked At</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>{{ booking.id }}</td>
+                    <td>{{ booking.show.movie.title if booking.show and booking.show.movie else "-" }}</td>
+                    <td>{{ booking.show.theater.name if booking.show and booking.show.theater else "-" }}</td>
+                    <td>{{ booking.show.show_time if booking.show else "-" }}</td>
+                    <td>{{ booking.seats }}</td>
+                    <td>Rs. {{ booking.total_amount }}</td>
+                    <td>
+                        <span class="badge {{ 'bg-secondary' if booking.status == 'Cancelled' else 'bg-success' }}">
+                            {{ booking.status }}
+                        </span>
+                    </td>
+                    <td>{{ booking.booked_at.strftime("%d %b %Y, %I:%M %p") if booking.booked_at else "-" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        No booking history found.
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

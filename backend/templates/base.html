@@ -64,6 +64,14 @@
                 </a>
             </li>
 
+            {% if session.get("user_id") %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('booking_bp.booking_history') }}">
+                    <i class="fas fa-clock-rotate-left"></i> Booking History
+                </a>
+            </li>
+            {% endif %}
+
             {% if session.get('user_role') == 'admin' %}
             <li class="nav-item">
                 <a class="nav-link text-warning" href="/admin/dashboard">
@@ -115,6 +123,12 @@
                 <li>
                     <a class="dropdown-item" href="/my-tickets">
                         My Tickets
+                    </a>
+                </li>
+
+                <li>
+                    <a class="dropdown-item" href="{{ url_for('booking_bp.booking_history') }}">
+                        Booking History
                     </a>
                 </li>
 

@@ -2,6 +2,8 @@ import os
 import qrcode
 from datetime import datetime
 
+from flask_login import current_user
+
 from flask import (
     Blueprint,
     flash,
@@ -266,3 +268,15 @@ def ticket_details(booking_id):
         "ticket_details.html",
         booking=booking
     )
+
+
+@booking_bp.route("/booking-history")
+@login_required
+def booking_history():
+    if current_user.role == "admin":
+        bookings = Booking.query.order_by(Booking.booked_at.desc()).all()
+    else:
+        bookings = Booking.query.filter_by(user_id=current_user.id)\
+            .order_by(Booking.booked_at.desc()).all()
+
+    return render_template("booking_history.html", bookings=bookings)
