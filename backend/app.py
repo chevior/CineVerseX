@@ -18,6 +18,7 @@ from models.show import Show
 from models.booking import Booking, Payment
 from models.setting import SystemSetting
 from models.ticket import Ticket
+from models.review import Review
 
 from routes.auth_routes import auth_bp
 from routes.movie_routes import movie_bp

@@ -1,12 +1,15 @@
 import os
 from uuid import uuid4
 
-from flask import Blueprint, render_template, request, current_app, redirect, url_for
+from flask import Blueprint, flash, render_template, request, current_app, redirect, url_for
+from flask_login import current_user
+from sqlalchemy import func
 from werkzeug.utils import secure_filename
 
-from auth.guards import admin_required
+from auth.guards import admin_required, login_required
 from extensions import db
 from models.movie import Movie
+from models.review import Review
 from models.show import Show
 from models.theater import Theater
 
@@ -98,6 +101,12 @@ def add_movie():
 def movie_details(movie_id):
 
     movie = Movie.query.get_or_404(movie_id)
+    reviews = Review.query.filter_by(movie_id=movie_id)\
+        .order_by(Review.created_at.desc())\
+        .all()
+    avg_rating = db.session.query(
+        func.avg(Review.rating)
+    ).filter_by(movie_id=movie_id).scalar()
 
     shows = Show.query.filter_by(
         movie_id=movie.id
@@ -120,8 +129,50 @@ def movie_details(movie_id):
     return render_template(
         "movie_details.html",
         movie=movie,
-        theaters=theaters
+        theaters=theaters,
+        reviews=reviews,
+        avg_rating=round(avg_rating, 1) if avg_rating else 0
     )
+
+
+@movie_bp.route("/movie/<int:movie_id>/review", methods=["POST"])
+@login_required
+def add_review(movie_id):
+    Movie.query.get_or_404(movie_id)
+
+    try:
+        rating = int(request.form.get("rating", 0))
+    except ValueError:
+        rating = 0
+
+    comment = (request.form.get("comment") or "").strip()
+
+    if rating < 1 or rating > 5:
+        flash("Rating must be between 1 and 5.", "danger")
+        return redirect(url_for("movie_bp.movie_details", movie_id=movie_id))
+
+    existing_review = Review.query.filter_by(
+        user_id=current_user.id,
+        movie_id=movie_id
+    ).first()
+
+    if existing_review:
+        existing_review.rating = rating
+        existing_review.comment = comment
+    else:
+        review = Review(
+            user_id=current_user.id,
+            movie_id=movie_id,
+            rating=rating,
+            comment=comment
+        )
+        db.session.add(review)
+
+    db.session.commit()
+    flash("Review submitted successfully.", "success")
+    return redirect(url_for("movie_bp.movie_details", movie_id=movie_id))
+
+
 @movie_bp.route("/search")
 def search_movies():
 
