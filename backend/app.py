@@ -5,6 +5,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from flask import Flask, render_template, request, session
 from flask_login import LoginManager
+from sqlalchemy import func
 from werkzeug.security import generate_password_hash
 
 from config import Config
@@ -62,7 +63,22 @@ app.register_blueprint(ticket_bp)
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    trending_movie = db.session.query(
+        Movie,
+        func.count(Booking.id).label("booking_count")
+    ).join(Show, Show.movie_id == Movie.id)\
+     .join(Booking, Booking.show_id == Show.id)\
+     .filter(Booking.status == "Booked")\
+     .group_by(Movie.id)\
+     .order_by(func.count(Booking.id).desc())\
+     .first()
+
+    if not trending_movie:
+        fallback_movie = Movie.query.order_by(Movie.rating.desc()).first()
+        if fallback_movie:
+            trending_movie = (fallback_movie, 0)
+
+    return render_template("home.html", trending_movie=trending_movie)
 
 
 @app.route("/health")
