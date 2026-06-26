@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h2 class="mb-0">Revenue Analytics</h2>
+
+        <a href="{{ url_for('admin_bp.admin_dashboard') }}" class="btn btn-outline-warning">
+            Back to Dashboard
+        </a>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card shadow p-3 mb-4">
+                <h5>Daily Revenue</h5>
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow p-3 mb-4">
+                <h5>Booking Status</h5>
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow p-3 mb-4">
+                <h5>Popular Movies</h5>
+                <canvas id="movieChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script id="dailyRevenueLabels" type="application/json">
+    {{ daily_revenue | map(attribute=0) | list | tojson }}
+</script>
+<script id="dailyRevenueData" type="application/json">
+    {{ daily_revenue | map(attribute=1) | list | tojson }}
+</script>
+<script id="bookingStatusLabels" type="application/json">
+    {{ status_count | map(attribute=0) | list | tojson }}
+</script>
+<script id="bookingStatusData" type="application/json">
+    {{ status_count | map(attribute=1) | list | tojson }}
+</script>
+<script id="movieLabels" type="application/json">
+    {{ popular_movies | map(attribute=0) | list | tojson }}
+</script>
+<script id="movieData" type="application/json">
+    {{ popular_movies | map(attribute=1) | list | tojson }}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function readChartData(elementId) {
+    return JSON.parse(document.getElementById(elementId).textContent);
+}
+
+const revenueLabels = readChartData("dailyRevenueLabels");
+const revenueData = readChartData("dailyRevenueData");
+
+new Chart(document.getElementById("revenueChart"), {
+    type: "line",
+    data: {
+        labels: revenueLabels,
+        datasets: [{
+            label: "Revenue Rs.",
+            data: revenueData,
+            tension: 0.3
+        }]
+    }
+});
+
+const statusLabels = readChartData("bookingStatusLabels");
+const statusData = readChartData("bookingStatusData");
+
+new Chart(document.getElementById("statusChart"), {
+    type: "pie",
+    data: {
+        labels: statusLabels,
+        datasets: [{
+            data: statusData
+        }]
+    }
+});
+
+const popularMovieLabels = readChartData("movieLabels");
+const popularMovieData = readChartData("movieData");
+
+new Chart(document.getElementById("movieChart"), {
+    type: "bar",
+    data: {
+        labels: popularMovieLabels,
+        datasets: [{
+            label: "Bookings",
+            data: popularMovieData
+        }]
+    }
+});
+</script>
+{% endblock %}

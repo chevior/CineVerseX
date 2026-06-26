@@ -144,6 +144,12 @@
                             Admin Panel
                         </a>
                     </li>
+
+                    <li>
+                        <a class="dropdown-item" href="{{ url_for('admin_bp.revenue_charts') }}">
+                            Revenue Charts
+                        </a>
+                    </li>
                     {% endif %}
 
                     <li><hr class="dropdown-divider"></li>
@@ -215,6 +221,5 @@
         });
     }());
 </script>
-
 </body>
 </html>

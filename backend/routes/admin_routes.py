@@ -1,4 +1,5 @@
 from flask import Blueprint, flash, render_template, request, session, redirect, url_for
+from sqlalchemy import func
 
 from auth.guards import admin_required
 from extensions import db
@@ -8,7 +9,7 @@ from models.theater import Theater
 from models.booking import Booking
 from models.ticket import Ticket
 from models.show import Show
-from models.booking import Booking, Payment
+from models.booking import Payment
 from models.setting import SystemSetting
 
 admin_bp = Blueprint("admin_bp", __name__)
@@ -128,3 +129,40 @@ def system_settings():
         return redirect(url_for("admin_bp.system_settings"))
 
     return render_template("system_settings.html", settings=settings)
+
+
+@admin_bp.route("/revenue-charts")
+@admin_required
+def revenue_charts():
+    daily_revenue = db.session.query(
+        func.date(Booking.booked_at),
+        func.sum(Booking.total_amount)
+    ).filter(
+        Booking.status == "Booked"
+    ).group_by(
+        func.date(Booking.booked_at)
+    ).all()
+
+    status_count = db.session.query(
+        Booking.status,
+        func.count(Booking.id)
+    ).group_by(
+        Booking.status
+    ).all()
+
+    popular_movies = db.session.query(
+        Movie.title,
+        func.count(Booking.id)
+    ).join(Show, Show.movie_id == Movie.id)\
+     .join(Booking, Booking.show_id == Show.id)\
+     .filter(Booking.status == "Booked")\
+     .group_by(Movie.title)\
+     .order_by(func.count(Booking.id).desc())\
+     .limit(5).all()
+
+    return render_template(
+        "revenue_charts.html",
+        daily_revenue=daily_revenue,
+        status_count=status_count,
+        popular_movies=popular_movies
+    )
