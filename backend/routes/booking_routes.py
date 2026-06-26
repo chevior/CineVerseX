@@ -2,6 +2,7 @@ import os
 import qrcode
 from datetime import datetime
 
+from flask_mail import Message
 from flask_login import current_user
 
 from flask import (
@@ -15,7 +16,7 @@ from flask import (
     current_app
 )
 
-from extensions import db
+from extensions import db, mail
 from auth.guards import login_required
 from models.show import Show
 from models.booking import Booking, Payment
@@ -59,6 +60,35 @@ def parse_show_time(show_time):
             continue
 
     return None
+
+
+def send_ticket_email(booking, ticket):
+    if not current_user.email:
+        return
+
+    msg = Message(
+        subject="Your CineVerseX Ticket",
+        recipients=[current_user.email],
+        body=f"""
+Hello {current_user.name},
+
+Your ticket has been booked successfully.
+
+Booking ID: {booking.id}
+Movie: {ticket.movie_name}
+Theatre: {ticket.theatre_name}
+Show Time: {ticket.show_time}
+Seats: {booking.seats}
+Amount: Rs. {booking.total_amount}
+
+Thank you for booking with CineVerseX.
+"""
+    )
+
+    try:
+        mail.send(msg)
+    except Exception as error:
+        print("Email failed:", error)
 
 
 @booking_bp.route("/show/<int:show_id>/seats")
@@ -201,6 +231,8 @@ def book_ticket(show_id):
     ticket.qr_code = f"qrcodes/{qr_filename}"
 
     db.session.commit()
+
+    send_ticket_email(booking, ticket)
 
     return redirect(url_for("ticket_bp.my_tickets"))
 

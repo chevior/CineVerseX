@@ -9,7 +9,7 @@ from sqlalchemy import func
 from werkzeug.security import generate_password_hash
 
 from config import Config
-from extensions import db
+from extensions import db, mail
 
 from models.user import User
 from models.movie import Movie
@@ -39,8 +39,18 @@ app = Flask(
 
 app.config.from_object(Config)
 app.secret_key = Config.SECRET_KEY
+app.config["MAIL_SERVER"] = os.environ.get("MAIL_SERVER", "smtp.gmail.com")
+app.config["MAIL_PORT"] = int(os.environ.get("MAIL_PORT", 587))
+app.config["MAIL_USE_TLS"] = os.environ.get("MAIL_USE_TLS", "true").lower() == "true"
+app.config["MAIL_USERNAME"] = os.environ.get("MAIL_USERNAME", "")
+app.config["MAIL_PASSWORD"] = os.environ.get("MAIL_PASSWORD", "")
+app.config["MAIL_DEFAULT_SENDER"] = os.environ.get(
+    "MAIL_DEFAULT_SENDER",
+    app.config["MAIL_USERNAME"]
+)
 
 db.init_app(app)
+mail.init_app(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
