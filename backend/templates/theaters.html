@@ -2,105 +2,170 @@
 
 {% block content %}
 
-<div class="container mt-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <h2>🎭 Theater Management</h2>
+<div class="cx-shell">
+    <div class="cx-page-head">
+        <div>
+            <span class="eyebrow">Cinema network</span>
+            <h1>Theaters</h1>
+            <p>Explore Bengaluru Urban and Rural venues, screens, amenities, routes, and linked releases.</p>
+        </div>
 
         {% if session.get('user_role') == 'admin' %}
-        <div>
-            <a href="/add-screen" class="btn btn-outline-warning me-2">
-                + Add Screen
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="/add-screen" class="btn btn-outline-warning">
+                <i class="fas fa-tv"></i> Add Screen
             </a>
-            <a href="/add-theater" class="btn btn-warning">
-                + Add Theater
+            <a href="/add-theater" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Theater
             </a>
         </div>
         {% endif %}
-
     </div>
 
-    <div class="card shadow">
-
-        <div class="card-body">
-
-            <table class="table table-hover table-bordered align-middle">
-
-                <thead class="table-dark">
-
-                    <tr>
-
-                        <th>ID</th>
-                        <th>Theater Name</th>
-                        <th>City</th>
-                        <th>Total Screens</th>
-
-                        {% if session.get('user_role') == 'admin' %}
-                        <th>Actions</th>
-                        {% endif %}
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    {% for theater in theaters %}
-
-                    <tr>
-
-                        <td>{{ theater.id }}</td>
-
-                        <td>
-                            🎬 {{ theater.name }}
-                        </td>
-
-                        <td>
-                            📍 {{ theater.city }}
-                        </td>
-
-                        <td>
-                            {{ theater.total_screens }}
-                        </td>
-
-                        {% if session.get('user_role') == 'admin' %}
-
-                        <td>
-
-                            <a
-                                href="/edit-theater/{{ theater.id }}"
-                                class="btn btn-primary btn-sm">
-
-                                Edit
-
-                            </a>
-
-                            <a
-                                href="/delete-theater/{{ theater.id }}"
-                                class="btn btn-danger btn-sm"
-                                onclick="return confirm('Are you sure you want to delete this theater?')">
-
-                                Delete
-
-                            </a>
-
-                        </td>
-
-                        {% endif %}
-
-                    </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
-
+    <div class="cx-stat-strip compact">
+        <div>
+            <span>Total Venues</span>
+            <strong>{{ summary.venues }}</strong>
         </div>
-
+        <div>
+            <span>Screens</span>
+            <strong>{{ summary.screens }}</strong>
+        </div>
+        <div>
+            <span>Seats</span>
+            <strong>{{ summary.seats }}</strong>
+        </div>
+        <div>
+            <span>Urban / Rural</span>
+            <strong>{{ summary.urban }} / {{ summary.rural }}</strong>
+        </div>
     </div>
 
+    <form method="GET" action="{{ url_for('theater_bp.theaters') }}" class="cx-filter-bar">
+        <label>
+            <span>Search</span>
+            <input
+                type="search"
+                name="q"
+                class="form-control"
+                value="{{ query_text }}"
+                placeholder="Theater, mall, area">
+        </label>
+
+        <label>
+            <span>Region</span>
+            <select name="region" class="form-control">
+                <option value="">Urban + Rural</option>
+                <option value="Urban" {% if selected_region == "Urban" %}selected{% endif %}>Bengaluru Urban</option>
+                <option value="Rural" {% if selected_region == "Rural" %}selected{% endif %}>Bengaluru Rural</option>
+            </select>
+        </label>
+
+        <label>
+            <span>Type</span>
+            <select name="format" class="form-control">
+                <option value="">All Theaters</option>
+                <option value="Multiplex" {% if selected_format == "Multiplex" %}selected{% endif %}>Multiplex</option>
+                <option value="Single Screen" {% if selected_format == "Single Screen" %}selected{% endif %}>Single Screen</option>
+            </select>
+        </label>
+
+        <label>
+            <span>Area</span>
+            <select name="area" class="form-control">
+                <option value="">All Areas</option>
+                {% for area in areas %}
+                <option value="{{ area }}" {% if selected_area == area %}selected{% endif %}>{{ area }}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <button class="btn btn-primary">
+            <i class="fas fa-sliders"></i> Apply
+        </button>
+
+        {% if query_text or selected_region or selected_format or selected_area %}
+        <a href="{{ url_for('theater_bp.theaters') }}" class="btn btn-outline-warning">Clear</a>
+        {% endif %}
+    </form>
+
+    <div class="cx-theater-grid">
+        {% for card in theater_cards %}
+        {% set theater = card.theater %}
+        <article class="cx-theater-card">
+            <div class="cx-theater-top">
+                <span>{{ card.area }} / {{ theater.city }}</span>
+                <h3>{{ theater.name }}</h3>
+                <p><i class="fas fa-location-dot"></i> {{ theater.address or "Address not set" }}</p>
+            </div>
+
+            <div class="cx-theater-body">
+                <div class="cx-info-chips">
+                    <span>{{ card.region }}</span>
+                    <span>{{ card.format }}</span>
+                    <span>{{ card.area }}</span>
+                </div>
+
+                <div class="cx-theater-metrics">
+                    <div><strong>{{ theater.total_screens }}</strong><span>Screens</span></div>
+                    <div><strong>{{ card.seats }}</strong><span>Seats</span></div>
+                    <div><strong>{{ card.linked_titles|length }}</strong><span>Linked</span></div>
+                </div>
+
+                <div class="amenity-row">
+                    {% for amenity in card.amenities %}
+                    <span>{{ amenity }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="screen-list">
+                    {% for screen in card.screens[:4] %}
+                    <span>
+                        <i class="fas fa-tv"></i>
+                        {{ screen.screen_name }} / {{ screen.total_seats }} seats
+                    </span>
+                    {% endfor %}
+                </div>
+
+                {% if card.linked_titles %}
+                <div class="linked-release-list">
+                    <strong>Linked releases</strong>
+                    {% for title in card.linked_titles %}
+                    <span>{{ title }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="cx-release-actions">
+                    <a
+                        href="https://www.google.com/maps/search/?api=1&query={{ (theater.name ~ ' ' ~ theater.address)|urlencode }}"
+                        class="btn btn-outline-warning"
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        Map
+                    </a>
+                    <a href="{{ url_for('show_bp.shows') }}" class="btn btn-primary">
+                        Releases
+                    </a>
+                </div>
+
+                {% if session.get('user_role') == 'admin' %}
+                <div class="cx-release-actions mt-2">
+                    <a href="/edit-theater/{{ theater.id }}" class="btn btn-outline-warning">Edit</a>
+                    <a
+                        href="/delete-theater/{{ theater.id }}"
+                        class="btn btn-outline-danger"
+                        onclick="return confirm('Are you sure you want to delete this theater?')">
+                        Delete
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </article>
+        {% else %}
+        <div class="alert alert-info">No theaters are available yet.</div>
+        {% endfor %}
+    </div>
 </div>
 
 {% endblock %}

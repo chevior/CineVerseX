@@ -10,6 +10,7 @@ class Booking(db.Model):
     seats = db.Column(db.String(100))
     total_amount = db.Column(db.Float)
     status = db.Column(db.String(50), default="Booked")
+    external_booking_url = db.Column(db.String(500))
     booked_at = db.Column(db.DateTime, default=datetime.utcnow)
     cancelled_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

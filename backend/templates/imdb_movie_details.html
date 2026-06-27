@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card shadow text-center p-5">
+                <i class="fas fa-film fa-3x mb-3"></i>
+                <p class="mb-0">IMDb dataset title</p>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <h1 class="mb-3">
+                {{ movie.primaryTitle }}
+            </h1>
+
+            <div class="mb-3">
+                <span class="badge bg-primary">
+                    {{ movie.startYear|int if movie.startYear else "Year not set" }}
+                </span>
+
+                <span class="badge bg-success">
+                    {{ movie.genres or "Genre not set" }}
+                </span>
+            </div>
+
+            <p>
+                <strong>Original Title:</strong>
+                {{ movie.originalTitle or movie.primaryTitle }}
+            </p>
+
+            <p>
+                <strong>Runtime:</strong>
+                {% if movie.runtimeMinutes %}
+                    {{ movie.runtimeMinutes|int }} minutes
+                {% else %}
+                    Not available
+                {% endif %}
+            </p>
+
+            <p>
+                <strong>IMDb Rating:</strong>
+                {{ movie.averageRating or "N/A" }}/10
+            </p>
+
+            <p>
+                <strong>Votes:</strong>
+                {{ "{:,}".format(movie.numVotes) if movie.numVotes else 0 }}
+            </p>
+
+            <div class="d-flex gap-2 flex-wrap mt-4">
+                <a
+                    href="https://www.imdb.com/title/{{ movie.tconst }}/"
+                    class="btn btn-warning"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    <i class="fas fa-star"></i> Open on IMDb
+                </a>
+
+                <a
+                    href="{{ bookmyshow_url }}"
+                    class="btn btn-primary"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    <i class="fas fa-ticket-alt"></i> Book on BookMyShow
+                </a>
+
+                <a
+                    href="{{ url_for('movie_bp.movies') }}"
+                    class="btn btn-outline-warning">
+                    Back to Movies
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -2,178 +2,276 @@
 
 {% block content %}
 
-<div class="container-fluid px-4">
+<div class="cx-shell">
 
-    <section class="home-banner">
-        <div class="banner-content">
+    <section class="cx-hero-carousel" data-hero-carousel>
+        {% for movie in hero_movies[:5] %}
+        <article class="cx-hero-slide {% if loop.first %}is-active{% endif %}" data-hero-slide>
+            <img
+                class="cx-hero-backdrop"
+                src="{{ movie.backdrop_url if movie.backdrop_url and movie.backdrop_url.startswith('http') else (movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else url_for('generated_movie_poster', movie_id=movie.id)) }}"
+                onerror="this.src='{{ url_for('generated_movie_poster', movie_id=movie.id) }}';"
+                alt="">
+            <div class="cx-hero-shade"></div>
 
-            <span class="badge bg-warning mb-3">
-                Smart Movie Booking Platform
-            </span>
+            <div class="cx-hero-copy">
+                <span class="cx-chip">
+                    <i class="fas fa-location-dot"></i> Bengaluru movies guide
+                </span>
 
-            <h1>
-                CineVerse X
-            </h1>
+                <h1>{{ movie.title }}</h1>
 
-            <p>
-                Discover movies, compare shows, reserve seats, and keep every ticket organized in one polished booking workspace.
-            </p>
+                <div class="cx-info-chips light">
+                    <span><i class="fas fa-star"></i> {{ movie.rating or "N/A" }}</span>
+                    {% for genre in (movie.genre or "").split(",")[:2] %}
+                    {% if genre.strip() %}<span>{{ genre.strip() }}</span>{% endif %}
+                    {% endfor %}
+                    <span>{{ movie.language.split(",")[0] if movie.language else "Movie" }}</span>
+                    {% if movie.runtime_minutes %}<span>{{ movie.runtime_minutes // 60 }}h {{ movie.runtime_minutes % 60 }}m</span>{% endif %}
+                    <span>{{ movie.certificate or "UA" }}</span>
+                </div>
 
-            <div class="mt-4 d-flex gap-2 flex-wrap">
-                <a href="/movies" class="btn btn-warning btn-lg">
-                    <i class="fas fa-film"></i> Browse Movies
-                </a>
+                <p>{{ movie.description[:210] }}{% if movie.description|length > 210 %}...{% endif %}</p>
 
-                {% if session.get("user_id") %}
-                <a href="/my-tickets" class="btn btn-outline-light btn-lg">
-                    <i class="fas fa-qrcode"></i> My Tickets
-                </a>
-                {% else %}
-                <a href="/login" class="btn btn-outline-light btn-lg">
-                    <i class="fas fa-right-to-bracket"></i> Login
-                </a>
-                {% endif %}
-            </div>
-
-        </div>
-    </section>
-
-    <section class="mt-5">
-        <div class="card shadow trending-movie-card">
-            <div class="row g-0 align-items-stretch">
-                {% if trending_movie %}
-                {% set movie = trending_movie[0] %}
-                {% set booking_count = trending_movie[1] %}
-                <div class="col-lg-4">
-                    {% if movie.poster_url %}
-                    <img
-                        src="{{ url_for('static', filename=movie.poster_url) }}"
-                        class="trending-poster"
-                        alt="{{ movie.title }}">
+                <div class="cx-hero-actions">
+                    {% if movie.trailer_url %}
+                    <a href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}#trailer" class="btn btn-primary btn-lg">
+                        <i class="fas fa-play"></i> Watch Trailer
+                    </a>
                     {% else %}
-                    <div class="trending-poster trending-poster-empty">
-                        <i class="fas fa-film"></i>
-                    </div>
+                    <a href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-circle-info"></i> View Details
+                    </a>
+                    {% endif %}
+
+                    {% if movie.bookmyshow_url %}
+                    <a href="{{ movie.bookmyshow_url }}" class="btn btn-outline-warning btn-lg" target="_blank" rel="noopener noreferrer">
+                        <i class="fas fa-ticket-alt"></i> Book Now
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('show_bp.shows') }}" class="btn btn-outline-warning btn-lg">
+                        <i class="fas fa-ticket-alt"></i> Releases
+                    </a>
                     {% endif %}
                 </div>
-
-                <div class="col-lg-8">
-                    <div class="card-body p-4 p-lg-5">
-                        <span class="badge bg-warning mb-3">
-                            Trending Movie
-                        </span>
-
-                        <h2 class="mb-2">{{ movie.title }}</h2>
-
-                        <p class="text-muted mb-3">
-                            {{ movie.language or "Movie" }}
-                            {% if movie.genre %} · {{ movie.genre }}{% endif %}
-                            {% if movie.rating %} · {{ movie.rating }}/10{% endif %}
-                        </p>
-
-                        <p>
-                            {{ movie.description[:180] }}{% if movie.description|length > 180 %}...{% endif %}
-                        </p>
-
-                        <div class="d-flex align-items-center gap-3 flex-wrap mt-4">
-                            <a
-                                href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}"
-                                class="btn btn-warning">
-                                View Details
-                            </a>
-
-                            {% if booking_count %}
-                            <span class="text-muted">
-                                Popular with {{ booking_count }} bookings
-                            </span>
-                            {% else %}
-                            <span class="text-muted">
-                                Highest rated pick right now
-                            </span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                {% else %}
-                <div class="col-lg-4">
-                    <div class="trending-poster trending-poster-empty">
-                        <i class="fas fa-film"></i>
-                    </div>
-                </div>
-
-                <div class="col-lg-8">
-                    <div class="card-body p-4 p-lg-5">
-                        <span class="badge bg-warning mb-3">
-                            Trending Movie
-                        </span>
-
-                        <h2 class="mb-2">No trending movie yet</h2>
-
-                        <p class="text-muted mb-4">
-                            Movies will appear here once bookings or ratings are available.
-                        </p>
-
-                        <a href="/movies" class="btn btn-warning">
-                            Browse Movies
-                        </a>
-                    </div>
-                </div>
-                {% endif %}
             </div>
+        </article>
+        {% else %}
+        <article class="cx-hero-slide is-active" data-hero-slide>
+            <div class="cx-hero-shade"></div>
+            <div class="cx-hero-copy">
+                <span class="cx-chip"><i class="fas fa-location-dot"></i> Bengaluru</span>
+                <h1>Movies made easy.</h1>
+                <p>Search releases, compare details, discover theaters, and continue with direct booking links.</p>
+            </div>
+        </article>
+        {% endfor %}
+
+        <div class="cx-hero-dots">
+            {% for movie in hero_movies[:5] %}
+            <button type="button" class="{% if loop.first %}is-active{% endif %}" data-hero-dot aria-label="Show slide {{ loop.index }}"></button>
+            {% endfor %}
         </div>
     </section>
 
-    <section class="mt-5">
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-            <div>
-                <h2 class="mb-1">Explore CineVerse X</h2>
-                <p class="text-muted mb-0">Fast paths for browsing, booking, and managing cinema operations.</p>
-            </div>
+    <form class="cx-search-panel cx-home-search" action="/search" method="GET">
+        <i class="fas fa-magnifying-glass"></i>
+        <input name="q" type="search" placeholder="Search by movie, language, genre, actor" aria-label="Search movies">
+        <button type="submit">Search</button>
+    </form>
 
-            <a href="/movies" class="btn btn-outline-warning btn-sm">
-                View All Movies
+    <section class="cx-stat-strip">
+        <div>
+            <span>Catalog</span>
+            <strong>{{ movie_count }}</strong>
+        </div>
+        <div>
+            <span>Scheduled</span>
+            <strong>{{ release_count }}</strong>
+        </div>
+        <div>
+            <span>Venues</span>
+            <strong>{{ theater_count }}</strong>
+        </div>
+        <div>
+            <span>Booking Mode</span>
+            <strong>BMS</strong>
+        </div>
+    </section>
+
+    <section class="cx-section cx-rail-section">
+        <div class="cx-section-head">
+            <div>
+                <span class="eyebrow">Coming soon</span>
+                <h2>Upcoming releases</h2>
+            </div>
+            <a href="{{ url_for('show_bp.shows') }}" class="cx-see-all">
+                See All
             </a>
         </div>
 
-        <div class="row">
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="quick-card upgraded-card">
-                    <div class="quick-icon"></div>
-                    <h4>Movies</h4>
-                    <p>Browse posters, ratings, language, genre, and movie details.</p>
-                    <a href="/movies" class="btn btn-warning btn-sm">View Movies</a>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="quick-card upgraded-card">
-                    <div class="quick-icon"></div>
-                    <h4>Theaters</h4>
-                    <p>Find theater locations and screens connected to active shows.</p>
-                    <a href="/theaters" class="btn btn-warning btn-sm">View Theaters</a>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="quick-card upgraded-card">
-                    <div class="quick-icon"></div>
-                    <h4>Shows</h4>
-                    <p>Compare available show times and start a seat booking quickly.</p>
-                    <a href="/shows" class="btn btn-warning btn-sm">View Shows</a>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="quick-card upgraded-card">
-                    <div class="quick-icon"></div>
-                    <h4>Tickets</h4>
-                    <p>Access QR tickets, booking history, and PDF downloads after login.</p>
-                    <a href="/my-tickets" class="btn btn-warning btn-sm">My Tickets</a>
-                </div>
-            </div>
+        <div class="cx-poster-rail">
+            {% for movie in featured_movies %}
+            <a class="cx-premiere-poster" href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}">
+                <span class="cx-premiere-img">
+                    <img
+                        src="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('generated_movie_poster', movie_id=movie.id)) }}"
+                        onerror="this.src='{{ url_for('generated_movie_poster', movie_id=movie.id) }}';"
+                        alt="">
+                    <span class="cx-premiere-ribbon">Soon</span>
+                </span>
+                <strong>{{ movie.title }}</strong>
+                <small>{{ movie.release_date or "Coming soon" }} / {{ movie.language.split(",")[0] if movie.language else "Movie" }}</small>
+            </a>
+            {% else %}
+            <div class="alert alert-info">Upcoming releases will appear here after sync.</div>
+            {% endfor %}
         </div>
     </section>
 
+    <section class="cx-section cx-rail-section">
+        <div class="cx-section-head">
+            <div>
+                <span class="eyebrow">Audience picks</span>
+                <h2>Highest rated movies</h2>
+            </div>
+            <a href="{{ url_for('movie_bp.movies', sort='rating', view='') }}" class="cx-see-all">
+                See All
+            </a>
+        </div>
+
+        <div class="cx-poster-rail">
+            {% for movie in top_rated_movies %}
+            <a class="cx-premiere-poster" href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}">
+                <span class="cx-premiere-img">
+                    <img
+                        src="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('generated_movie_poster', movie_id=movie.id)) }}"
+                        onerror="this.src='{{ url_for('generated_movie_poster', movie_id=movie.id) }}';"
+                        alt="">
+                    <span class="cx-premiere-ribbon">Top</span>
+                </span>
+                <strong>{{ movie.title }}</strong>
+                <small><i class="fas fa-star"></i> {{ movie.rating or "N/A" }} / {{ movie.genre or "Movie" }}</small>
+            </a>
+            {% else %}
+            <div class="alert alert-info">More movies will appear here after sync.</div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="cx-section cx-rail-section">
+        <div class="cx-section-head">
+            <div>
+                <span class="eyebrow">More to explore</span>
+                <h2>Fresh poster-backed picks</h2>
+            </div>
+            <a href="{{ url_for('movie_bp.movies') }}" class="cx-see-all">
+                See All
+            </a>
+        </div>
+
+        <div class="cx-poster-rail">
+            {% for movie in stream_movies %}
+            <a class="cx-premiere-poster" href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}">
+                <span class="cx-premiere-img">
+                    <img
+                        src="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('generated_movie_poster', movie_id=movie.id)) }}"
+                        onerror="this.src='{{ url_for('generated_movie_poster', movie_id=movie.id) }}';"
+                        alt="">
+                    <span class="cx-premiere-ribbon">Explore</span>
+                </span>
+                <strong>{{ movie.title }}</strong>
+                <small>{{ movie.genre or movie.language or "Movie" }}</small>
+            </a>
+            {% else %}
+            <div class="alert alert-info">More poster-backed movies will appear after sync.</div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="cx-section cx-rail-section">
+        <div class="cx-section-head">
+            <div>
+                <span class="eyebrow">Quick discovery</span>
+                <h2>Browse by mood</h2>
+            </div>
+        </div>
+
+        <div class="cx-discovery-row">
+            <a href="{{ url_for('movie_bp.movies', genre='Action', view='') }}"><i class="fas fa-bolt"></i> Action</a>
+            <a href="{{ url_for('movie_bp.movies', genre='Comedy', view='') }}"><i class="fas fa-face-laugh"></i> Comedy</a>
+            <a href="{{ url_for('movie_bp.movies', genre='Animation', view='') }}"><i class="fas fa-child-reaching"></i> Animation</a>
+            <a href="{{ url_for('movie_bp.movies', genre='Drama', view='') }}"><i class="fas fa-masks-theater"></i> Drama</a>
+            <a href="{{ url_for('movie_bp.movies', genre='Thriller', view='') }}"><i class="fas fa-fire"></i> Thriller</a>
+            <a href="{{ url_for('show_bp.shows', language='Hindi') }}"><i class="fas fa-language"></i> Hindi</a>
+            <a href="{{ url_for('show_bp.shows', language='Kannada') }}"><i class="fas fa-language"></i> Kannada</a>
+            <a href="{{ url_for('show_bp.shows', language='Tamil') }}"><i class="fas fa-language"></i> Tamil</a>
+        </div>
+    </section>
+
+    <section class="cx-action-grid">
+        <a href="{{ url_for('movie_bp.movies') }}">
+            <i class="fas fa-film"></i>
+            <strong>Movies</strong>
+            <span>Browse posters, ratings, genres, languages, and details</span>
+        </a>
+        <a href="{{ url_for('show_bp.shows') }}">
+            <i class="fas fa-calendar-days"></i>
+            <strong>Upcoming Releases</strong>
+            <span>Upcoming titles with direct BookMyShow actions where available</span>
+        </a>
+        <a href="{{ url_for('theater_bp.theaters') }}">
+            <i class="fas fa-building"></i>
+            <strong>Theaters</strong>
+            <span>Filter Bengaluru Urban and Rural venues by area and type</span>
+        </a>
+        <a href="{{ url_for('booking_bp.booking_history') }}">
+            <i class="fas fa-arrow-up-right-from-square"></i>
+            <strong>Booking Links</strong>
+            <span>Open official BookMyShow pages and keep useful link history</span>
+        </a>
+        <a href="{{ url_for('movie_bp.movies', sort='rating', view='') }}">
+            <i class="fas fa-star"></i>
+            <strong>Top Rated</strong>
+            <span>Sort the catalog by IMDbAPI and CineVerse ratings</span>
+        </a>
+        <a href="{{ url_for('theater_bp.theaters', region='Rural') }}">
+            <i class="fas fa-route"></i>
+            <strong>Rural Venues</strong>
+            <span>Filter Bengaluru Rural area theaters directly</span>
+        </a>
+    </section>
+
 </div>
+
+<script>
+    (function () {
+        const carousel = document.querySelector("[data-hero-carousel]");
+        if (!carousel) return;
+
+        const slides = Array.from(carousel.querySelectorAll("[data-hero-slide]"));
+        const dots = Array.from(carousel.querySelectorAll("[data-hero-dot]"));
+        let index = 0;
+
+        function showSlide(nextIndex) {
+            if (!slides.length) return;
+            index = nextIndex % slides.length;
+            slides.forEach((slide, slideIndex) => {
+                slide.classList.toggle("is-active", slideIndex === index);
+            });
+            dots.forEach((dot, dotIndex) => {
+                dot.classList.toggle("is-active", dotIndex === index);
+            });
+        }
+
+        dots.forEach((dot, dotIndex) => {
+            dot.addEventListener("click", () => showSlide(dotIndex));
+        });
+
+        if (slides.length > 1) {
+            window.setInterval(() => showSlide(index + 1), 5000);
+        }
+    }());
+</script>
 
 {% endblock %}

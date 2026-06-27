@@ -2,50 +2,130 @@
 
 {% block content %}
 
-<div class="container mt-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>🎬 Available Shows</h2>
+<div class="cx-shell">
+    <div class="cx-page-head">
+        <div>
+            <span class="eyebrow">Scheduled releases</span>
+            <h1>Upcoming Releases</h1>
+            <p>Browse upcoming movies, inspect details, and continue to BookMyShow when a direct page is available.</p>
+        </div>
 
         {% if session.get('user_role') == 'admin' %}
-            <a href="/add-show" class="btn btn-success">
-                Add New Show
-            </a>
+        <a href="/add-show" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Show
+        </a>
         {% endif %}
     </div>
 
-    <table class="table table-striped table-bordered shadow">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Movie</th>
-                <th>Theater</th>
-                <th>Screen</th>
-                <th>Show Time</th>
-                <th>Price</th>
-                <th>Action</th>
-            </tr>
-        </thead>
+    <form method="GET" action="{{ url_for('show_bp.shows') }}" class="cx-filter-bar">
+        <label>
+            <span>Genre</span>
+            <select name="genre" class="form-control">
+                <option value="">All Genres</option>
+                {% for genre in genres %}
+                <option value="{{ genre }}" {% if selected_genre == genre %}selected{% endif %}>
+                    {{ genre }}
+                </option>
+                {% endfor %}
+            </select>
+        </label>
 
-        <tbody>
-        {% for show in shows %}
-            <tr>
-                <td>{{ show.id }}</td>
-                <td>{{ show.movie.title if show.movie else show.movie_id }}</td>
-                <td>{{ show.theater.name if show.theater else show.theater_id }}</td>
-                <td>{{ show.screen.screen_name if show.screen else show.screen_id }}</td>
-                <td>{{ show.show_time }}</td>
-                <td>₹{{ show.price }}</td>
-                <td>
-                    <a href="/show/{{ show.id }}/seats" class="btn btn-primary btn-sm">
-                        🎟 Book
+        <label>
+            <span>Language</span>
+            <select name="language" class="form-control">
+                <option value="">All Languages</option>
+                {% for language in languages %}
+                <option value="{{ language }}" {% if selected_language == language %}selected{% endif %}>
+                    {{ language }}
+                </option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label>
+            <span>Sort</span>
+            <select name="sort" class="form-control">
+                <option value="release" {% if selected_sort == "release" %}selected{% endif %}>Release Date</option>
+                <option value="movie" {% if selected_sort == "movie" %}selected{% endif %}>Movie</option>
+                <option value="rating" {% if selected_sort == "rating" %}selected{% endif %}>Rating</option>
+            </select>
+        </label>
+
+        <button class="btn btn-primary">
+            <i class="fas fa-sliders"></i> Apply
+        </button>
+
+        {% if selected_genre or selected_language or selected_sort != "release" %}
+        <a href="{{ url_for('show_bp.shows') }}" class="btn btn-outline-warning">Clear</a>
+        {% endif %}
+    </form>
+
+    <div class="cx-release-grid">
+        {% for card in movie_cards %}
+        {% set movie = card.movie %}
+        {% set show = card.show %}
+        <article class="cx-release-card">
+            <a class="cx-release-poster" href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}">
+                <img
+                    src="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('generated_movie_poster', movie_id=movie.id)) }}"
+                    onerror="this.src='{{ url_for('generated_movie_poster', movie_id=movie.id) }}';"
+                    alt="{{ movie.title }}">
+                <span class="cx-release-rating">{{ movie.rating or "N/A" }}/10</span>
+                <span class="cx-hover-overlay">
+                    <span>{% if movie.bookmyshow_url %}Book Now{% else %}Details{% endif %}</span>
+                </span>
+            </a>
+
+            <div class="cx-release-body">
+                <div>
+                    <small>{{ movie.release_date or "Coming soon" }}</small>
+                    <h3>{{ movie.title }}</h3>
+                    <div class="cx-info-chips">
+                        <span><i class="fas fa-star"></i> {{ movie.rating or "N/A" }}</span>
+                        {% for genre in (movie.genre or "").split(",")[:2] %}
+                        {% if genre.strip() %}<span>{{ genre.strip() }}</span>{% endif %}
+                        {% endfor %}
+                        <span>{{ movie.language.split(",")[0] if movie.language else "Movie" }}</span>
+                        {% if movie.runtime_minutes %}<span>{{ movie.runtime_minutes // 60 }}h {{ movie.runtime_minutes % 60 }}m</span>{% endif %}
+                        <span>{{ movie.certificate or "UA" }}</span>
+                    </div>
+                </div>
+
+                <div class="cx-release-meta">
+                    <span><i class="fas fa-language"></i> {{ movie.language or "Language not set" }}</span>
+                    {% if movie.description %}
+                    <span><i class="fas fa-align-left"></i> {{ movie.description[:110] }}{% if movie.description|length > 110 %}...{% endif %}</span>
+                    {% endif %}
+                </div>
+
+                <div class="cx-release-actions">
+                    <a href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}" class="btn btn-outline-warning">
+                        Details
                     </a>
-                </td>
-            </tr>
+                    {% if movie.bookmyshow_url %}
+                    <a
+                        href="{{ url_for('booking_bp.seat_selection', show_id=show.id) }}"
+                        class="btn btn-primary"
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        BookMyShow
+                    </a>
+                    {% else %}
+                    <a
+                        href="{{ movie.justwatch_url or 'https://www.justwatch.com/in/search?q=' ~ movie.title|urlencode }}"
+                        class="btn btn-primary"
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        JustWatch
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </article>
+        {% else %}
+        <div class="alert alert-info">No upcoming releases are available yet.</div>
         {% endfor %}
-        </tbody>
-    </table>
-
+    </div>
 </div>
 
 {% endblock %}

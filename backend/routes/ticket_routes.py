@@ -14,15 +14,7 @@ ticket_bp = Blueprint("ticket_bp", __name__)
 @ticket_bp.route("/my-tickets")
 @login_required
 def my_tickets():
-
-    tickets = Ticket.query.filter_by(
-        user_id=session["user_id"]
-    ).all()
-
-    return render_template(
-        "my_tickets.html",
-        tickets=tickets
-    )
+    return redirect(url_for("booking_bp.booking_history"))
 @ticket_bp.route("/download-ticket/<int:ticket_id>")
 @login_required
 def download_ticket(ticket_id):

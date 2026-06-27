@@ -17,9 +17,10 @@
             <div class="card h-100">
 
                 <img
-                    src="{{ url_for('static', filename=movie.poster_url) }}"
+                    src="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('generated_movie_poster', movie_id=movie.id)) }}"
                     class="card-img-top"
                     style="height:350px;object-fit:cover;"
+                    onerror="this.src='{{ url_for('generated_movie_poster', movie_id=movie.id) }}';"
                 >
 
                 <div class="card-body">

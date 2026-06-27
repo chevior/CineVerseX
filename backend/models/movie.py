@@ -39,11 +39,20 @@ class Movie(db.Model):
         default=0
     )
 
+    runtime_minutes = db.Column(db.Integer)
+    certificate = db.Column(db.String(20))
+    cast_names = db.Column(db.Text)
+    director_names = db.Column(db.Text)
+    writer_names = db.Column(db.Text)
+    backdrop_url = db.Column(db.String(500))
     trailer_url = db.Column(db.String(300))
-    tmdb_id = db.Column(db.Integer)
-    tmdb_url = db.Column(db.String(300))
     justwatch_url = db.Column(db.String(300))
     bookmyshow_url = db.Column(db.String(300))
+    bookmyshow_movie_url = db.Column(db.String(300))
+    bookmyshow_ticket_url = db.Column(db.String(300))
+    tmdb_id = db.Column(db.Integer)
+    tmdb_url = db.Column(db.String(300))
+    data_source = db.Column(db.String(50), default="manual")
 
     created_at = db.Column(
         db.DateTime,

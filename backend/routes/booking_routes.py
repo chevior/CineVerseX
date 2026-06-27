@@ -92,35 +92,34 @@ Thank you for booking with CineVerseX.
 
 
 @booking_bp.route("/show/<int:show_id>/seats")
-@login_required
 def seat_selection(show_id):
-    settings = get_settings()
     show = Show.query.get_or_404(show_id)
+    bookmyshow_url = ""
 
-    seats = []
-    rows = ["A", "B", "C", "D", "E", "F", "G", "H"]
+    if show.movie:
+        if show.movie.bookmyshow_url:
+            bookmyshow_url = show.movie.bookmyshow_url
 
-    for row in rows:
-        for num in range(1, 11):
-            seats.append(f"{row}{num}")
+        if not bookmyshow_url:
+            flash("BookMyShow movie page is not available yet for this title.", "warning")
+            return redirect(url_for("show_bp.shows"))
 
-    bookings = Booking.query.filter(
-        Booking.show_id == show.id,
-        Booking.status.in_(ACTIVE_BOOKING_STATUSES)
-    ).all()
+        if session.get("user_id"):
+            booking_link = Booking(
+                user_id=session["user_id"],
+                show_id=show.id,
+                seats="External",
+                total_amount=0,
+                status="Opened BookMyShow",
+                external_booking_url=bookmyshow_url
+            )
+            db.session.add(booking_link)
+            db.session.commit()
 
-    booked_seats = []
+        return redirect(bookmyshow_url)
 
-    for booking in bookings:
-        booked_seats.extend(booking.seats.split(","))
-
-    return render_template(
-        "seat_selection.html",
-        show=show,
-        seats=seats,
-        booked_seats=booked_seats,
-        settings=settings
-    )
+    flash("BookMyShow link is not available for this show.", "warning")
+    return redirect(url_for("show_bp.shows"))
 
 
 @booking_bp.route("/book/<int:show_id>", methods=["POST"])

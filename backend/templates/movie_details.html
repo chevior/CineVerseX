@@ -2,236 +2,192 @@
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="cx-detail-page">
+    <section class="cx-detail-hero">
+        <img
+            class="cx-detail-backdrop"
+            src="{{ movie.backdrop_url if movie.backdrop_url and movie.backdrop_url.startswith('http') else (movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else url_for('generated_movie_poster', movie_id=movie.id)) }}"
+            onerror="this.src='{{ url_for('generated_movie_poster', movie_id=movie.id) }}';"
+            alt="{{ movie.title }}">
+        <div class="cx-detail-shade"></div>
 
-    <div class="row">
-        <div class="col-lg-4">
-            {% if movie.poster_url %}
+        <div class="cx-detail-content">
             <img
-                src="{{ movie.poster_url if movie.poster_url.startswith('http') else url_for('static', filename=movie.poster_url) }}"
-                class="img-fluid rounded shadow"
-                style="width:100%; max-height:600px; object-fit:cover;"
+                class="cx-detail-poster"
+                src="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('generated_movie_poster', movie_id=movie.id)) }}"
+                onerror="this.src='{{ url_for('generated_movie_poster', movie_id=movie.id) }}';"
                 alt="{{ movie.title }}">
-            {% else %}
-            <div class="card shadow text-center p-5">
-                <i class="fas fa-film fa-3x mb-3"></i>
-                <p class="mb-0">No poster available</p>
-            </div>
-            {% endif %}
-        </div>
 
-        <div class="col-lg-8">
-            <h1 class="mb-3">
-                {{ movie.title }}
-            </h1>
+            <div class="cx-detail-copy">
+                <span class="cx-chip">CineVerse Movie</span>
+                <h1>{{ movie.title }}</h1>
 
-            <h4 class="text-warning mb-3">
-                <i class="fas fa-star"></i> {{ movie.rating }}/10
-            </h4>
-
-            <div class="mb-3">
-                <span class="badge bg-primary">
-                    {{ movie.language }}
-                </span>
-
-                <span class="badge bg-success">
-                    {{ movie.genre }}
-                </span>
-
-                <span class="badge bg-danger">
-                    {{ movie.release_date }}
-                </span>
-            </div>
-
-            <hr>
-
-            <h4>About Movie</h4>
-
-            <p>
-                <strong>Genre:</strong> {{ movie.genre or "Not set" }}
-            </p>
-
-            <p class="fs-5">
-                {{ movie.description }}
-            </p>
-
-            <div class="d-flex gap-2 flex-wrap mt-4">
-                {% if movie.trailer_url %}
-                <a
-                    href="#movieTrailer"
-                    class="btn btn-danger">
-                    <i class="fa-brands fa-youtube"></i> Watch Trailer
-                </a>
-
-                <a
-                    href="{{ trailer_watch_url or movie.trailer_url }}"
-                    class="btn btn-outline-danger"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    Open in YouTube
-                </a>
-
-                {% endif %}
-
-                {% if movie.tmdb_url %}
-                <a
-                    href="{{ movie.tmdb_url }}"
-                    class="btn btn-outline-warning"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    <i class="fas fa-database"></i> View on TMDb
-                </a>
-                {% endif %}
-
-                {% if movie.justwatch_url %}
-                <a
-                    href="{{ movie.justwatch_url }}"
-                    class="btn btn-outline-info"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    <i class="fas fa-tv"></i> Stream on JustWatch
-                </a>
-                {% endif %}
-
-                {% if movie.bookmyshow_url %}
-                <a
-                    href="{{ movie.bookmyshow_url }}"
-                    class="btn btn-primary"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    <i class="fas fa-ticket-alt"></i> Book on BookMyShow
-                </a>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    {% if movie.trailer_url %}
-    <section id="movieTrailer" class="mt-5">
-        <h2 class="mb-3">Trailer</h2>
-
-        <div class="ratio ratio-16x9">
-            <iframe
-                src="{{ movie.trailer_url }}"
-                title="{{ movie.title }} trailer"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen>
-            </iframe>
-        </div>
-    </section>
-    {% endif %}
-
-    <hr class="my-5">
-
-    <section>
-        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-            <div>
-                <h2 class="mb-1">Ratings & Reviews</h2>
-                <p class="text-muted mb-0">
-                    Average Rating:
-                    <strong>{{ avg_rating }}/5</strong>
-                </p>
-            </div>
-        </div>
-
-        {% if current_user.is_authenticated %}
-        <form
-            method="POST"
-            action="{{ url_for('movie_bp.add_review', movie_id=movie.id) }}"
-            class="card shadow mb-4">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Rating</label>
-                        <select name="rating" class="form-control" required>
-                            <option value="5">5 - Excellent</option>
-                            <option value="4">4 - Good</option>
-                            <option value="3">3 - Average</option>
-                            <option value="2">2 - Poor</option>
-                            <option value="1">1 - Bad</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-8 mb-3">
-                        <label class="form-label">Comment</label>
-                        <textarea
-                            name="comment"
-                            class="form-control"
-                            rows="3"
-                            placeholder="Share what you thought about this movie"></textarea>
-                    </div>
+                <div class="cx-info-chips light">
+                    <span><i class="fas fa-star"></i> {{ movie.rating or "N/A" }}/10</span>
+                    {% for genre in (movie.genre or "").split(",")[:3] %}
+                    {% if genre.strip() %}<span>{{ genre.strip() }}</span>{% endif %}
+                    {% endfor %}
+                    <span>{{ movie.language.split(",")[0] if movie.language else "Movie" }}</span>
+                    {% if movie.runtime_minutes %}<span>{{ movie.runtime_minutes // 60 }}h {{ movie.runtime_minutes % 60 }}m</span>{% endif %}
+                    <span>{{ movie.certificate or "UA" }}</span>
                 </div>
 
-                <button class="btn btn-primary">
-                    Submit Review
-                </button>
-            </div>
-        </form>
-        {% else %}
-        <div class="alert alert-info">
-            Log in to add your review.
-        </div>
-        {% endif %}
+                <p>{{ movie.description }}</p>
 
-        {% for review in reviews %}
-        <div class="card mb-2 shadow-sm">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
-                    <strong>{{ review.user.name }}</strong>
-                    <span class="badge bg-warning">{{ review.rating }}/5</span>
-                </div>
+                <div class="cx-hero-actions">
+                    {% if movie.trailer_url %}
+                    <button class="btn btn-primary btn-lg" type="button" data-bs-toggle="modal" data-bs-target="#trailerModal">
+                        <i class="fas fa-play"></i> Watch Trailer
+                    </button>
+                    {% endif %}
 
-                {% if review.comment %}
-                <p class="mt-3 mb-2">{{ review.comment }}</p>
-                {% endif %}
-
-                <small class="text-muted">
-                    {{ review.created_at.strftime("%d %b %Y, %I:%M %p") }}
-                </small>
-            </div>
-        </div>
-        {% else %}
-        <p class="text-muted">No reviews yet.</p>
-        {% endfor %}
-    </section>
-
-    <hr class="my-5">
-
-    <h2 class="mb-4">
-        <i class="fas fa-building"></i> Available Theaters
-    </h2>
-
-    {% if theaters %}
-        {% for data in theaters.values() %}
-        <div class="card mb-4 shadow">
-            <div class="card-body">
-                <h4>
-                    {{ data.theater.name }}
-                </h4>
-
-                <p class="text-muted">
-                    {{ data.theater.city }}
-                </p>
-
-                <div class="mt-3">
-                    {% for show in data.shows %}
-                    <a
-                        href="/show/{{ show.id }}/seats"
-                        class="btn btn-warning me-2 mb-2">
-                        <i class="fas fa-ticket-alt"></i> {{ show.show_time }}
-                        <br>
-                        Rs. {{ show.price }}
+                    {% if movie.bookmyshow_url %}
+                    <a class="btn btn-primary btn-lg" href="{{ movie.bookmyshow_url }}" target="_blank" rel="noopener noreferrer">
+                        <i class="fas fa-ticket-alt"></i> Book Now
                     </a>
+                    {% endif %}
+
+                    <a class="btn btn-outline-warning btn-lg" href="{{ justwatch_url }}" target="_blank" rel="noopener noreferrer">
+                        <i class="fas fa-tv"></i> JustWatch
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="cx-shell">
+        <section class="cx-detail-grid">
+            <article class="cx-detail-panel">
+                <span class="eyebrow">Story</span>
+                <h2>About the movie</h2>
+                <p>{{ movie.description }}</p>
+            </article>
+
+            <article class="cx-detail-panel">
+                <span class="eyebrow">Credits</span>
+                <h2>Cast & Crew</h2>
+
+                <div class="cx-credit-list">
+                    {% if movie.director_names %}
+                    <div>
+                        <span>Directed by</span>
+                        <strong>{{ movie.director_names }}</strong>
+                    </div>
+                    {% endif %}
+
+                    {% if movie.writer_names %}
+                    <div>
+                        <span>Written by</span>
+                        <strong>{{ movie.writer_names }}</strong>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if movie.cast_names %}
+                <div class="cx-cast-rail">
+                    {% for person in movie.cast_names.split(",") %}
+                    {% if person.strip() %}
+                    <span>
+                        <i class="fas fa-user"></i>
+                        {{ person.strip() }}
+                    </span>
+                    {% endif %}
                     {% endfor %}
                 </div>
+                {% else %}
+                <p class="text-muted mb-0">Cast details will appear after the next metadata sync.</p>
+                {% endif %}
+            </article>
+        </section>
+
+        <section class="cx-section">
+            <div class="cx-section-head">
+                <div>
+                    <span class="eyebrow">Reviews</span>
+                    <h2>Ratings & Reviews</h2>
+                    <p class="text-muted mb-0">Average Rating: <strong>{{ avg_rating }}/5</strong></p>
+                </div>
+            </div>
+
+            {% if current_user.is_authenticated %}
+            <form method="POST" action="{{ url_for('movie_bp.add_review', movie_id=movie.id) }}" class="cx-review-form">
+                <select name="rating" class="form-control" required>
+                    <option value="5">5 - Excellent</option>
+                    <option value="4">4 - Good</option>
+                    <option value="3">3 - Average</option>
+                    <option value="2">2 - Poor</option>
+                    <option value="1">1 - Bad</option>
+                </select>
+                <textarea name="comment" class="form-control" rows="2" placeholder="Share what you thought"></textarea>
+                <button class="btn btn-primary">Submit Review</button>
+            </form>
+            {% endif %}
+
+            <div class="cx-review-list">
+                {% for review in reviews %}
+                <article>
+                    <strong>{{ review.user.name }}</strong>
+                    <span><i class="fas fa-star"></i> {{ review.rating }}/5</span>
+                    {% if review.comment %}<p>{{ review.comment }}</p>{% endif %}
+                    <small>{{ review.created_at.strftime("%d %b %Y, %I:%M %p") }}</small>
+                </article>
+                {% else %}
+                <p class="text-muted">No reviews yet.</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="cx-section cx-rail-section">
+            <div class="cx-section-head">
+                <div>
+                    <span class="eyebrow">Similar Movies</span>
+                    <h2>You may also like</h2>
+                </div>
+            </div>
+
+            {% if similar_movies %}
+            <div class="cx-poster-rail">
+                {% for item in similar_movies %}
+                <a class="cx-premiere-poster" href="{{ url_for('movie_bp.movie_details', movie_id=item.id) }}">
+                    <span class="cx-premiere-img">
+                        <img
+                            src="{{ item.poster_url if item.poster_url and item.poster_url.startswith('http') else (url_for('static', filename=item.poster_url) if item.poster_url else url_for('generated_movie_poster', movie_id=item.id)) }}"
+                            onerror="this.src='{{ url_for('generated_movie_poster', movie_id=item.id) }}';"
+                            alt="{{ item.title }}">
+                    </span>
+                    <strong>{{ item.title }}</strong>
+                    <small><i class="fas fa-star"></i> {{ item.rating or "N/A" }} / {{ item.genre or "Movie" }}</small>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info">Similar movies will appear as the catalog grows.</div>
+            {% endif %}
+        </section>
+    </div>
+</div>
+
+{% if movie.trailer_url %}
+<div class="modal fade" id="trailerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content cx-trailer-modal">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ movie.title }} Trailer</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="ratio ratio-16x9">
+                    <iframe
+                        src="{{ movie.trailer_url }}"
+                        title="{{ movie.title }} trailer"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen>
+                    </iframe>
+                </div>
             </div>
         </div>
-        {% endfor %}
-    {% else %}
-    <div class="alert alert-warning">
-        No shows available for this movie.
     </div>
-    {% endif %}
 </div>
+{% endif %}
 
 {% endblock %}

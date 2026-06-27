@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+
+*.log
+
+*.db
+*.sqlite
+*.sqlite3
+
+backend/instance/
+instance/
+
+backend/static/qrcodes/
+backend/static/tickets/
+backend/static/posters/

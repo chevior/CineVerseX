@@ -5,10 +5,15 @@
 <div class="container mt-4">
 
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <h2 class="mb-0">Booking History</h2>
+        <div>
+            <h2 class="mb-1">Booking Links</h2>
+            <p class="text-muted mb-0">
+                Movies you opened on BookMyShow from CineVerse X.
+            </p>
+        </div>
 
-        <a href="{{ url_for('ticket_bp.my_tickets') }}" class="btn btn-outline-light">
-            <i class="fas fa-qrcode"></i> My Tickets
+        <a href="{{ url_for('show_bp.shows') }}" class="btn btn-outline-light">
+            <i class="fas fa-ticket-alt"></i> Upcoming Releases
         </a>
     </div>
 
@@ -21,10 +26,9 @@
                     <th>Movie</th>
                     <th>Theater</th>
                     <th>Show Time</th>
-                    <th>Seats</th>
-                    <th>Amount</th>
                     <th>Status</th>
-                    <th>Booked At</th>
+                    <th>Opened At</th>
+                    <th>Action</th>
                 </tr>
             </thead>
 
@@ -35,14 +39,25 @@
                     <td>{{ booking.show.movie.title if booking.show and booking.show.movie else "-" }}</td>
                     <td>{{ booking.show.theater.name if booking.show and booking.show.theater else "-" }}</td>
                     <td>{{ booking.show.show_time if booking.show else "-" }}</td>
-                    <td>{{ booking.seats }}</td>
-                    <td>Rs. {{ booking.total_amount }}</td>
                     <td>
                         <span class="badge {{ 'bg-secondary' if booking.status == 'Cancelled' else 'bg-success' }}">
                             {{ booking.status }}
                         </span>
                     </td>
                     <td>{{ booking.booked_at.strftime("%d %b %Y, %I:%M %p") if booking.booked_at else "-" }}</td>
+                    <td>
+                        {% if booking.external_booking_url %}
+                        <a
+                            href="{{ booking.external_booking_url }}"
+                            class="btn btn-primary btn-sm"
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            Open BookMyShow
+                        </a>
+                        {% else %}
+                        <span class="text-muted">Internal booking</span>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

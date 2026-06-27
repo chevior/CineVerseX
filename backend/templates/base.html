@@ -49,20 +49,14 @@
 
                 <li class="nav-item">
                     <a class="nav-link" href="/shows">
-                        <i class="fas fa-ticket-alt"></i> Shows
+                        <i class="fas fa-ticket-alt"></i> Upcoming Releases
                     </a>
                 </li>
 
                 {% if session.get("user_id") %}
                 <li class="nav-item">
-                    <a class="nav-link" href="/my-tickets">
-                        <i class="fas fa-qrcode"></i> My Tickets
-                    </a>
-                </li>
-
-                <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('booking_bp.booking_history') }}">
-                        <i class="fas fa-clock-rotate-left"></i> Booking History
+                        <i class="fas fa-arrow-up-right-from-square"></i> Booking Links
                     </a>
                 </li>
                 {% endif %}
@@ -76,13 +70,19 @@
                 {% endif %}
             </ul>
 
-            <form class="d-flex ms-auto me-3" action="/search" method="GET">
+            <div class="cx-nav-location ms-auto">
+                <i class="fas fa-location-dot"></i>
+                Bengaluru
+            </div>
+
+            <form class="cx-nav-search" action="/search" method="GET">
+                <i class="fas fa-magnifying-glass"></i>
                 <input
                     class="form-control"
                     type="search"
                     name="q"
                     placeholder="Search movies"
-                    style="width:250px;">
+                    aria-label="Search movies">
             </form>
 
             {% if system_settings and system_settings.support_discord_link %}
@@ -127,14 +127,8 @@
                     </li>
 
                     <li>
-                        <a class="dropdown-item" href="/my-tickets">
-                            My Tickets
-                        </a>
-                    </li>
-
-                    <li>
                         <a class="dropdown-item" href="{{ url_for('booking_bp.booking_history') }}">
-                            Booking History
+                            Booking Links
                         </a>
                     </li>
 
@@ -173,6 +167,25 @@
 
         </div>
     </div>
+</nav>
+
+<nav class="cx-mobile-nav">
+    <a href="{{ url_for('home') }}">
+        <i class="fas fa-house"></i>
+        <span>Home</span>
+    </a>
+    <a href="{{ url_for('movie_bp.movies') }}">
+        <i class="fas fa-film"></i>
+        <span>Movies</span>
+    </a>
+    <a href="{{ url_for('show_bp.shows') }}">
+        <i class="fas fa-ticket-alt"></i>
+        <span>Releases</span>
+    </a>
+    <a href="{{ url_for('theater_bp.theaters') }}">
+        <i class="fas fa-building"></i>
+        <span>Theaters</span>
+    </a>
 </nav>
 
 <main class="page-content container-fluid">

@@ -5,11 +5,83 @@ from models.theater import Theater, Screen
 
 theater_bp = Blueprint("theater_bp", __name__)
 
+AMENITY_SETS = [
+    ["IMAX", "Dolby Atmos", "Recliner", "Cafe"],
+    ["4K Projection", "Dolby 7.1", "Premium Seats", "Parking"],
+    ["Laser Projection", "Family Lounge", "Food Court", "Online Entry"],
+    ["XL Screen", "Couple Seats", "Wheelchair Access", "Cafe"],
+]
+
 
 @theater_bp.route("/theaters")
 def theaters():
-    all_theaters = Theater.query.all()
-    return render_template("theaters.html", theaters=all_theaters)
+    selected_region = request.args.get("region", "")
+    selected_format = request.args.get("format", "")
+    selected_area = request.args.get("area", "")
+    query_text = request.args.get("q", "").strip()
+    all_theaters = Theater.query.filter(Theater.name != "BookMyShow")\
+        .order_by(Theater.city.asc(), Theater.name.asc()).all()
+    theater_cards = []
+    all_areas = []
+
+    for index, theater in enumerate(all_theaters):
+        seats = sum((screen.total_seats or 0) for screen in theater.screens)
+        area = (theater.address or theater.city).split(",")[0].strip()
+        region = "Rural" if "Rural" in (theater.city or "") else "Urban"
+        theater_format = "Multiplex" if (theater.total_screens or 0) >= 3 else "Single Screen"
+        linked_titles = []
+
+        if area and area not in all_areas:
+            all_areas.append(area)
+
+        if selected_region and selected_region != region:
+            continue
+
+        if selected_format and selected_format != theater_format:
+            continue
+
+        if selected_area and selected_area != area:
+            continue
+
+        if query_text:
+            haystack = f"{theater.name} {theater.city} {theater.address}".lower()
+
+            if query_text.lower() not in haystack:
+                continue
+
+        for show in theater.shows:
+            if show.movie and show.movie.title not in linked_titles:
+                linked_titles.append(show.movie.title)
+
+        theater_cards.append({
+            "theater": theater,
+            "seats": seats,
+            "screens": sorted(theater.screens, key=lambda screen: screen.screen_name or ""),
+            "linked_titles": linked_titles[:4],
+            "amenities": AMENITY_SETS[index % len(AMENITY_SETS)],
+            "area": area,
+            "region": region,
+            "format": theater_format,
+        })
+
+    summary = {
+        "venues": len(theater_cards),
+        "screens": sum(card["theater"].total_screens or 0 for card in theater_cards),
+        "seats": sum(card["seats"] for card in theater_cards),
+        "urban": sum(1 for card in theater_cards if "Rural" not in (card["theater"].city or "")),
+        "rural": sum(1 for card in theater_cards if "Rural" in (card["theater"].city or "")),
+    }
+
+    return render_template(
+        "theaters.html",
+        theater_cards=theater_cards,
+        summary=summary,
+        areas=sorted(all_areas),
+        selected_region=selected_region,
+        selected_format=selected_format,
+        selected_area=selected_area,
+        query_text=query_text
+    )
 
 
 @theater_bp.route("/add-theater", methods=["GET", "POST"])

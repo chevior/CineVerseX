@@ -25,3 +25,4 @@ class SystemSetting(db.Model):
 
     payment_gateway_enabled = db.Column(db.Boolean, default=False)
     email_notifications_enabled = db.Column(db.Boolean, default=False)
+    tmdb_last_sync = db.Column(db.String(20), default="")
