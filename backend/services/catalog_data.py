@@ -3,72 +3,7 @@ TMDB_BASE_URL = "https://api.themoviedb.org/3"
 TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"
 IMDBAPI_BASE_URL = "https://api.imdbapi.dev"
 BOOKMYSHOW_HOME_URL = "https://in.bookmyshow.com/"
-KNOWN_BOOKMYSHOW_LINKS = {
-    "the super mario galaxy movie": {
-        "movie": "https://in.bookmyshow.com/movies/the-super-mario-galaxy-movie/ET00465655",
-        "ticket": "",
-    },
-    "spider-man: brand new day": {
-        "movie": "https://in.bookmyshow.com/movies/spiderman-brand-new-day/ET00447840",
-        "ticket": "",
-    },
-    "avengers: doomsday": {
-        "movie": "https://in.bookmyshow.com/movies/avengers-doomsday/ET00439706",
-        "ticket": "",
-    },
-    "the odyssey": {
-        "movie": "https://in.bookmyshow.com/movies/the-odyssey/ET00452034",
-        "ticket": "https://in.bookmyshow.com/movies/bengaluru/the-odyssey/buytickets/ET00452034/",
-    },
-    "balan: the boy": {
-        "movie": "https://in.bookmyshow.com/movies/bengaluru/balan-the-boy/ET00502388",
-        "ticket": "https://in.bookmyshow.com/movies/bengaluru/balan-the-boy/buytickets/ET00502388/",
-    },
-    "carry on jatta 4": {
-        "movie": "https://in.bookmyshow.com/movies/bengaluru/carry-on-jatta-4/ET00374796",
-        "ticket": "",
-    },
-    "jindagi once more": {
-        "movie": "https://in.bookmyshow.com/movies/bengaluru/jindagi-once-more/ET00501011",
-        "ticket": "",
-    },
-    "welcome to the jungle": {
-        "movie": "https://in.bookmyshow.com/movies/bengaluru/welcome-to-the-jungle/ET00369379",
-        "ticket": "",
-    },
-    "tumbadchi manjula": {
-        "movie": "https://in.bookmyshow.com/movies/bengaluru/tumbadchi-manjula/ET00496931",
-        "ticket": "https://in.bookmyshow.com/movies/bengaluru/tumbadchi-manjula/buytickets/ET00496931/20260607",
-    },
-    "toxic: a fairy tale for grown-ups": {
-        "movie": "https://in.bookmyshow.com/movies/toxic-a-fairy-tale-for-grown-ups/ET00378770",
-        "ticket": "",
-    },
-    "ranabaali": {
-        "movie": "https://in.bookmyshow.com/movies/bengaluru/ranabaali/ET00483565",
-        "ticket": "",
-    },
-    "drishyam 3": {
-        "movie": "https://in.bookmyshow.com/movies/bengaluru/drishyam-3/ET00487295",
-        "ticket": "https://in.bookmyshow.com/movies/bengaluru/drishyam-3/buytickets/ET00487295/",
-    },
-    "rakkayie": {
-        "movie": "https://in.bookmyshow.com/movies/bengaluru/rakkayie/ET00420342",
-        "ticket": "",
-    },
-    "send help": {
-        "movie": "https://in.bookmyshow.com/movies/bengaluru/send-help/ET00481597",
-        "ticket": "https://in.bookmyshow.com/movies/bengaluru/send-help/buytickets/ET00483802/",
-    },
-    "project hail mary": {
-        "movie": "https://in.bookmyshow.com/movies/bengaluru/project-hail-mary/ET00451760",
-        "ticket": "https://in.bookmyshow.com/movies/bengaluru/project-hail-mary-bengaluru/buytickets/et00451760",
-    },
-    "michael": {
-        "movie": "https://in.bookmyshow.com/movies/bengaluru/michael/ET00470110",
-        "ticket": "https://in.bookmyshow.com/movies/bengaluru/michael-bengaluru/buytickets/et00470110",
-    },
-}
+KNOWN_BOOKMYSHOW_LINKS = {}
 CURATED_UPCOMING_RELEASES = [
     {
         "title": "The Super Mario Galaxy Movie",

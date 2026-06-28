@@ -7,7 +7,7 @@
         <div>
             <span class="eyebrow">Scheduled releases</span>
             <h1>Upcoming Releases</h1>
-            <p>Browse upcoming movies, inspect details, and continue to BookMyShow when a direct page is available.</p>
+            <p>Browse upcoming movies, inspect details, and continue to BookMyShow.</p>
         </div>
 
         {% if session.get('user_role') == 'admin' %}
@@ -72,7 +72,7 @@
                     alt="{{ movie.title }}">
                 <span class="cx-release-rating">{{ movie.rating or "N/A" }}/10</span>
                 <span class="cx-hover-overlay">
-                    <span>{% if movie.bookmyshow_url %}Book Now{% else %}Details{% endif %}</span>
+                    <span>Details</span>
                 </span>
             </a>
 
@@ -103,7 +103,7 @@
                         Details
                     </a>
                     <a
-                        href="{{ url_for('booking_bp.seat_selection', show_id=show.id) if movie.bookmyshow_url else 'https://in.bookmyshow.com/' }}"
+                        href="{{ url_for('booking_bp.seat_selection', show_id=show.id) }}"
                         class="btn btn-primary"
                         target="_blank"
                         rel="noopener noreferrer">

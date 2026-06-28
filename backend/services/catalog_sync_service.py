@@ -17,7 +17,6 @@ from services.catalog_data import (
     CURATED_UPCOMING_RELEASES,
     FEATURED_MOVIE_DETAILS,
     IMDBAPI_BASE_URL,
-    KNOWN_BOOKMYSHOW_LINKS,
     THEATER_NETWORK,
     THEATER_RENAMES,
     TMDB_BASE_URL,
@@ -43,51 +42,14 @@ def bookmyshow_search_url(title):
 
 
 def normalize_bookmyshow_movie_url(url):
-    url = (url or "").strip()
-
-    if not url:
-        return ""
-
-    marker = "in.bookmyshow.com/movies/"
-
-    if marker not in url:
-        return url
-
-    prefix, path = url.split(marker, 1)
-    parts = [part for part in path.split("/") if part]
-
-    if not parts:
-        return url
-
-    if "buytickets" in parts:
-        buytickets_index = parts.index("buytickets")
-        if buytickets_index >= 1 and buytickets_index + 1 < len(parts):
-            slug = parts[buytickets_index - 1]
-            event_id = parts[buytickets_index + 1]
-            return f"{prefix}{marker}{slug}/{event_id}"
-
-    if len(parts) >= 3 and parts[2].upper().startswith("ET"):
-        return f"{prefix}{marker}{parts[1]}/{parts[2]}"
-
-    return url
+    return BOOKMYSHOW_HOME_URL
 
 
 def bookmyshow_links_for_title(title):
-    title_key = (title or "").strip().casefold()
-    known_links = KNOWN_BOOKMYSHOW_LINKS.get(title_key)
-
-    if known_links:
-        movie_url = normalize_bookmyshow_movie_url(known_links["movie"])
-        return {
-            "movie": movie_url,
-            "ticket": "",
-            "primary": movie_url,
-        }
-
     return {
-        "movie": "",
+        "movie": BOOKMYSHOW_HOME_URL,
         "ticket": "",
-        "primary": "",
+        "primary": BOOKMYSHOW_HOME_URL,
     }
 
 

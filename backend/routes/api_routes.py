@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify
 from models.movie import Movie
 from models.show import Show
 from models.theater import Theater
+from services.catalog_data import BOOKMYSHOW_HOME_URL
 
 api_bp = Blueprint("api_bp", __name__, url_prefix="/api")
 
@@ -16,7 +17,7 @@ def movie_json(movie):
         "release_date": movie.release_date,
         "rating": movie.rating,
         "poster_url": movie.poster_url,
-        "bookmyshow_url": movie.bookmyshow_url,
+        "bookmyshow_url": BOOKMYSHOW_HOME_URL,
         "justwatch_url": movie.justwatch_url,
     }
 

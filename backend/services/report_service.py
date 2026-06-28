@@ -11,6 +11,7 @@ from models.show import Show
 from models.theater import Theater
 from models.user import User
 from services.booking_metrics_service import confirmed_booking_filter
+from services.catalog_data import BOOKMYSHOW_HOME_URL
 
 
 def format_datetime(value):
@@ -141,7 +142,7 @@ def movies_csv_report():
                 movie.poster_url or "",
                 movie.trailer_url or "",
                 movie.justwatch_url or "",
-                movie.bookmyshow_url or "",
+                BOOKMYSHOW_HOME_URL,
                 format_datetime(movie.created_at),
             ]
             for movie in movies

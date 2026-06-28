@@ -165,7 +165,7 @@
                 {% endif %}
                 <span class="cx-rating"><i class="fas fa-star"></i> {{ movie.rating or "N/A" }}</span>
                 <span class="cx-hover-overlay">
-                    <span>{% if movie.bookmyshow_url %}Book Now{% else %}View Details{% endif %}</span>
+                    <span>View Details</span>
                 </span>
             </a>
 
@@ -185,7 +185,7 @@
                 <div class="cx-card-actions">
                     <a href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}">Details</a>
                     <a target="_blank" rel="noopener noreferrer" href="{{ movie.justwatch_url or 'https://www.justwatch.com/in/search?q=' ~ movie.title|urlencode }}">JustWatch</a>
-                    <a target="_blank" rel="noopener noreferrer" href="{{ movie.bookmyshow_url or 'https://in.bookmyshow.com/' }}">BookMyShow</a>
+                    <a target="_blank" rel="noopener noreferrer" href="https://in.bookmyshow.com/">BookMyShow</a>
                     {% if session.get("user_id") %}
                     <a href="{{ url_for('wishlist_bp.add_to_wishlist', movie_id=movie.id) }}">Wishlist</a>
                     {% endif %}

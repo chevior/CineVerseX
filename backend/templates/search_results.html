@@ -53,7 +53,7 @@
                 <div class="cx-card-actions">
                     <a href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}">Details</a>
                     <a href="{{ movie.justwatch_url or 'https://www.justwatch.com/in/search?q=' ~ movie.title|urlencode }}" target="_blank" rel="noopener noreferrer">JustWatch</a>
-                    <a href="{{ movie.bookmyshow_url or 'https://in.bookmyshow.com/' }}" target="_blank" rel="noopener noreferrer">BookMyShow</a>
+                    <a href="https://in.bookmyshow.com/" target="_blank" rel="noopener noreferrer">BookMyShow</a>
                 </div>
             </div>
         </article>

@@ -23,6 +23,7 @@ from models.booking import Booking, Payment
 from models.setting import SystemSetting
 from models.ticket import Ticket
 from services.activity_service import log_activity
+from services.catalog_data import BOOKMYSHOW_HOME_URL
 
 booking_bp = Blueprint("booking_bp", __name__)
 
@@ -95,16 +96,9 @@ Thank you for booking with CineVerseX.
 @booking_bp.route("/show/<int:show_id>/seats")
 def seat_selection(show_id):
     show = Show.query.get_or_404(show_id)
-    bookmyshow_url = ""
+    bookmyshow_url = BOOKMYSHOW_HOME_URL
 
     if show.movie:
-        if show.movie.bookmyshow_url:
-            bookmyshow_url = show.movie.bookmyshow_url
-
-        if not bookmyshow_url:
-            flash("BookMyShow movie page is not available yet for this title.", "warning")
-            return redirect(url_for("show_bp.shows"))
-
         if session.get("user_id"):
             booking_link = Booking(
                 user_id=session["user_id"],
@@ -120,8 +114,7 @@ def seat_selection(show_id):
 
         return redirect(bookmyshow_url)
 
-    flash("BookMyShow link is not available for this show.", "warning")
-    return redirect(url_for("show_bp.shows"))
+    return redirect(bookmyshow_url)
 
 
 @booking_bp.route("/book/<int:show_id>", methods=["POST"])
