@@ -95,6 +95,13 @@ def imdb_db_path():
     if os.path.isfile(deploy_disk_path):
         return deploy_disk_path
 
+    packaged_seed_path = os.path.abspath(
+        os.path.join(current_app.root_path, "data", "imdb_seed.db")
+    )
+
+    if os.path.isfile(packaged_seed_path):
+        return packaged_seed_path
+
     return default_path
 
 

@@ -20,6 +20,13 @@ def local_imdb_db_path():
     if configured_path:
         return os.path.abspath(configured_path)
 
+    packaged_seed_path = os.path.abspath(
+        os.path.join(current_app.root_path, "data", "imdb_seed.db")
+    )
+
+    if os.path.isfile(packaged_seed_path):
+        return packaged_seed_path
+
     return os.path.abspath(os.path.join(current_app.root_path, "..", "cineversex.db"))
 
 

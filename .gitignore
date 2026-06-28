@@ -8,6 +8,7 @@ backend/.env
 *.db
 *.sqlite
 *.sqlite3
+!backend/data/imdb_seed.db
 
 backend/instance/
 instance/
