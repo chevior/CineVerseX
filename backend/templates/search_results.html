@@ -2,53 +2,109 @@
 
 {% block content %}
 
-<div class="container mt-4">
-
-    <h2>
-        Search Results for "{{ query }}"
-    </h2>
-
-    <div class="row mt-4">
-
-        {% for movie in movies %}
-
-        <div class="col-md-3 mb-4">
-
-            <div class="card h-100">
-
-                <img
-                    src="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('generated_movie_poster', movie_id=movie.id)) }}"
-                    class="card-img-top"
-                    style="height:350px;object-fit:cover;"
-                    onerror="this.src='{{ url_for('generated_movie_poster', movie_id=movie.id) }}';"
-                >
-
-                <div class="card-body">
-
-                    <h5>{{ movie.title }}</h5>
-
-                    <p>
-                        ⭐ {{ movie.rating }}
-                    </p>
-
-                    <a
-                        href="/movie/{{ movie.id }}"
-                        class="btn btn-warning">
-
-                        View Details
-
-                    </a>
-
-                </div>
-
-            </div>
-
+<div class="cx-shell">
+    <div class="cx-page-head">
+        <div>
+            <span class="eyebrow">Search</span>
+            <h1>Results for "{{ query }}"</h1>
+            <p>CineVerse picks and local IMDb database matches in one place.</p>
         </div>
-
-        {% endfor %}
-
+        <a href="{{ url_for('movie_bp.movies') }}" class="btn btn-primary">
+            <i class="fas fa-film"></i> Browse Movies
+        </a>
     </div>
 
+    <div class="cx-movie-grid">
+        {% for movie in movies %}
+        <article class="cx-movie-card">
+            <a
+                class="cx-poster-link"
+                href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}"
+                data-track-movie
+                data-title="{{ movie.title }}"
+                data-url="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}"
+                data-poster="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('generated_movie_poster', movie_id=movie.id)) }}">
+                <img
+                    src="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('generated_movie_poster', movie_id=movie.id)) }}"
+                    onerror="this.src='{{ url_for('generated_movie_poster', movie_id=movie.id) }}';"
+                    alt="{{ movie.title }}">
+                {% if session.get("user_id") %}
+                <button
+                    class="cx-watch-button"
+                    type="button"
+                    data-watch-title="{{ movie.title }}"
+                    data-watch-url="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}"
+                    data-watch-poster="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('generated_movie_poster', movie_id=movie.id)) }}"
+                    aria-label="Add {{ movie.title }} to watchlist">
+                    <i class="far fa-heart"></i>
+                </button>
+                {% endif %}
+                <span class="cx-rating"><i class="fas fa-star"></i> {{ movie.rating or "N/A" }}</span>
+                <span class="cx-hover-overlay"><span>View Details</span></span>
+            </a>
+            <div class="cx-card-body">
+                <h3>{{ movie.title }}</h3>
+                <div class="cx-info-chips">
+                    {% for genre in (movie.genre or "").split(",")[:2] %}
+                    {% if genre.strip() %}<span>{{ genre.strip() }}</span>{% endif %}
+                    {% endfor %}
+                    <span>{{ movie.language.split(",")[0] if movie.language else "Movie" }}</span>
+                </div>
+                <div class="cx-card-actions">
+                    <a href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}">Details</a>
+                    <a href="{{ movie.justwatch_url or 'https://www.justwatch.com/in/search?q=' ~ movie.title|urlencode }}" target="_blank" rel="noopener noreferrer">JustWatch</a>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+
+        {% for movie in imdb_movies %}
+        <article class="cx-movie-card">
+            <a
+                class="cx-poster-link"
+                href="{{ url_for('movie_bp.imdb_movie_details', tconst=movie.tconst) }}"
+                data-track-movie
+                data-title="{{ movie.primaryTitle }}"
+                data-url="{{ url_for('movie_bp.imdb_movie_details', tconst=movie.tconst) }}"
+                data-poster="{{ movie.poster_url or url_for('movie_bp.imdb_poster', tconst=movie.tconst, title=movie.primaryTitle) }}">
+                <img
+                    src="{{ movie.poster_url or url_for('movie_bp.imdb_poster', tconst=movie.tconst, title=movie.primaryTitle) }}"
+                    onerror="this.src='{{ url_for('movie_bp.imdb_poster', tconst=movie.tconst, title=movie.primaryTitle) }}';"
+                    alt="{{ movie.primaryTitle }}">
+                {% if session.get("user_id") %}
+                <button
+                    class="cx-watch-button"
+                    type="button"
+                    data-watch-title="{{ movie.primaryTitle }}"
+                    data-watch-url="{{ url_for('movie_bp.imdb_movie_details', tconst=movie.tconst) }}"
+                    data-watch-poster="{{ movie.poster_url or url_for('movie_bp.imdb_poster', tconst=movie.tconst, title=movie.primaryTitle) }}"
+                    aria-label="Add {{ movie.primaryTitle }} to watchlist">
+                    <i class="far fa-heart"></i>
+                </button>
+                {% endif %}
+                <span class="cx-rating"><i class="fas fa-star"></i> {{ movie.averageRating or "N/A" }}</span>
+                <span class="cx-hover-overlay"><span>IMDb Details</span></span>
+            </a>
+            <div class="cx-card-body">
+                <h3>{{ movie.primaryTitle }}</h3>
+                <div class="cx-info-chips">
+                    <span>{{ movie.startYear|int if movie.startYear else "Year" }}</span>
+                    {% for genre in (movie.genres or "").split(",")[:2] %}
+                    {% if genre.strip() %}<span>{{ genre.strip() }}</span>{% endif %}
+                    {% endfor %}
+                </div>
+                <div class="cx-card-actions">
+                    <a href="{{ url_for('movie_bp.imdb_movie_details', tconst=movie.tconst) }}">Details</a>
+                    <a href="https://www.imdb.com/title/{{ movie.tconst }}/" target="_blank" rel="noopener noreferrer">IMDb</a>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    {% if not movies and not imdb_movies %}
+    <div class="alert alert-info mt-4">No movies found.</div>
+    {% endif %}
 </div>
 
 {% endblock %}

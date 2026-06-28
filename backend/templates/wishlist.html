@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="cx-shell">
+    <div class="cx-page-head">
+        <div>
+            <span class="eyebrow">Saved movies</span>
+            <h1>My Wishlist</h1>
+            <p>Keep favorite movies ready for details, trailers, and booking links.</p>
+        </div>
+    </div>
+
+    <div class="cx-movie-grid">
+        {% for item in items %}
+        {% set movie = item.movie %}
+        <article class="cx-movie-card">
+            <a class="cx-poster-link" href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}">
+                <img
+                    src="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('generated_movie_poster', movie_id=movie.id)) }}"
+                    onerror="this.src='{{ url_for('generated_movie_poster', movie_id=movie.id) }}';"
+                    alt="{{ movie.title }}">
+                <span class="cx-rating"><i class="fas fa-star"></i> {{ movie.rating or "N/A" }}</span>
+            </a>
+            <div class="cx-card-body">
+                <h3>{{ movie.title }}</h3>
+                <p class="cx-language">{{ movie.language or "Movie" }}</p>
+                <div class="cx-card-actions">
+                    <a href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}">Details</a>
+                    {% if movie.bookmyshow_url %}
+                    <a href="{{ movie.bookmyshow_url }}" target="_blank" rel="noopener noreferrer">Book Now</a>
+                    {% endif %}
+                    <a href="{{ url_for('wishlist_bp.remove_from_wishlist', movie_id=movie.id) }}">Remove</a>
+                </div>
+            </div>
+        </article>
+        {% else %}
+        <div class="alert alert-info">Your wishlist is empty.</div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

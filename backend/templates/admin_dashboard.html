@@ -4,12 +4,13 @@
 
 <div class="container mt-4">
 
-    <h1 class="mb-4 text-center">
-        🎬 CineVerse X Admin Dashboard
-    </h1>
+    <div class="cx-page-head text-center">
+        <span class="eyebrow">Admin</span>
+        <h1>CineVerse X Admin Dashboard</h1>
+        <p>Live platform health, active booking metrics, revenue, and admin tools.</p>
+    </div>
 
     <div class="row">
-
         <div class="col-md-3 mb-3">
             <div class="card bg-primary text-white shadow">
                 <div class="card-body text-center">
@@ -40,33 +41,65 @@
         <div class="col-md-3 mb-3">
             <div class="card bg-danger text-white shadow">
                 <div class="card-body text-center">
-                    <h5>Total Bookings</h5>
+                    <h5>Active Bookings</h5>
                     <h1>{{ total_bookings }}</h1>
                 </div>
             </div>
         </div>
-
     </div>
 
     <div class="card shadow mt-4">
         <div class="card-body text-center">
-            <h3>Total Revenue</h3>
-            <h1 class="text-success">₹{{ total_revenue }}</h1>
+            <h3>Active Revenue</h3>
+            <h1 class="text-success">Rs. {{ total_revenue }}</h1>
+            <p class="text-muted mb-0">
+                Confirmed bookings only. Cancelled tickets and BookMyShow link opens are excluded.
+            </p>
         </div>
     </div>
 
     <div class="row mt-4">
+        <div class="col-md-4 mb-3">
+            <div class="card shadow text-center h-100">
+                <div class="card-body">
+                    <h5>All Booking Records</h5>
+                    <h2>{{ all_booking_rows }}</h2>
+                    <p class="text-muted mb-0">Active bookings, cancelled bookings, and external link opens.</p>
+                </div>
+            </div>
+        </div>
 
+        <div class="col-md-4 mb-3">
+            <div class="card shadow text-center h-100">
+                <div class="card-body">
+                    <h5>Cancelled Bookings</h5>
+                    <h2>{{ cancelled_bookings }}</h2>
+                    <p class="text-muted mb-0">Excluded from revenue and active booking totals.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card shadow text-center h-100">
+                <div class="card-body">
+                    <h5>BookMyShow Opens</h5>
+                    <h2>{{ external_link_opens }}</h2>
+                    <p class="text-muted mb-0">Tracked separately because payment happens outside CineVerse X.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
         <div class="col-md-6 mb-3">
             <div class="card shadow text-center h-100">
                 <div class="card-body">
                     <h5>Most Popular Movie</h5>
-
                     {% if popular_movie %}
                         <h3>{{ popular_movie[0] }}</h3>
-                        <p class="mb-0">{{ popular_movie[1] }} bookings</p>
+                        <p class="mb-0">{{ popular_movie[1] }} active action{{ '' if popular_movie[1] == 1 else 's' }}</p>
                     {% else %}
-                        <p class="mb-0">No bookings yet</p>
+                        <p class="mb-0">No active booking actions yet</p>
                     {% endif %}
                 </div>
             </div>
@@ -76,56 +109,43 @@
             <div class="card shadow text-center h-100">
                 <div class="card-body">
                     <h5>Most Popular Theater</h5>
-
                     {% if popular_theater %}
                         <h3>{{ popular_theater[0] }}</h3>
-                        <p class="mb-0">{{ popular_theater[1] }} bookings</p>
+                        <p class="mb-0">{{ popular_theater[1] }} active action{{ '' if popular_theater[1] == 1 else 's' }}</p>
                     {% else %}
-                        <p class="mb-0">No bookings yet</p>
+                        <p class="mb-0">No active booking actions yet</p>
                     {% endif %}
                 </div>
             </div>
         </div>
-
     </div>
 
     <div class="card shadow mt-4">
         <div class="card-body">
-            <h3 class="text-center mb-4">📊 Platform Analytics</h3>
+            <h3 class="text-center mb-4">Platform Analytics</h3>
             <canvas id="revenueChart" style="max-height: 350px;"></canvas>
         </div>
     </div>
 
     <div class="row mt-4">
-
         <div class="col-md-3 mb-3">
-            <a href="/movies" class="btn btn-dark w-100">
-                🎬 Manage Movies
-            </a>
+            <a href="/movies" class="btn btn-dark w-100">Manage Movies</a>
         </div>
 
         <div class="col-md-3 mb-3">
-            <a href="/theaters" class="btn btn-dark w-100">
-                🎭 Manage Theaters
-            </a>
+            <a href="/theaters" class="btn btn-dark w-100">Manage Theaters</a>
         </div>
 
         <div class="col-md-3 mb-3">
-            <a href="/shows" class="btn btn-dark w-100">
-                🎟 Manage Shows
-            </a>
+            <a href="/shows" class="btn btn-dark w-100">Manage Shows</a>
         </div>
 
         <div class="col-md-3 mb-3">
-            <a href="/bookings" class="btn btn-dark w-100">
-                📋 View Bookings
-            </a>
+            <a href="/bookings" class="btn btn-dark w-100">View Bookings</a>
         </div>
 
         <div class="col-md-3 mb-3">
-            <a href="/admin/users" class="btn btn-dark w-100">
-                👥 Manage Users
-            </a>
+            <a href="/admin/users" class="btn btn-dark w-100">Manage Users</a>
         </div>
 
         <div class="col-md-3 mb-3">
@@ -140,6 +160,23 @@
             </a>
         </div>
 
+        <div class="col-md-3 mb-3">
+            <a href="{{ url_for('admin_bp.advanced_analytics') }}" class="btn btn-dark w-100">
+                <i class="fa-solid fa-chart-pie"></i> Advanced Analytics
+            </a>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <a href="{{ url_for('reports_bp.reports') }}" class="btn btn-dark w-100">
+                <i class="fa-solid fa-file-csv"></i> Reports
+            </a>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <a href="{{ url_for('activity_bp.activity_logs') }}" class="btn btn-dark w-100">
+                <i class="fa-solid fa-list-check"></i> Activity Logs
+            </a>
+        </div>
     </div>
 
 </div>
@@ -153,13 +190,15 @@
         Number("{{ total_users }}"),
         Number("{{ total_movies }}"),
         Number("{{ total_theaters }}"),
-        Number("{{ total_bookings }}")
+        Number("{{ total_bookings }}"),
+        Number("{{ cancelled_bookings }}"),
+        Number("{{ external_link_opens }}")
     ];
 
     new Chart(ctx, {
         type: "bar",
         data: {
-            labels: ["Users", "Movies", "Theaters", "Bookings"],
+            labels: ["Users", "Movies", "Theaters", "Active Bookings", "Cancelled", "External Opens"],
             datasets: [{
                 label: "CineVerse X Statistics",
                 data: chartData,
@@ -167,7 +206,9 @@
                     "#0d6efd",
                     "#198754",
                     "#ffc107",
-                    "#dc3545"
+                    "#dc3545",
+                    "#6c757d",
+                    "#0dcaf0"
                 ]
             }]
         },
@@ -176,19 +217,19 @@
             plugins: {
                 legend: {
                     labels: {
-                        color: "white"
+                        color: "#111827"
                     }
                 }
             },
             scales: {
                 x: {
                     ticks: {
-                        color: "white"
+                        color: "#111827"
                     }
                 },
                 y: {
                     ticks: {
-                        color: "white"
+                        color: "#111827"
                     }
                 }
             }

@@ -7,7 +7,7 @@
         <div>
             <span class="eyebrow">Cinema network</span>
             <h1>Theaters</h1>
-            <p>Explore Bengaluru Urban and Rural venues, screens, amenities, routes, and linked releases.</p>
+            <p>Explore venues, screens, amenities, routes, and linked releases.</p>
         </div>
 
         {% if session.get('user_role') == 'admin' %}
@@ -36,8 +36,8 @@
             <strong>{{ summary.seats }}</strong>
         </div>
         <div>
-            <span>Urban / Rural</span>
-            <strong>{{ summary.urban }} / {{ summary.rural }}</strong>
+            <span>Cities</span>
+            <strong>{{ summary.cities }}</strong>
         </div>
     </div>
 
@@ -53,20 +53,21 @@
         </label>
 
         <label>
-            <span>Region</span>
-            <select name="region" class="form-control">
-                <option value="">Urban + Rural</option>
-                <option value="Urban" {% if selected_region == "Urban" %}selected{% endif %}>Bengaluru Urban</option>
-                <option value="Rural" {% if selected_region == "Rural" %}selected{% endif %}>Bengaluru Rural</option>
-            </select>
-        </label>
-
-        <label>
             <span>Type</span>
             <select name="format" class="form-control">
                 <option value="">All Theaters</option>
                 <option value="Multiplex" {% if selected_format == "Multiplex" %}selected{% endif %}>Multiplex</option>
                 <option value="Single Screen" {% if selected_format == "Single Screen" %}selected{% endif %}>Single Screen</option>
+            </select>
+        </label>
+
+        <label>
+            <span>City</span>
+            <select name="city" class="form-control">
+                <option value="">All Cities</option>
+                {% for city in cities %}
+                <option value="{{ city }}" {% if selected_city == city %}selected{% endif %}>{{ city }}</option>
+                {% endfor %}
             </select>
         </label>
 
@@ -84,7 +85,9 @@
             <i class="fas fa-sliders"></i> Apply
         </button>
 
-        {% if query_text or selected_region or selected_format or selected_area %}
+        <input type="hidden" name="page" value="1">
+
+        {% if query_text or selected_format or selected_area or selected_city %}
         <a href="{{ url_for('theater_bp.theaters') }}" class="btn btn-outline-warning">Clear</a>
         {% endif %}
     </form>
@@ -94,15 +97,15 @@
         {% set theater = card.theater %}
         <article class="cx-theater-card">
             <div class="cx-theater-top">
-                <span>{{ card.area }} / {{ theater.city }}</span>
-                <h3>{{ theater.name }}</h3>
-                <p><i class="fas fa-location-dot"></i> {{ theater.address or "Address not set" }}</p>
+                <span>{{ card.city }} / {{ card.area }}</span>
+                <h3>{{ card.display_name }}</h3>
+                <p><i class="fas fa-location-dot"></i> {{ card.address_display or "Address not set" }}</p>
             </div>
 
             <div class="cx-theater-body">
                 <div class="cx-info-chips">
-                    <span>{{ card.region }}</span>
                     <span>{{ card.format }}</span>
+                    <span>{{ card.city }}</span>
                     <span>{{ card.area }}</span>
                 </div>
 
@@ -138,7 +141,7 @@
 
                 <div class="cx-release-actions">
                     <a
-                        href="https://www.google.com/maps/search/?api=1&query={{ (theater.name ~ ' ' ~ theater.address)|urlencode }}"
+                        href="https://www.google.com/maps/search/?api=1&query={{ card.map_query|urlencode }}"
                         class="btn btn-outline-warning"
                         target="_blank"
                         rel="noopener noreferrer">
@@ -166,6 +169,34 @@
         <div class="alert alert-info">No theaters are available yet.</div>
         {% endfor %}
     </div>
+
+    {% if theater_cards and pagination_pages %}
+    <nav class="cx-pagination" aria-label="Theater pages">
+        {% if selected_page > 1 %}
+        <a href="{{ url_for('theater_bp.theaters', q=query_text, format=selected_format, city=selected_city, area=selected_area, page=selected_page - 1) }}">
+            <i class="fas fa-chevron-left"></i> Previous
+        </a>
+        {% endif %}
+
+        {% for page_number in pagination_pages %}
+            {% if page_number %}
+                {% if page_number == selected_page %}
+                <span class="is-current">{{ page_number }}</span>
+                {% else %}
+                <a href="{{ url_for('theater_bp.theaters', q=query_text, format=selected_format, city=selected_city, area=selected_area, page=page_number) }}">{{ page_number }}</a>
+                {% endif %}
+            {% else %}
+            <span class="cx-pagination-gap">...</span>
+            {% endif %}
+        {% endfor %}
+
+        {% if selected_page < total_pages %}
+        <a href="{{ url_for('theater_bp.theaters', q=query_text, format=selected_format, city=selected_city, area=selected_area, page=selected_page + 1) }}">
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </nav>
+    {% endif %}
 </div>
 
 {% endblock %}

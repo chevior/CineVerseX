@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="cx-shell">
+    <div class="cx-page-head">
+        <div>
+            <span class="eyebrow">Admin exports</span>
+            <h1>Reports</h1>
+            <p>Download clean CSV reports for bookings, users, movies, and revenue.</p>
+        </div>
+
+        <a href="{{ url_for('admin_bp.admin_dashboard') }}" class="btn btn-outline-warning">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </a>
+    </div>
+
+    <section class="cx-feature-strip">
+        <a href="{{ url_for('reports_bp.download_bookings_report') }}">
+            <i class="fas fa-ticket"></i>
+            <span>Bookings CSV</span>
+            <strong>Booking status, seats, users, shows, payments, and external links.</strong>
+        </a>
+
+        <a href="{{ url_for('reports_bp.download_users_report') }}">
+            <i class="fas fa-users"></i>
+            <span>Users CSV</span>
+            <strong>User IDs, names, emails, roles, and created dates.</strong>
+        </a>
+
+        <a href="{{ url_for('reports_bp.download_movies_report') }}">
+            <i class="fas fa-film"></i>
+            <span>Movies CSV</span>
+            <strong>Movie metadata, ratings, language, source, and platform links.</strong>
+        </a>
+
+        <a href="{{ url_for('reports_bp.download_revenue_report') }}">
+            <i class="fas fa-chart-line"></i>
+            <span>Revenue CSV</span>
+            <strong>Daily booked-ticket counts and total revenue.</strong>
+        </a>
+    </section>
+</div>
+
+{% endblock %}

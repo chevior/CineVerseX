@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from auth.guards import admin_required
 from extensions import db
 from models.theater import Theater, Screen
+from services.activity_service import log_activity
 
 theater_bp = Blueprint("theater_bp", __name__)
 
@@ -13,28 +14,81 @@ AMENITY_SETS = [
 ]
 
 
+def pagination_window(current_page, total_pages, radius=2):
+    if total_pages <= 1:
+        return []
+
+    current_page = max(1, min(current_page, total_pages))
+    pages = {1, total_pages}
+
+    for page_number in range(current_page - radius, current_page + radius + 1):
+        if 1 <= page_number <= total_pages:
+            pages.add(page_number)
+
+    ordered_pages = sorted(pages)
+    window = []
+    previous = None
+
+    for page_number in ordered_pages:
+        if previous is not None and page_number - previous > 1:
+            window.append(None)
+
+        window.append(page_number)
+        previous = page_number
+
+    return window
+
+
+def clean_location_text(value):
+    text = value or ""
+
+    for old, new in (
+        ("Bengaluru Urban/Rural", ""),
+        ("Bengaluru Urban", ""),
+        ("Bengaluru Rural", ""),
+        ("Bengaluru region", ""),
+        ("Bengaluru", ""),
+        ("Bangalore", ""),
+        ("Karnataka", ""),
+    ):
+        text = text.replace(old, new)
+
+    while ", ," in text:
+        text = text.replace(", ,", ",")
+
+    return " ".join(text.strip(" ,").split())
+
+
 @theater_bp.route("/theaters")
 def theaters():
-    selected_region = request.args.get("region", "")
     selected_format = request.args.get("format", "")
     selected_area = request.args.get("area", "")
+    selected_city = request.args.get("city", "")
+    selected_page = max(request.args.get("page", 1, type=int), 1)
+    per_page = 48
     query_text = request.args.get("q", "").strip()
     all_theaters = Theater.query.filter(Theater.name != "BookMyShow")\
         .order_by(Theater.city.asc(), Theater.name.asc()).all()
     theater_cards = []
     all_areas = []
+    all_cities = []
 
     for index, theater in enumerate(all_theaters):
         seats = sum((screen.total_seats or 0) for screen in theater.screens)
-        area = (theater.address or theater.city).split(",")[0].strip()
-        region = "Rural" if "Rural" in (theater.city or "") else "Urban"
+        display_name = clean_location_text(theater.name)
+        address_display = clean_location_text(theater.address)
+        area = clean_location_text((theater.address or theater.city).split(",")[0]).strip()
+        city_display = clean_location_text(theater.city)
         theater_format = "Multiplex" if (theater.total_screens or 0) >= 3 else "Single Screen"
         linked_titles = []
 
         if area and area not in all_areas:
             all_areas.append(area)
 
-        if selected_region and selected_region != region:
+        if city_display and city_display not in all_cities:
+            all_cities.append(city_display)
+
+        if selected_city and selected_city != city_display:
             continue
 
         if selected_format and selected_format != theater_format:
@@ -44,7 +98,7 @@ def theaters():
             continue
 
         if query_text:
-            haystack = f"{theater.name} {theater.city} {theater.address}".lower()
+            haystack = f"{theater.name} {theater.city} {theater.address} {address_display}".lower()
 
             if query_text.lower() not in haystack:
                 continue
@@ -55,31 +109,45 @@ def theaters():
 
         theater_cards.append({
             "theater": theater,
+            "display_name": display_name,
             "seats": seats,
             "screens": sorted(theater.screens, key=lambda screen: screen.screen_name or ""),
             "linked_titles": linked_titles[:4],
             "amenities": AMENITY_SETS[index % len(AMENITY_SETS)],
             "area": area,
-            "region": region,
+            "city": city_display,
+            "address_display": address_display,
+            "map_query": f"{display_name} {address_display}".strip(),
             "format": theater_format,
         })
 
+    total_theaters = len(theater_cards)
+    total_pages = max((total_theaters + per_page - 1) // per_page, 1)
+    selected_page = min(selected_page, total_pages)
+    start_index = (selected_page - 1) * per_page
+    paged_theater_cards = theater_cards[start_index:start_index + per_page]
+
     summary = {
-        "venues": len(theater_cards),
+        "venues": total_theaters,
         "screens": sum(card["theater"].total_screens or 0 for card in theater_cards),
         "seats": sum(card["seats"] for card in theater_cards),
-        "urban": sum(1 for card in theater_cards if "Rural" not in (card["theater"].city or "")),
-        "rural": sum(1 for card in theater_cards if "Rural" in (card["theater"].city or "")),
+        "multiplex": sum(1 for card in theater_cards if card["format"] == "Multiplex"),
+        "single_screen": sum(1 for card in theater_cards if card["format"] == "Single Screen"),
+        "cities": len(all_cities),
     }
 
     return render_template(
         "theaters.html",
-        theater_cards=theater_cards,
+        theater_cards=paged_theater_cards,
         summary=summary,
         areas=sorted(all_areas),
-        selected_region=selected_region,
+        cities=sorted(all_cities),
         selected_format=selected_format,
         selected_area=selected_area,
+        selected_city=selected_city,
+        selected_page=selected_page,
+        total_pages=total_pages,
+        pagination_pages=pagination_window(selected_page, total_pages),
         query_text=query_text
     )
 
@@ -107,6 +175,7 @@ def add_theater():
 
         db.session.add(theater)
         db.session.commit()
+        log_activity("Theater Added", f"Added theater: {theater.name}", notify=True)
 
         return redirect(url_for("theater_bp.theaters"))
 
@@ -135,6 +204,7 @@ def add_screen():
 
         db.session.add(screen)
         db.session.commit()
+        log_activity("Screen Added", f"Added screen: {screen.screen_name}", notify=True)
 
         return redirect(url_for("theater_bp.screens"))
 
@@ -168,6 +238,7 @@ def edit_theater(theater_id):
         theater.total_screens = int(request.form["total_screens"] or 1)
 
         db.session.commit()
+        log_activity("Theater Edited", f"Edited theater: {theater.name}", notify=True)
 
         return redirect("/theaters")
 
@@ -180,8 +251,10 @@ def edit_theater(theater_id):
 def delete_theater(theater_id):
 
     theater = Theater.query.get_or_404(theater_id)
+    name = theater.name
 
     db.session.delete(theater)
     db.session.commit()
+    log_activity("Theater Deleted", f"Deleted theater: {name}", notify=True)
 
     return redirect("/theaters")

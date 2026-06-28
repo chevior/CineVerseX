@@ -94,7 +94,7 @@
                 <div class="cx-release-meta">
                     <span><i class="fas fa-language"></i> {{ movie.language or "Language not set" }}</span>
                     {% if movie.description %}
-                    <span><i class="fas fa-align-left"></i> {{ movie.description[:110] }}{% if movie.description|length > 110 %}...{% endif %}</span>
+                    <span><i class="fas fa-align-left"></i> {{ (movie.description|neutral_copy)[:110] }}{% if (movie.description|neutral_copy)|length > 110 %}...{% endif %}</span>
                     {% endif %}
                 </div>
 
@@ -126,6 +126,34 @@
         <div class="alert alert-info">No upcoming releases are available yet.</div>
         {% endfor %}
     </div>
+
+    {% if movie_cards and pagination_pages %}
+    <nav class="cx-pagination" aria-label="Upcoming release pages">
+        {% if selected_page > 1 %}
+        <a href="{{ url_for('show_bp.shows', genre=selected_genre, language=selected_language, sort=selected_sort, page=selected_page - 1) }}">
+            <i class="fas fa-chevron-left"></i> Previous
+        </a>
+        {% endif %}
+
+        {% for page_number in pagination_pages %}
+            {% if page_number %}
+                {% if page_number == selected_page %}
+                <span class="is-current">{{ page_number }}</span>
+                {% else %}
+                <a href="{{ url_for('show_bp.shows', genre=selected_genre, language=selected_language, sort=selected_sort, page=page_number) }}">{{ page_number }}</a>
+                {% endif %}
+            {% else %}
+            <span class="cx-pagination-gap">...</span>
+            {% endif %}
+        {% endfor %}
+
+        {% if selected_page < total_pages %}
+        <a href="{{ url_for('show_bp.shows', genre=selected_genre, language=selected_language, sort=selected_sort, page=selected_page + 1) }}">
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </nav>
+    {% endif %}
 </div>
 
 {% endblock %}

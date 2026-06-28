@@ -22,6 +22,7 @@ from models.show import Show
 from models.booking import Booking, Payment
 from models.setting import SystemSetting
 from models.ticket import Ticket
+from services.activity_service import log_activity
 
 booking_bp = Blueprint("booking_bp", __name__)
 
@@ -115,6 +116,7 @@ def seat_selection(show_id):
             )
             db.session.add(booking_link)
             db.session.commit()
+            log_activity("BookMyShow Link Opened", f"Opened external booking for show #{show.id}.")
 
         return redirect(bookmyshow_url)
 
@@ -179,6 +181,7 @@ def book_ticket(show_id):
 
     db.session.add(booking)
     db.session.commit()
+    log_activity("Payment Success", f"Payment recorded for booking #{booking.id}.", notify=True)
 
     payment = Payment(
         booking_id=booking.id,
@@ -232,6 +235,7 @@ def book_ticket(show_id):
     db.session.commit()
 
     send_ticket_email(booking, ticket)
+    log_activity("Ticket Booked", f"Booking #{booking.id} for {movie_name}, seats {seats}.", notify=True)
 
     return redirect(url_for("ticket_bp.my_tickets"))
 
@@ -269,6 +273,7 @@ def cancel_ticket(booking_id):
         ticket.status = "Cancelled"
 
     db.session.commit()
+    log_activity("Ticket Cancelled", f"Booking #{booking.id} cancelled.", notify=True)
 
     flash("Ticket cancelled successfully. Seat is now available again.", "success")
     return redirect(url_for("ticket_bp.my_tickets"))

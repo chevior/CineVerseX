@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="cx-shell">
+    <div class="cx-page-head">
+        <div>
+            <span class="eyebrow">Account</span>
+            <h1>User Profile</h1>
+            <p>Edit account details and review your booking statistics.</p>
+        </div>
+    </div>
+
+    <section class="cx-stat-strip compact">
+        <div><span>Total Bookings</span><strong>{{ total_bookings }}</strong></div>
+        <div><span>Total Tickets</span><strong>{{ total_tickets }}</strong></div>
+        <div><span>Total Spent</span><strong>Rs. {{ total_spent }}</strong></div>
+        <div><span>Role</span><strong>{{ user.role }}</strong></div>
+    </section>
+
+    <section class="cx-import-panel">
+        <div>
+            <span class="eyebrow">Profile</span>
+            <h2>Edit Details</h2>
+            <p>Update your name, email, and optional profile picture.</p>
+            {% if user.profile_picture %}
+            <img src="{{ url_for('static', filename=user.profile_picture) }}" alt="" style="width:96px;height:96px;object-fit:cover;border-radius:50%;border:2px solid var(--line);">
+            {% endif %}
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="cx-admin-form">
+            <label>Name<input class="form-control" name="name" value="{{ user.name }}" required></label>
+            <label>Email<input class="form-control" type="email" name="email" value="{{ user.email }}" required></label>
+            <label>Profile Picture<input class="form-control" type="file" name="profile_picture" accept="image/*"></label>
+            <button class="btn btn-primary">Save Profile</button>
+        </form>
+    </section>
+
+    <section class="cx-manual-panel">
+        <h2>Change Password</h2>
+        <form method="POST" action="{{ url_for('profile_bp.profile_change_password') }}" class="cx-admin-form">
+            <label>Current Password<input class="form-control" type="password" name="current_password" required></label>
+            <label>New Password<input class="form-control" type="password" name="new_password" required></label>
+            <label>Confirm Password<input class="form-control" type="password" name="confirm_password" required></label>
+            <button class="btn btn-warning">Change Password</button>
+        </form>
+    </section>
+</div>
+
+{% endblock %}

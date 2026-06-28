@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="cx-shell">
+    <div class="alert alert-success">
+        Payment initialized for booking #{{ booking.id }}. Status: {{ payment.status }}
+    </div>
+    <a href="{{ url_for('payment_bp.payment_history') }}" class="btn btn-primary">Payment History</a>
+</div>
+{% endblock %}

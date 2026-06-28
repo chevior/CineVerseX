@@ -2,11 +2,12 @@ import os
 import json
 import sqlite3
 from datetime import datetime
-from urllib.parse import parse_qs, quote_plus, urlparse
+from html import escape
+from urllib.parse import parse_qs, quote_plus, urlencode, urlparse
 from urllib.request import Request, urlopen
 from uuid import uuid4
 
-from flask import Blueprint, flash, render_template, request, current_app, redirect, url_for
+from flask import Blueprint, Response, flash, render_template, request, current_app, redirect, url_for
 from flask_login import current_user
 from sqlalchemy import func
 from werkzeug.utils import secure_filename
@@ -17,10 +18,13 @@ from models.movie import Movie
 from models.review import Review
 from models.show import Show
 from models.theater import Theater
+from services.activity_service import log_activity
 
 movie_bp = Blueprint("movie_bp", __name__)
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
+TMDB_BASE_URL = "https://api.themoviedb.org/3"
+TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"
 GENRES = [
     "Action",
     "Adventure",
@@ -42,6 +46,31 @@ GENRES = [
     "War",
     "Western",
 ]
+
+
+def pagination_window(current_page, total_pages, radius=2):
+    if total_pages <= 1:
+        return []
+
+    current_page = max(1, min(current_page, total_pages))
+    pages = {1, total_pages}
+
+    for page_number in range(current_page - radius, current_page + radius + 1):
+        if 1 <= page_number <= total_pages:
+            pages.add(page_number)
+
+    ordered_pages = sorted(pages)
+    window = []
+    previous = None
+
+    for page_number in ordered_pages:
+        if previous is not None and page_number - previous > 1:
+            window.append(None)
+
+        window.append(page_number)
+        previous = page_number
+
+    return window
 
 
 def allowed_file(filename):
@@ -73,12 +102,47 @@ def imdb_db_available():
     return os.path.isfile(imdb_db_path())
 
 
-def bookmyshow_search_url(title, city="bengaluru"):
+def imdb_database_label():
+    if not imdb_db_available():
+        return "IMDb database not connected"
+
+    size_gb = os.path.getsize(imdb_db_path()) / (1024 ** 3)
+    return f"Local IMDb database ({size_gb:.1f} GB)"
+
+
+def bookmyshow_search_url(title):
     return "https://in.bookmyshow.com/"
 
 
 def justwatch_search_url(title):
     return f"https://www.justwatch.com/in/search?q={quote_plus(title or '')}"
+
+
+def tmdb_is_configured():
+    return bool(
+        os.environ.get("TMDB_BEARER_TOKEN", "").strip()
+        or os.environ.get("TMDB_API_KEY", "").strip()
+    )
+
+
+def fetch_tmdb_json(path, params=None):
+    params = params or {}
+    api_key = os.environ.get("TMDB_API_KEY", "").strip()
+    bearer_token = os.environ.get("TMDB_BEARER_TOKEN", "").strip()
+    headers = {"accept": "application/json"}
+
+    if bearer_token:
+        headers["Authorization"] = f"Bearer {bearer_token}"
+    elif api_key:
+        params["api_key"] = api_key
+
+    api_request = Request(
+        f"{TMDB_BASE_URL}{path}?{urlencode(params)}",
+        headers=headers
+    )
+
+    with urlopen(api_request, timeout=8) as response:
+        return json.loads(response.read().decode("utf-8"))
 
 
 def imdb_id_from_url(url):
@@ -141,14 +205,126 @@ def enrich_movie_from_imdbapi(movie):
     db.session.commit()
 
 
-def fetch_imdb_movies(genre="", view="", sort="popular", limit=50):
+def fetch_cached_imdb_images(tconsts):
+    if not tconsts:
+        return {}
+
+    placeholders = ",".join("?" for _ in tconsts)
+
+    try:
+        with db.engine.connect() as connection:
+            rows = connection.exec_driver_sql(
+                f"""
+                SELECT tconst, poster_url, backdrop_url
+                FROM imdb_image_cache
+                WHERE tconst IN ({placeholders})
+                """,
+                tuple(tconsts)
+            ).fetchall()
+    except Exception:
+        return {}
+
+    return {
+        row[0]: {
+            "poster_url": row[1] or "",
+            "backdrop_url": row[2] or "",
+        }
+        for row in rows
+    }
+
+
+def cache_imdb_image(tconst, title, poster_url="", backdrop_url="", source="imdbapi"):
+    with db.engine.begin() as connection:
+        connection.exec_driver_sql(
+            """
+            INSERT INTO imdb_image_cache
+                (tconst, title, poster_url, backdrop_url, source, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ON CONFLICT(tconst) DO UPDATE SET
+                title = excluded.title,
+                poster_url = excluded.poster_url,
+                backdrop_url = excluded.backdrop_url,
+                source = excluded.source,
+                updated_at = excluded.updated_at
+            """,
+            (
+                tconst,
+                title or "",
+                poster_url or "",
+                backdrop_url or "",
+                source,
+                datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+            )
+        )
+
+
+def fetch_imdbapi_image(tconst, title=""):
+    try:
+        api_request = Request(
+            f"https://api.imdbapi.dev/titles/{tconst}",
+            headers={
+                "accept": "application/json",
+                "User-Agent": "CineVerseX/1.0 (+https://cineversex.onrender.com)",
+            }
+        )
+
+        with urlopen(api_request, timeout=8) as response:
+            details = json.loads(response.read().decode("utf-8"))
+    except Exception as error:
+        print(f"IMDb image lookup failed for {tconst}:", error)
+        return {}
+
+    primary_image = details.get("primaryImage") or {}
+    poster_url = primary_image.get("url") or ""
+
+    if poster_url:
+        cache_imdb_image(
+            tconst,
+            title or details.get("primaryTitle") or details.get("originalTitle") or "",
+            poster_url,
+            poster_url,
+            "imdbapi"
+        )
+
+    return {
+        "poster_url": poster_url,
+        "backdrop_url": poster_url,
+    }
+
+
+def fetch_imdbapi_details(tconst):
+    if not tconst:
+        return {}
+
+    try:
+        api_request = Request(
+            f"https://api.imdbapi.dev/titles/{tconst}",
+            headers={
+                "accept": "application/json",
+                "User-Agent": "CineVerseX/1.0 (+https://cineversex.onrender.com)",
+            }
+        )
+
+        with urlopen(api_request, timeout=10) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except Exception as error:
+        print(f"IMDb detail import failed for {tconst}:", error)
+        return {}
+
+
+def find_imdb_title(query):
+    query = (query or "").strip()
+
+    if not query or not imdb_db_available():
+        return None
+
     conn = sqlite3.connect(f"file:{imdb_db_path()}?mode=ro", uri=True)
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
 
-    base_query = """
-        SELECT *
-        FROM (
+    if query.startswith("tt") and query[2:].isdigit():
+        cur.execute(
+            """
             SELECT
                 t.tconst,
                 t.primaryTitle,
@@ -157,47 +333,271 @@ def fetch_imdb_movies(genre="", view="", sort="popular", limit=50):
                 t.runtimeMinutes,
                 t.genres,
                 r.averageRating,
-                r.numVotes,
-                ROW_NUMBER() OVER (
-                    PARTITION BY LOWER(TRIM(t.primaryTitle)), CAST(t.startYear AS INTEGER)
-                    ORDER BY COALESCE(r.numVotes, 0) DESC, t.tconst ASC
-                ) AS title_rank
+                r.numVotes
+            FROM imdb_titles t
+            LEFT JOIN imdb_ratings r ON t.tconst = r.tconst
+            WHERE t.tconst = ?
+            AND t.titleType = 'movie'
+            AND t.isAdult = 0
+            """,
+            (query,)
+        )
+    else:
+        cur.execute(
+            """
+            SELECT
+                t.tconst,
+                t.primaryTitle,
+                t.originalTitle,
+                t.startYear,
+                t.runtimeMinutes,
+                t.genres,
+                r.averageRating,
+                r.numVotes
             FROM imdb_titles t
             LEFT JOIN imdb_ratings r ON t.tconst = r.tconst
             WHERE t.titleType = 'movie'
             AND t.isAdult = 0
-    """
+            AND (
+                LOWER(t.primaryTitle) = LOWER(?)
+                OR t.primaryTitle LIKE ?
+                OR t.primaryTitle LIKE ?
+            )
+            ORDER BY
+                CASE
+                    WHEN LOWER(t.primaryTitle) = LOWER(?) THEN 0
+                    WHEN t.primaryTitle LIKE ? THEN 1
+                    ELSE 2
+                END,
+                COALESCE(r.numVotes, 0) DESC,
+                COALESCE(r.averageRating, 0) DESC
+            LIMIT 1
+            """,
+            (query, f"{query}%", f"%{query}%", query, f"{query}%")
+        )
 
+    row = cur.fetchone()
+    conn.close()
+
+    return dict(row) if row else None
+
+
+def fetch_tmdb_movie_match(title, year=""):
+    if not tmdb_is_configured() or not title:
+        return {}
+
+    params = {
+        "query": title,
+        "include_adult": "false",
+        "language": "en-IN",
+    }
+
+    if str(year).isdigit():
+        params["primary_release_year"] = str(year)
+
+    try:
+        data = fetch_tmdb_json("/search/movie", params)
+    except Exception as error:
+        print(f"TMDb import lookup failed for {title}:", error)
+        return {}
+
+    results = data.get("results") or []
+
+    if not results and params.get("primary_release_year"):
+        params.pop("primary_release_year", None)
+        try:
+            data = fetch_tmdb_json("/search/movie", params)
+            results = data.get("results") or []
+        except Exception:
+            results = []
+
+    best = next((item for item in results if item.get("poster_path")), results[0] if results else None)
+
+    if not best:
+        return {}
+
+    return {
+        "tmdb_id": best.get("id"),
+        "title": best.get("title") or title,
+        "description": best.get("overview") or "",
+        "poster_url": f"{TMDB_IMAGE_BASE_URL}{best['poster_path']}" if best.get("poster_path") else "",
+        "backdrop_url": f"{TMDB_IMAGE_BASE_URL}{best['backdrop_path']}" if best.get("backdrop_path") else "",
+        "release_date": best.get("release_date") or "",
+        "rating": round(float(best.get("vote_average") or 0), 1),
+    }
+
+
+def import_movie_from_external_sources(query):
+    imdb_row = find_imdb_title(query)
+
+    if not imdb_row:
+        return None, "No matching movie found in the local IMDb database."
+
+    title = imdb_row["primaryTitle"]
+    existing_movie = Movie.query.filter(
+        (Movie.title.ilike(title)) | (Movie.tmdb_url == f"https://www.imdb.com/title/{imdb_row['tconst']}/")
+    ).first()
+
+    imdb_details = fetch_imdbapi_details(imdb_row["tconst"])
+    tmdb_match = fetch_tmdb_movie_match(title, imdb_row.get("startYear"))
+    primary_image = imdb_details.get("primaryImage") or {}
+    runtime_seconds = imdb_details.get("runtimeSeconds") or 0
+    imdb_rating = imdb_details.get("rating") or {}
+    poster_url = primary_image.get("url") or tmdb_match.get("poster_url") or ""
+    backdrop_url = tmdb_match.get("backdrop_url") or primary_image.get("url") or poster_url
+    description = (
+        imdb_details.get("plot")
+        or tmdb_match.get("description")
+        or f"{title} imported from the local IMDb dataset."
+    )
+    languages = ", ".join(
+        language.get("name", "")
+        for language in imdb_details.get("spokenLanguages", [])
+        if language.get("name")
+    )
+    cast_names = ", ".join(
+        person.get("displayName", "")
+        for person in imdb_details.get("stars", [])[:10]
+        if person.get("displayName")
+    )
+    director_names = ", ".join(
+        person.get("displayName", "")
+        for person in imdb_details.get("directors", [])[:5]
+        if person.get("displayName")
+    )
+    writer_names = ", ".join(
+        person.get("displayName", "")
+        for person in imdb_details.get("writers", [])[:5]
+        if person.get("displayName")
+    )
+
+    if not existing_movie:
+        existing_movie = Movie(title=title, description=description)
+        db.session.add(existing_movie)
+
+    existing_movie.title = title
+    existing_movie.description = description
+    existing_movie.poster_url = poster_url
+    existing_movie.backdrop_url = backdrop_url
+    existing_movie.language = languages or "Multiple Languages"
+    existing_movie.genre = imdb_row.get("genres") or "Movie"
+    existing_movie.release_date = (
+        tmdb_match.get("release_date")
+        or (str(int(imdb_row["startYear"])) if imdb_row.get("startYear") else "")
+    )
+    existing_movie.rating = round(float(
+        imdb_rating.get("aggregateRating")
+        or imdb_row.get("averageRating")
+        or tmdb_match.get("rating")
+        or 0
+    ), 1)
+    existing_movie.runtime_minutes = (
+        int(runtime_seconds // 60)
+        if runtime_seconds
+        else (int(imdb_row["runtimeMinutes"]) if imdb_row.get("runtimeMinutes") else None)
+    )
+    existing_movie.certificate = existing_movie.certificate or "UA"
+    existing_movie.cast_names = cast_names
+    existing_movie.director_names = director_names
+    existing_movie.writer_names = writer_names
+    existing_movie.tmdb_id = tmdb_match.get("tmdb_id") or existing_movie.tmdb_id
+    existing_movie.tmdb_url = f"https://www.imdb.com/title/{imdb_row['tconst']}/"
+    existing_movie.justwatch_url = justwatch_search_url(title)
+    existing_movie.bookmyshow_url = bookmyshow_search_url(title)
+    existing_movie.bookmyshow_movie_url = existing_movie.bookmyshow_url
+    existing_movie.bookmyshow_ticket_url = existing_movie.bookmyshow_url
+    existing_movie.data_source = "imported"
+
+    if poster_url:
+        cache_imdb_image(imdb_row["tconst"], title, poster_url, backdrop_url, "import")
+
+    db.session.commit()
+
+    return existing_movie, ""
+
+
+def fetch_imdb_movies(genre="", view="", sort="popular", page=1, limit=80):
+    conn = sqlite3.connect(f"file:{imdb_db_path()}?mode=ro", uri=True)
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+
+    page = max(page, 1)
+    candidate_limit = limit * 3
+    candidate_offset = max(page - 1, 0) * limit
+    filters = [
+        "t.titleType = 'movie'",
+        "t.isAdult = 0",
+    ]
     params = []
 
     if genre:
-        base_query += " AND t.genres LIKE ?"
+        filters.append("t.genres LIKE ?")
         params.append(f"%{genre}%")
 
     if view == "now-showing":
-        base_query += " AND CAST(t.startYear AS INTEGER) = 2026"
+        filters.append("CAST(t.startYear AS INTEGER) = 2026")
     elif view == "upcoming":
-        base_query += " AND CAST(t.startYear AS INTEGER) >= 2026"
+        filters.append("CAST(t.startYear AS INTEGER) >= 2026")
 
-    base_query += """
-        )
-        WHERE title_rank = 1
-    """
+    where_clause = " AND ".join(filters)
 
-    sort_clauses = {
-        "rating": "COALESCE(averageRating, 0) DESC, COALESCE(numVotes, 0) DESC",
-        "newest": "COALESCE(startYear, 0) DESC, COALESCE(numVotes, 0) DESC",
-        "title": "primaryTitle COLLATE NOCASE ASC",
-        "popular": "COALESCE(numVotes, 0) DESC, COALESCE(averageRating, 0) DESC",
-    }
+    if sort == "title":
+        query = f"""
+            SELECT
+                t.tconst,
+                t.primaryTitle,
+                t.originalTitle,
+                t.startYear,
+                t.runtimeMinutes,
+                t.genres,
+                r.averageRating,
+                r.numVotes
+            FROM imdb_titles t
+            LEFT JOIN imdb_ratings r ON t.tconst = r.tconst
+            WHERE {where_clause}
+            ORDER BY t.primaryTitle COLLATE NOCASE ASC
+            LIMIT ?
+            OFFSET ?
+        """
+    elif sort == "newest":
+        query = f"""
+            SELECT
+                t.tconst,
+                t.primaryTitle,
+                t.originalTitle,
+                t.startYear,
+                t.runtimeMinutes,
+                t.genres,
+                r.averageRating,
+                r.numVotes
+            FROM imdb_titles t
+            LEFT JOIN imdb_ratings r ON t.tconst = r.tconst
+            WHERE {where_clause}
+            ORDER BY CAST(t.startYear AS INTEGER) DESC, COALESCE(r.numVotes, 0) DESC
+            LIMIT ?
+            OFFSET ?
+        """
+    else:
+        rating_order = "r.averageRating DESC, r.numVotes DESC" if sort == "rating" else "r.numVotes DESC, r.averageRating DESC"
+        query = f"""
+            SELECT
+                t.tconst,
+                t.primaryTitle,
+                t.originalTitle,
+                t.startYear,
+                t.runtimeMinutes,
+                t.genres,
+                r.averageRating,
+                r.numVotes
+            FROM imdb_ratings r
+            JOIN imdb_titles t ON t.tconst = r.tconst
+            WHERE {where_clause}
+            ORDER BY {rating_order}
+            LIMIT ?
+            OFFSET ?
+        """
 
-    base_query += f"""
-        ORDER BY {sort_clauses.get(sort, sort_clauses["popular"])}
-        LIMIT ?
-    """
-    params.append(limit * 4)
-
-    cur.execute(base_query, params)
+    cur.execute(query, params + [candidate_limit, candidate_offset])
     rows = cur.fetchall()
     conn.close()
 
@@ -214,12 +614,51 @@ def fetch_imdb_movies(genre="", view="", sort="popular", limit=50):
             continue
 
         seen_titles.add(title_key)
-        movies.append(row)
+        movies.append(dict(row))
 
         if len(movies) >= limit:
             break
 
+    image_cache = fetch_cached_imdb_images([movie["tconst"] for movie in movies])
+
+    for movie in movies:
+        cached_image = image_cache.get(movie["tconst"], {})
+        movie["poster_url"] = cached_image.get("poster_url", "")
+        movie["backdrop_url"] = cached_image.get("backdrop_url", "")
+
     return movies
+
+
+def count_imdb_movies(genre="", view=""):
+    conn = sqlite3.connect(f"file:{imdb_db_path()}?mode=ro", uri=True)
+    cur = conn.cursor()
+    filters = [
+        "titleType = 'movie'",
+        "isAdult = 0",
+    ]
+    params = []
+
+    if genre:
+        filters.append("genres LIKE ?")
+        params.append(f"%{genre}%")
+
+    if view == "now-showing":
+        filters.append("CAST(startYear AS INTEGER) = 2026")
+    elif view == "upcoming":
+        filters.append("CAST(startYear AS INTEGER) >= 2026")
+
+    cur.execute(
+        f"""
+        SELECT COUNT(*)
+        FROM imdb_titles
+        WHERE {" AND ".join(filters)}
+        """,
+        params
+    )
+    total = cur.fetchone()[0]
+    conn.close()
+
+    return total
 
 
 def fetch_imdb_movie(tconst):
@@ -249,12 +688,148 @@ def fetch_imdb_movie(tconst):
     return movie
 
 
+def search_imdb_movies(query, limit=24):
+    query = (query or "").strip()
+
+    if not query or not imdb_db_available():
+        return []
+
+    conn = sqlite3.connect(f"file:{imdb_db_path()}?mode=ro", uri=True)
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT
+            t.tconst,
+            t.primaryTitle,
+            t.originalTitle,
+            t.startYear,
+            t.runtimeMinutes,
+            t.genres,
+            r.averageRating,
+            r.numVotes
+        FROM imdb_titles t
+        LEFT JOIN imdb_ratings r ON t.tconst = r.tconst
+        WHERE t.titleType = 'movie'
+        AND t.isAdult = 0
+        AND (
+            t.primaryTitle LIKE ?
+            OR t.primaryTitle LIKE ?
+        )
+        ORDER BY
+            CASE
+                WHEN LOWER(t.primaryTitle) = LOWER(?) THEN 0
+                WHEN t.primaryTitle LIKE ? THEN 1
+                ELSE 2
+            END,
+            COALESCE(r.numVotes, 0) DESC,
+            COALESCE(r.averageRating, 0) DESC
+        LIMIT ?
+        """,
+        (f"{query}%", f"%{query}%", query, f"{query}%", limit)
+    )
+    rows = [dict(row) for row in cur.fetchall()]
+    conn.close()
+
+    image_cache = fetch_cached_imdb_images([movie["tconst"] for movie in rows])
+
+    for movie in rows:
+        cached_image = image_cache.get(movie["tconst"], {})
+        movie["poster_url"] = cached_image.get("poster_url", "")
+        movie["backdrop_url"] = cached_image.get("backdrop_url", "")
+
+    return rows
+
+
+@movie_bp.route("/imdb/poster/<tconst>")
+def imdb_poster(tconst):
+    title = request.args.get("title", "")
+    cached = fetch_cached_imdb_images([tconst]).get(tconst, {})
+    poster_url = cached.get("poster_url")
+
+    if poster_url:
+        return redirect(poster_url)
+
+    fetched = fetch_imdbapi_image(tconst, title)
+
+    if fetched.get("poster_url"):
+        return redirect(fetched["poster_url"])
+
+    safe_title = escape(title or "IMDb Movie")
+    initial = escape((title or "M")[:1].upper())
+    svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="640" height="960" viewBox="0 0 640 960">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#171321"/>
+    <stop offset="1" stop-color="#050505"/>
+  </linearGradient>
+</defs>
+<rect width="640" height="960" fill="url(#bg)"/>
+<circle cx="320" cy="270" r="118" fill="#f84464" opacity=".88"/>
+<text x="320" y="312" text-anchor="middle" font-family="Arial, sans-serif" font-size="128" font-weight="900" fill="#fff">{initial}</text>
+<text x="64" y="690" font-family="Arial, sans-serif" font-size="52" font-weight="900" fill="#fff">{safe_title}</text>
+<text x="64" y="752" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#f8c8d2">IMDb dataset title</text>
+<text x="64" y="820" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#f4e6df">Poster will cache when a public image is available</text>
+</svg>"""
+    return Response(svg, mimetype="image/svg+xml")
+
+
 @movie_bp.route("/movies")
 def movies():
     selected_genre = request.args.get("genre", "")
     selected_view = request.args.get("view", "upcoming")
     selected_sort = request.args.get("sort", "popular")
+    selected_source = request.args.get("source") or ("imdb" if imdb_db_available() else "local")
+    selected_page = max(request.args.get("page", 1, type=int), 1)
+    per_page = 60
     today_key = datetime.utcnow().strftime("%Y-%m-%d")
+
+    if selected_source == "imdb":
+        if imdb_db_available():
+            total_movies = count_imdb_movies(selected_genre, selected_view)
+            total_pages = max((total_movies + per_page - 1) // per_page, 1)
+            selected_page = min(selected_page, total_pages)
+            imdb_movies = fetch_imdb_movies(
+                selected_genre,
+                selected_view,
+                selected_sort,
+                page=selected_page,
+                limit=per_page
+            )
+            return render_template(
+                "movies.html",
+                movies=imdb_movies,
+                genres=GENRES,
+                selected_genre=selected_genre,
+                selected_view=selected_view,
+                selected_sort=selected_sort,
+                selected_source=selected_source,
+                selected_page=selected_page,
+                movie_source="imdb",
+                imdb_database_label=imdb_database_label(),
+                bookmyshow_search_url=bookmyshow_search_url,
+                total_pages=total_pages,
+                pagination_pages=pagination_window(selected_page, total_pages)
+            )
+
+        return render_template(
+            "movies.html",
+            movies=[],
+            genres=GENRES,
+            selected_genre=selected_genre,
+            selected_view=selected_view,
+            selected_sort=selected_sort,
+            selected_source=selected_source,
+            selected_page=selected_page,
+            movie_source="imdb",
+            bookmyshow_search_url=bookmyshow_search_url,
+            total_pages=1,
+            pagination_pages=[],
+            imdb_status_message=(
+                "IMDb database is not connected locally. "
+                f"Expected database path: {imdb_db_path()}"
+            )
+        )
 
     local_query = Movie.query.filter(Movie.data_source.in_(("tmdb", "imdbapi", "curated")))
 
@@ -283,18 +858,29 @@ def movies():
         else:
             local_query = local_query.order_by(*poster_first, Movie.release_date.asc(), Movie.rating.desc())
 
+        total_movies = local_query.count()
+        total_pages = max((total_movies + per_page - 1) // per_page, 1)
+        selected_page = min(selected_page, total_pages)
+
         return render_template(
             "movies.html",
-            movies=local_query.limit(80).all(),
+            movies=local_query.offset((selected_page - 1) * per_page).limit(per_page).all(),
             genres=GENRES,
             selected_genre=selected_genre,
             selected_view=selected_view,
             selected_sort=selected_sort,
-            movie_source="local"
+            selected_source=selected_source,
+            selected_page=selected_page,
+            movie_source="local",
+            total_pages=total_pages,
+            pagination_pages=pagination_window(selected_page, total_pages)
         )
 
     if imdb_db_available():
-        imdb_movies = fetch_imdb_movies(selected_genre, selected_view, selected_sort)
+        total_movies = count_imdb_movies(selected_genre, selected_view)
+        total_pages = max((total_movies + per_page - 1) // per_page, 1)
+        selected_page = min(selected_page, total_pages)
+        imdb_movies = fetch_imdb_movies(selected_genre, selected_view, selected_sort, page=selected_page, limit=per_page)
         return render_template(
             "movies.html",
             movies=imdb_movies,
@@ -302,8 +888,13 @@ def movies():
             selected_genre=selected_genre,
             selected_view=selected_view,
             selected_sort=selected_sort,
+            selected_source="imdb",
+            selected_page=selected_page,
             movie_source="imdb",
-            bookmyshow_search_url=bookmyshow_search_url
+            imdb_database_label=imdb_database_label(),
+            bookmyshow_search_url=bookmyshow_search_url,
+            total_pages=total_pages,
+            pagination_pages=pagination_window(selected_page, total_pages)
         )
 
     return render_template(
@@ -313,8 +904,12 @@ def movies():
         selected_genre=selected_genre,
         selected_view=selected_view,
         selected_sort=selected_sort,
+        selected_source="imdb",
+        selected_page=selected_page,
         movie_source="imdb",
         bookmyshow_search_url=bookmyshow_search_url,
+        total_pages=1,
+        pagination_pages=[],
         imdb_status_message=(
             "IMDb database is not connected. "
             f"Expected database path: {imdb_db_path()}"
@@ -381,6 +976,18 @@ def youtube_watch_url(embed_url):
 def add_movie():
 
     if request.method == "POST":
+        import_query = (request.form.get("import_query") or "").strip()
+
+        if import_query:
+            imported_movie, error = import_movie_from_external_sources(import_query)
+
+            if error:
+                flash(error, "danger")
+                return redirect(url_for("movie_bp.add_movie"))
+
+            flash(f"{imported_movie.title} imported successfully.", "success")
+            log_activity("Movie Added", f"Imported movie: {imported_movie.title}", notify=True)
+            return redirect(url_for("movie_bp.movie_details", movie_id=imported_movie.id))
 
         title = request.form["title"].strip()
         description = request.form["description"].strip()
@@ -444,6 +1051,7 @@ def add_movie():
 
         db.session.add(movie)
         db.session.commit()
+        log_activity("Movie Added", f"Added movie: {movie.title}", notify=True)
 
         return redirect(url_for("movie_bp.movies"))
 
@@ -542,11 +1150,13 @@ def search_movies():
 
     movies = Movie.query.filter(
         Movie.title.ilike(f"%{query}%")
-    ).all()
+    ).limit(36).all()
+    imdb_movies = search_imdb_movies(query)
 
     return render_template(
         "search_results.html",
         movies=movies,
+        imdb_movies=imdb_movies,
         query=query
     )
 @movie_bp.route("/edit-movie/<int:movie_id>", methods=["GET", "POST"])
@@ -568,6 +1178,7 @@ def edit_movie(movie_id):
         movie.bookmyshow_url = (request.form.get("bookmyshow_url") or "").strip()
 
         db.session.commit()
+        log_activity("Movie Edited", f"Edited movie: {movie.title}", notify=True)
 
         return redirect(url_for("movie_bp.movie_details", movie_id=movie.id))
 
@@ -582,8 +1193,10 @@ def edit_movie(movie_id):
 def delete_movie(movie_id):
 
     movie = Movie.query.get_or_404(movie_id)
+    title = movie.title
 
     db.session.delete(movie)
     db.session.commit()
+    log_activity("Movie Deleted", f"Deleted movie: {title}", notify=True)
 
     return redirect(url_for("movie_bp.movies"))

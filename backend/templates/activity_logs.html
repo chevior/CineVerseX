@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="cx-shell">
+    <div class="cx-page-head">
+        <div>
+            <span class="eyebrow">Admin audit</span>
+            <h1>Activity Logs</h1>
+            <p>Track logins, registrations, bookings, cancellations, settings changes, and important system actions.</p>
+        </div>
+
+        <a href="{{ url_for('admin_bp.admin_dashboard') }}" class="btn btn-outline-warning">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </a>
+    </div>
+
+    <div class="table-responsive cx-table-wrap">
+        <table class="table table-dark table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>Details</th>
+                    <th>IP</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.created_at }}</td>
+                    <td>{{ log.user.email if log.user else "-" }}</td>
+                    <td>{{ log.action }}</td>
+                    <td>{{ log.details }}</td>
+                    <td>{{ log.ip_address }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5">No activity yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

@@ -16,7 +16,7 @@
 
             <div class="cx-hero-copy">
                 <span class="cx-chip">
-                    <i class="fas fa-location-dot"></i> Bengaluru movies guide
+                    <i class="fas fa-clapperboard"></i> Movie discovery
                 </span>
 
                 <h1>{{ movie.title }}</h1>
@@ -31,7 +31,7 @@
                     <span>{{ movie.certificate or "UA" }}</span>
                 </div>
 
-                <p>{{ movie.description[:210] }}{% if movie.description|length > 210 %}...{% endif %}</p>
+                <p>{{ (movie.description|neutral_copy)[:210] }}{% if (movie.description|neutral_copy)|length > 210 %}...{% endif %}</p>
 
                 <div class="cx-hero-actions">
                     {% if movie.trailer_url %}
@@ -60,7 +60,7 @@
         <article class="cx-hero-slide is-active" data-hero-slide>
             <div class="cx-hero-shade"></div>
             <div class="cx-hero-copy">
-                <span class="cx-chip"><i class="fas fa-location-dot"></i> Bengaluru</span>
+                <span class="cx-chip"><i class="fas fa-clapperboard"></i> Movie discovery</span>
                 <h1>Movies made easy.</h1>
                 <p>Search releases, compare details, discover theaters, and continue with direct booking links.</p>
             </div>
@@ -80,10 +80,64 @@
         <button type="submit">Search</button>
     </form>
 
+    <section class="cx-release-intro">
+        <div>
+            <span class="eyebrow">Upcoming Releases</span>
+            <h2>Discover the latest blockbusters, multi-language hits and exclusive premieres coming to cinemas.</h2>
+        </div>
+        <div class="cx-release-metrics">
+            <span><i class="fas fa-film"></i> {{ "{:,}".format(movie_count) }} Movies</span>
+            <span><i class="fas fa-star"></i> IMDb Rated</span>
+            <span><i class="fas fa-masks-theater"></i> {{ genre_count or 28 }} Genres</span>
+            <span><i class="fas fa-earth-asia"></i> {{ language_count or 14 }} Languages</span>
+        </div>
+    </section>
+
+    <section class="cx-trend-tabs" aria-label="Movie shortcuts">
+        <a href="{{ url_for('movie_bp.movies', sort='popular') }}"><i class="fas fa-fire"></i> Trending</a>
+        <a href="{{ url_for('show_bp.shows') }}"><i class="fas fa-calendar-week"></i> Coming This Week</a>
+        <a href="{{ url_for('movie_bp.movies', view='upcoming', sort='newest') }}"><i class="fas fa-calendar-days"></i> This Month</a>
+        <a href="{{ url_for('movie_bp.movies', sort='rating', view='') }}"><i class="fas fa-star"></i> Highest Rated</a>
+        <a href="{{ url_for('movie_bp.movies', source='imdb', genre='Action', view='', sort='popular') }}"><i class="fas fa-clapperboard"></i> Hollywood</a>
+        <a href="{{ url_for('show_bp.shows', language='Hindi') }}"><i class="fas fa-music"></i> Bollywood</a>
+        <a href="{{ url_for('show_bp.shows', language='Kannada') }}"><i class="fas fa-language"></i> Kannada</a>
+    </section>
+
+    <section class="cx-command-grid">
+        <a href="{{ url_for('movie_bp.movies', source='imdb', view='', sort='popular') }}">
+            <i class="fas fa-database"></i>
+            <span>Full IMDb Library</span>
+            <strong>Browse the local 12 GB dataset with lazy image caching.</strong>
+        </a>
+        {% if session.get("user_id") %}
+        <button type="button" data-bs-toggle="offcanvas" data-bs-target="#cxWatchlistPanel">
+            <i class="fas fa-heart"></i>
+            <span>Watchlist</span>
+            <strong>Save movies and reopen them from any page.</strong>
+        </button>
+        {% else %}
+        <a href="{{ url_for('auth_bp.login') }}">
+            <i class="fas fa-lock"></i>
+            <span>Member Watchlist</span>
+            <strong>Login to save movies and unlock personal browsing features.</strong>
+        </a>
+        {% endif %}
+        <a href="{{ url_for('theater_bp.theaters') }}">
+            <i class="fas fa-map-location-dot"></i>
+            <span>Theater Finder</span>
+            <strong>Filter venues by area, format, and screen count.</strong>
+        </a>
+        <a href="{{ url_for('show_bp.shows') }}">
+            <i class="fas fa-calendar-check"></i>
+            <span>Release Planner</span>
+            <strong>Track upcoming releases by language, genre and rating.</strong>
+        </a>
+    </section>
+
     <section class="cx-stat-strip">
         <div>
-            <span>Catalog</span>
-            <strong>{{ movie_count }}</strong>
+            <span>{% if movie_count > catalog_movie_count %}IMDb DB{% else %}Catalog{% endif %}</span>
+            <strong>{{ "{:,}".format(movie_count) }}</strong>
         </div>
         <div>
             <span>Scheduled</span>
@@ -127,6 +181,24 @@
             <div class="alert alert-info">Upcoming releases will appear here after sync.</div>
             {% endfor %}
         </div>
+    </section>
+
+    <section class="cx-section cx-feature-strip">
+        <a href="{{ url_for('movie_bp.movies', sort='rating', view='') }}">
+            <i class="fas fa-star"></i>
+            <span>Top Rated</span>
+            <strong>Jump into the highest-rated catalog picks.</strong>
+        </a>
+        <a href="{{ url_for('movie_bp.movies', genre='Animation', view='') }}">
+            <i class="fas fa-child-reaching"></i>
+            <span>Family Picks</span>
+            <strong>Find animation, comedy, and easy weekend watches.</strong>
+        </a>
+        <a href="{{ url_for('theater_bp.theaters') }}">
+            <i class="fas fa-building"></i>
+            <span>Theater Finder</span>
+            <strong>Compare venues by screens, seats, maps, and amenities.</strong>
+        </a>
     </section>
 
     <section class="cx-section cx-rail-section">
@@ -223,7 +295,7 @@
         <a href="{{ url_for('theater_bp.theaters') }}">
             <i class="fas fa-building"></i>
             <strong>Theaters</strong>
-            <span>Filter Bengaluru Urban and Rural venues by area and type</span>
+            <span>Filter venues by area, format, and screen count</span>
         </a>
         <a href="{{ url_for('booking_bp.booking_history') }}">
             <i class="fas fa-arrow-up-right-from-square"></i>
@@ -235,10 +307,10 @@
             <strong>Top Rated</strong>
             <span>Sort the catalog by IMDbAPI and CineVerse ratings</span>
         </a>
-        <a href="{{ url_for('theater_bp.theaters', region='Rural') }}">
+        <a href="{{ url_for('theater_bp.theaters') }}">
             <i class="fas fa-route"></i>
-            <strong>Rural Venues</strong>
-            <span>Filter Bengaluru Rural area theaters directly</span>
+            <strong>Venue Guide</strong>
+            <span>Explore theaters, screens, amenities, and maps</span>
         </a>
     </section>
 

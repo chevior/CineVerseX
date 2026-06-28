@@ -16,4 +16,8 @@ class User(UserMixin, db.Model):
 
     role = db.Column(db.String(50), default="customer")
 
+    google_id = db.Column(db.String(120), unique=True)
+
+    profile_picture = db.Column(db.String(255), default="")
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

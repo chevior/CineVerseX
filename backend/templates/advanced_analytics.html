@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="cx-shell">
+    <div class="cx-page-head">
+        <div>
+            <span class="eyebrow">Admin insights</span>
+            <h1>Advanced Analytics</h1>
+            <p>Revenue, occupancy, booking behavior, user growth, and top-performing movies and theaters.</p>
+        </div>
+
+        <a href="{{ url_for('admin_bp.admin_dashboard') }}" class="btn btn-outline-warning">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </a>
+    </div>
+
+    <section class="cx-stat-strip compact">
+        <div>
+            <span>Total Revenue</span>
+            <strong>Rs. {{ analytics.summary.total_revenue }}</strong>
+        </div>
+        <div>
+            <span>Active Bookings</span>
+            <strong>{{ analytics.summary.total_bookings }}</strong>
+        </div>
+        <div>
+            <span>Occupancy</span>
+            <strong>{{ analytics.summary.occupancy_percent }}%</strong>
+        </div>
+        <div>
+            <span>Cancelled</span>
+            <strong>{{ analytics.summary.cancelled_bookings }}</strong>
+        </div>
+    </section>
+
+    <section class="cx-stat-strip compact">
+        <div>
+            <span>All Booking Records</span>
+            <strong>{{ analytics.summary.all_booking_records }}</strong>
+        </div>
+        <div>
+            <span>BookMyShow Opens</span>
+            <strong>{{ analytics.summary.external_link_opens }}</strong>
+        </div>
+        <div>
+            <span>Active Users</span>
+            <strong>{{ analytics.summary.active_users }}</strong>
+        </div>
+        <div>
+            <span>New Users This Month</span>
+            <strong>{{ analytics.summary.new_users_this_month }}</strong>
+        </div>
+        <div>
+            <span>Booked Seats</span>
+            <strong>{{ analytics.summary.booked_seats }}</strong>
+        </div>
+        <div>
+            <span>Total Capacity</span>
+            <strong>{{ analytics.summary.total_capacity }}</strong>
+        </div>
+    </section>
+
+    <section class="cx-analytics-grid">
+        <article>
+            <h3>Daily Revenue</h3>
+            <canvas id="dailyRevenueChart"></canvas>
+        </article>
+        <article>
+            <h3>Weekly Revenue</h3>
+            <canvas id="weeklyRevenueChart"></canvas>
+        </article>
+        <article>
+            <h3>Monthly Revenue</h3>
+            <canvas id="monthlyRevenueChart"></canvas>
+        </article>
+        <article>
+            <h3>Peak Booking Hours</h3>
+            <canvas id="peakHoursChart"></canvas>
+        </article>
+        <article>
+            <h3>Top 10 Movies</h3>
+            <canvas id="topMoviesChart"></canvas>
+        </article>
+        <article>
+            <h3>Top 10 Theaters</h3>
+            <canvas id="topTheatersChart"></canvas>
+        </article>
+        <article>
+            <h3>Bookings by Movie</h3>
+            <canvas id="movieBookingsChart"></canvas>
+        </article>
+        <article>
+            <h3>Bookings by Theater</h3>
+            <canvas id="theaterBookingsChart"></canvas>
+        </article>
+    </section>
+</div>
+
+<script id="analyticsPayload" type="application/json">{{ analytics|tojson }}</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const analytics = JSON.parse(document.getElementById("analyticsPayload").textContent);
+
+function labels(rows) {
+    return rows.map(function (row) {
+        return Array.isArray(row) ? row[0] : row.label;
+    });
+}
+
+function values(rows) {
+    return rows.map(function (row) {
+        return Array.isArray(row) ? Number(row[1] || 0) : Number(row.value || 0);
+    });
+}
+
+function chart(canvasId, type, rows, label) {
+    new Chart(document.getElementById(canvasId), {
+        type: type,
+        data: {
+            labels: labels(rows),
+            datasets: [{
+                label: label,
+                data: values(rows),
+                borderColor: "#f84464",
+                backgroundColor: "rgba(248, 68, 100, .35)",
+                tension: .35
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: type !== "bar" }
+            },
+            scales: type === "pie" ? {} : {
+                x: { ticks: { color: "#9ca3af" } },
+                y: { ticks: { color: "#9ca3af" }, beginAtZero: true }
+            }
+        }
+    });
+}
+
+chart("dailyRevenueChart", "line", analytics.daily_revenue, "Daily Revenue");
+chart("weeklyRevenueChart", "line", analytics.weekly_revenue, "Weekly Revenue");
+chart("monthlyRevenueChart", "line", analytics.monthly_revenue, "Monthly Revenue");
+chart("peakHoursChart", "bar", analytics.peak_hours, "Bookings");
+chart("topMoviesChart", "bar", analytics.top_movies, "Booked Tickets");
+chart("topTheatersChart", "bar", analytics.top_theaters, "Booked Tickets");
+chart("movieBookingsChart", "bar", analytics.bookings_by_movie, "Bookings");
+chart("theaterBookingsChart", "bar", analytics.bookings_by_theater, "Bookings");
+</script>
+
+{% endblock %}

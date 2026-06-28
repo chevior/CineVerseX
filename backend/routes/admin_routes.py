@@ -11,6 +11,12 @@ from models.ticket import Ticket
 from models.show import Show
 from models.booking import Payment
 from models.setting import SystemSetting
+from services.activity_service import log_activity
+from services.analytics_service import build_advanced_analytics
+from services.booking_metrics_service import (
+    build_admin_dashboard_metrics,
+    confirmed_booking_filter,
+)
 
 admin_bp = Blueprint("admin_bp", __name__)
 
@@ -27,47 +33,9 @@ def normalize_url(value):
 @admin_bp.route("/admin/dashboard")
 @admin_required
 def admin_dashboard():
-    total_users = User.query.count()
-    total_movies = Movie.query.count()
-    total_theaters = Theater.query.count()
-    total_bookings = Booking.query.count()
-
-    tickets = Ticket.query.all()
-
-    total_revenue = 0
-
-    for ticket in tickets:
-        total_revenue += ticket.total_amount
-
-    popular_movie = db.session.query(
-        Movie.title,
-        func.count(Booking.id).label("booking_count")
-    ).join(Show, Show.movie_id == Movie.id)\
-     .join(Booking, Booking.show_id == Show.id)\
-     .filter(Booking.status == "Booked")\
-     .group_by(Movie.title)\
-     .order_by(func.count(Booking.id).desc())\
-     .first()
-
-    popular_theater = db.session.query(
-        Theater.name,
-        func.count(Booking.id).label("booking_count")
-    ).join(Show, Show.theater_id == Theater.id)\
-     .join(Booking, Booking.show_id == Show.id)\
-     .filter(Booking.status == "Booked")\
-     .group_by(Theater.name)\
-     .order_by(func.count(Booking.id).desc())\
-     .first()
-
     return render_template(
         "admin_dashboard.html",
-        total_users=total_users,
-        total_movies=total_movies,
-        total_theaters=total_theaters,
-        total_bookings=total_bookings,
-        total_revenue=total_revenue,
-        popular_movie=popular_movie,
-        popular_theater=popular_theater
+        **build_admin_dashboard_metrics()
     )
 
 
@@ -79,6 +47,15 @@ def manage_users():
     return render_template(
         "manage_users.html",
         users=users
+    )
+
+
+@admin_bp.route("/admin/analytics")
+@admin_required
+def advanced_analytics():
+    return render_template(
+        "advanced_analytics.html",
+        analytics=build_advanced_analytics()
     )
 
 
@@ -147,6 +124,7 @@ def system_settings():
         settings.email_notifications_enabled = "email_notifications_enabled" in request.form
 
         db.session.commit()
+        log_activity("Settings Changed", "Admin updated system settings.", notify=True)
         flash("System settings updated successfully.", "success")
         return redirect(url_for("admin_bp.system_settings"))
 
@@ -159,9 +137,7 @@ def revenue_charts():
     daily_revenue = db.session.query(
         func.date(Booking.booked_at),
         func.sum(Booking.total_amount)
-    ).filter(
-        Booking.status == "Booked"
-    ).group_by(
+    ).filter(confirmed_booking_filter()).group_by(
         func.date(Booking.booked_at)
     ).all()
 
@@ -177,7 +153,7 @@ def revenue_charts():
         func.count(Booking.id)
     ).join(Show, Show.movie_id == Movie.id)\
      .join(Booking, Booking.show_id == Show.id)\
-     .filter(Booking.status == "Booked")\
+     .filter(confirmed_booking_filter())\
      .group_by(Movie.title)\
      .order_by(func.count(Booking.id).desc())\
      .limit(5).all()

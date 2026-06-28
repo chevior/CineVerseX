@@ -1,12 +1,14 @@
 from flask import Blueprint, flash, render_template, request, redirect, url_for, session
 import bcrypt
-from flask_login import login_user, logout_user
+from flask_login import logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from auth.guards import login_required
 from extensions import db
 from models.setting import SystemSetting
 from models.user import User
+from services.activity_service import log_activity
+from services.security_service import validate_password_strength
 
 auth_bp = Blueprint("auth_bp", __name__)
 
@@ -26,57 +28,20 @@ def password_matches(user, password):
 
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == "POST":
-        settings = SystemSetting.query.first()
-        if settings and not settings.registration_enabled:
-            flash("New registration is currently disabled.", "warning")
-            return redirect(url_for("auth_bp.login"))
-
-        name = request.form["name"]
-        email = request.form["email"].strip().lower()
-        password = request.form["password"]
-
-        if User.query.filter_by(email=email).first():
-            flash("An account already exists with that email.", "warning")
-            return redirect(url_for("auth_bp.register"))
-
-        user = User(
-            name=name,
-            email=email,
-            password=generate_password_hash(password)
-        )
-
-        db.session.add(user)
-        db.session.commit()
-
-        flash("Account created. You can log in now.", "success")
+    settings = SystemSetting.query.first()
+    if settings and not settings.registration_enabled:
+        flash("New registration is currently disabled.", "warning")
         return redirect(url_for("auth_bp.login"))
 
-    return render_template("register.html")
+    flash("CineVerse X now uses Google Login for accounts.", "info")
+    return redirect(url_for("google_auth_bp.google_login"))
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.form["email"].strip().lower()
-        password = request.form["password"]
-
-        user = User.query.filter_by(email=email).first()
-
-        if not user:
-            flash("No account found with that email.", "danger")
-            return redirect(url_for("auth_bp.login"))
-
-        if password_matches(user, password):
-            login_user(user)
-            session["user_id"] = user.id
-            session["user_name"] = user.name
-            session["user_role"] = user.role
-
-            return redirect(url_for("auth_bp.dashboard"))
-
-        flash("Incorrect password.", "danger")
-        return redirect(url_for("auth_bp.login"))
+        flash("Use Google Login to continue.", "info")
+        return redirect(url_for("google_auth_bp.google_login"))
 
     return render_template("login.html")
 
@@ -110,8 +75,9 @@ def reset_password():
             flash("Passwords do not match.", "danger")
             return redirect(url_for("auth_bp.reset_password"))
 
-        if len(new_password) < 6:
-            flash("Password must be at least 6 characters.", "danger")
+        strength_error = validate_password_strength(new_password)
+        if strength_error:
+            flash(strength_error, "danger")
             return redirect(url_for("auth_bp.reset_password"))
 
         user = User.query.filter_by(email=email).first()
@@ -122,6 +88,7 @@ def reset_password():
 
         user.password = generate_password_hash(new_password)
         db.session.commit()
+        log_activity("Password Change", f"{user.email} reset password.", user_id=user.id)
 
         flash("Password reset. You can log in with the new password.", "success")
         return redirect(url_for("auth_bp.login"))
@@ -147,12 +114,14 @@ def change_password():
             flash("New passwords do not match.", "danger")
             return redirect(url_for("auth_bp.change_password"))
 
-        if len(new_password) < 6:
-            flash("Password must be at least 6 characters.", "danger")
+        strength_error = validate_password_strength(new_password)
+        if strength_error:
+            flash(strength_error, "danger")
             return redirect(url_for("auth_bp.change_password"))
 
         user.password = generate_password_hash(new_password)
         db.session.commit()
+        log_activity("Password Change", f"{user.email} changed password.", user_id=user.id)
 
         flash("Password changed successfully.", "success")
         return redirect(url_for("auth_bp.dashboard"))

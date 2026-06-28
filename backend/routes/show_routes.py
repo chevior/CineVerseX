@@ -6,6 +6,7 @@ from extensions import db
 from models.movie import Movie
 from models.theater import Theater, Screen
 from models.show import Show
+from services.activity_service import log_activity
 
 show_bp = Blueprint("show_bp", __name__)
 
@@ -17,6 +18,31 @@ LEGACY_DEMO_MOVIES = (
     "Kalki 2898 AD",
     "Munjya",
 )
+
+
+def pagination_window(current_page, total_pages, radius=2):
+    if total_pages <= 1:
+        return []
+
+    current_page = max(1, min(current_page, total_pages))
+    pages = {1, total_pages}
+
+    for page_number in range(current_page - radius, current_page + radius + 1):
+        if 1 <= page_number <= total_pages:
+            pages.add(page_number)
+
+    ordered_pages = sorted(pages)
+    window = []
+    previous = None
+
+    for page_number in ordered_pages:
+        if previous is not None and page_number - previous > 1:
+            window.append(None)
+
+        window.append(page_number)
+        previous = page_number
+
+    return window
 
 
 @show_bp.route("/add-show", methods=["GET", "POST"])
@@ -40,6 +66,7 @@ def add_show():
 
         db.session.add(show)
         db.session.commit()
+        log_activity("Show Added", f"Added show #{show.id} for movie #{show.movie_id}", notify=True)
 
         return redirect(url_for("show_bp.shows"))
 
@@ -56,6 +83,8 @@ def shows():
     selected_sort = request.args.get("sort", "release")
     selected_genre = request.args.get("genre", "")
     selected_language = request.args.get("language", "")
+    selected_page = max(request.args.get("page", 1, type=int), 1)
+    per_page = 24
     today_key = datetime.utcnow().strftime("%Y-%m-%d")
 
     query = (
@@ -100,6 +129,12 @@ def shows():
             "show": show,
         })
 
+    total_movies = len(movie_cards)
+    total_pages = max((total_movies + per_page - 1) // per_page, 1)
+    selected_page = min(selected_page, total_pages)
+    start_index = (selected_page - 1) * per_page
+    movie_cards = movie_cards[start_index:start_index + per_page]
+
     return render_template(
         "shows.html",
         movie_cards=movie_cards,
@@ -134,5 +169,8 @@ def shows():
         ],
         selected_sort=selected_sort,
         selected_genre=selected_genre,
-        selected_language=selected_language
+        selected_language=selected_language,
+        selected_page=selected_page,
+        total_pages=total_pages,
+        pagination_pages=pagination_window(selected_page, total_pages)
     )

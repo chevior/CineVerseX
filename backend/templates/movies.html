@@ -15,7 +15,13 @@
                     Popular Movies
                 {% endif %}
             </h1>
-            <p>Filter by genre, release type, and rating without losing the poster view.</p>
+            <p>
+                {% if selected_source == "imdb" %}
+                    Browsing {{ imdb_database_label or "local IMDb database" }} with lazy poster caching.
+                {% else %}
+                    Filter by genre, release type, and rating without losing the poster view.
+                {% endif %}
+            </p>
         </div>
 
         {% if session.get('user_role') == 'admin' %}
@@ -39,6 +45,14 @@
         </label>
 
         <label>
+            <span>Database</span>
+            <select name="source" class="form-control">
+                <option value="local" {% if selected_source != "imdb" %}selected{% endif %}>CineVerse Picks</option>
+                <option value="imdb" {% if selected_source == "imdb" %}selected{% endif %}>Full Local IMDb DB</option>
+            </select>
+        </label>
+
+        <label>
             <span>View</span>
             <select name="view" class="form-control">
                 <option value="">All Movies</option>
@@ -57,11 +71,13 @@
             </select>
         </label>
 
+        <input type="hidden" name="page" value="1">
+
         <button class="btn btn-primary">
             <i class="fas fa-sliders"></i> Apply
         </button>
 
-        {% if selected_genre or selected_view or selected_sort != "popular" %}
+        {% if selected_genre or selected_view or selected_sort != "popular" or selected_source == "imdb" %}
         <a href="{{ url_for('movie_bp.movies') }}" class="btn btn-outline-warning">
             Clear
         </a>
@@ -78,11 +94,27 @@
         {% for movie in movies %}
         <article class="cx-movie-card">
             {% if movie_source == "imdb" %}
-            <a class="cx-poster-link" href="{{ url_for('movie_bp.imdb_movie_details', tconst=movie.tconst) }}">
-                {% if movie.poster_url %}
-                <img src="{{ movie.poster_url }}" alt="{{ movie.primaryTitle }}">
-                {% else %}
-                <div class="cx-poster-fallback"><i class="fas fa-film"></i></div>
+            <a
+                class="cx-poster-link"
+                href="{{ url_for('movie_bp.imdb_movie_details', tconst=movie.tconst) }}"
+                data-track-movie
+                data-title="{{ movie.primaryTitle }}"
+                data-url="{{ url_for('movie_bp.imdb_movie_details', tconst=movie.tconst) }}"
+                data-poster="{{ movie.poster_url or url_for('movie_bp.imdb_poster', tconst=movie.tconst, title=movie.primaryTitle) }}">
+                <img
+                    src="{{ movie.poster_url or url_for('movie_bp.imdb_poster', tconst=movie.tconst, title=movie.primaryTitle) }}"
+                    onerror="this.src='{{ url_for('movie_bp.imdb_poster', tconst=movie.tconst, title=movie.primaryTitle) }}';"
+                    alt="{{ movie.primaryTitle }}">
+                {% if session.get("user_id") %}
+                <button
+                    class="cx-watch-button"
+                    type="button"
+                    data-watch-title="{{ movie.primaryTitle }}"
+                    data-watch-url="{{ url_for('movie_bp.imdb_movie_details', tconst=movie.tconst) }}"
+                    data-watch-poster="{{ movie.poster_url or url_for('movie_bp.imdb_poster', tconst=movie.tconst, title=movie.primaryTitle) }}"
+                    aria-label="Add {{ movie.primaryTitle }} to watchlist">
+                    <i class="far fa-heart"></i>
+                </button>
                 {% endif %}
                 <span class="cx-rating"><i class="fas fa-star"></i> {{ movie.averageRating or "N/A" }}</span>
                 <span class="cx-hover-overlay">
@@ -108,11 +140,28 @@
                 </div>
             </div>
             {% else %}
-            <a class="cx-poster-link" href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}">
+            <a
+                class="cx-poster-link"
+                href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}"
+                data-track-movie
+                data-title="{{ movie.title }}"
+                data-url="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}"
+                data-poster="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('generated_movie_poster', movie_id=movie.id)) }}">
                 <img
                     src="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('generated_movie_poster', movie_id=movie.id)) }}"
                     onerror="this.src='{{ url_for('generated_movie_poster', movie_id=movie.id) }}';"
                     alt="{{ movie.title }}">
+                {% if session.get("user_id") %}
+                <button
+                    class="cx-watch-button"
+                    type="button"
+                    data-watch-title="{{ movie.title }}"
+                    data-watch-url="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}"
+                    data-watch-poster="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('generated_movie_poster', movie_id=movie.id)) }}"
+                    aria-label="Add {{ movie.title }} to watchlist">
+                    <i class="far fa-heart"></i>
+                </button>
+                {% endif %}
                 <span class="cx-rating"><i class="fas fa-star"></i> {{ movie.rating or "N/A" }}</span>
                 <span class="cx-hover-overlay">
                     <span>{% if movie.bookmyshow_url %}Book Now{% else %}View Details{% endif %}</span>
@@ -138,6 +187,9 @@
                     {% if movie.bookmyshow_url %}
                     <a target="_blank" rel="noopener noreferrer" href="{{ movie.bookmyshow_url }}">BookMyShow</a>
                     {% endif %}
+                    {% if session.get("user_id") %}
+                    <a href="{{ url_for('wishlist_bp.add_to_wishlist', movie_id=movie.id) }}">Wishlist</a>
+                    {% endif %}
                     {% if session.get('user_role') == 'admin' %}
                     <a href="{{ url_for('movie_bp.edit_movie', movie_id=movie.id) }}">Edit</a>
                     {% endif %}
@@ -149,6 +201,34 @@
         <div class="alert alert-info">No movies found.</div>
         {% endfor %}
     </div>
+
+    {% if movies and pagination_pages %}
+    <nav class="cx-pagination" aria-label="Movie pages">
+        {% if selected_page > 1 %}
+        <a href="{{ url_for('movie_bp.movies', source=selected_source, genre=selected_genre, view=selected_view, sort=selected_sort, page=selected_page - 1) }}">
+            <i class="fas fa-chevron-left"></i> Previous
+        </a>
+        {% endif %}
+
+        {% for page_number in pagination_pages %}
+            {% if page_number %}
+                {% if page_number == selected_page %}
+                <span class="is-current">{{ page_number }}</span>
+                {% else %}
+                <a href="{{ url_for('movie_bp.movies', source=selected_source, genre=selected_genre, view=selected_view, sort=selected_sort, page=page_number) }}">{{ page_number }}</a>
+                {% endif %}
+            {% else %}
+            <span class="cx-pagination-gap">...</span>
+            {% endif %}
+        {% endfor %}
+
+        {% if selected_page < total_pages %}
+        <a href="{{ url_for('movie_bp.movies', source=selected_source, genre=selected_genre, view=selected_view, sort=selected_sort, page=selected_page + 1) }}">
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </nav>
+    {% endif %}
 </div>
 
 {% endblock %}
