@@ -3104,3 +3104,415 @@ body[data-theme="midnight"] .cx-hero-poster-card small {
         min-width: 680px;
     }
 }
+
+/* CineVerse X UI reset: stable, non-overlapping layout */
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden !important;
+}
+
+body {
+    background:
+        radial-gradient(circle at 18% -12%, rgba(248, 68, 100, .18), transparent 360px),
+        radial-gradient(circle at 95% 2%, rgba(45, 105, 255, .14), transparent 340px),
+        linear-gradient(180deg, #f7f8fb 0, var(--page-bg) 420px) !important;
+}
+
+.cine-navbar,
+.cine-navbar.sticky-top,
+.navbar.fixed-top,
+.navbar.sticky-top {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background:
+        linear-gradient(135deg, rgba(16, 20, 31, .98), rgba(27, 36, 51, .96)) !important;
+    box-shadow: 0 12px 34px rgba(10, 15, 28, .24) !important;
+}
+
+.cine-navbar .container-fluid {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 12px !important;
+    min-height: 64px !important;
+    padding: 12px clamp(14px, 3vw, 30px) !important;
+}
+
+.cine-logo {
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    font-size: clamp(18px, 2vw, 23px) !important;
+    line-height: 1.1 !important;
+}
+
+.navbar-toggler {
+    margin-left: auto !important;
+}
+
+@media (min-width: 992px) {
+    .cine-navbar .navbar-collapse {
+        display: flex !important;
+        flex: 1 1 auto !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        gap: 10px !important;
+        min-width: 0 !important;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .cine-navbar .navbar-collapse:not(.show) {
+        display: none !important;
+    }
+
+    .cine-navbar .navbar-collapse.show,
+    .cine-navbar .navbar-collapse.collapsing {
+        display: block !important;
+        width: 100% !important;
+    }
+}
+
+.cine-navbar .navbar-nav {
+    display: flex !important;
+    flex: 0 1 auto !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 6px !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
+}
+
+.cine-navbar .nav-item {
+    flex: 0 0 auto !important;
+}
+
+.cine-navbar .nav-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    min-height: 38px !important;
+    margin: 0 !important;
+    padding: 8px 11px !important;
+    border-radius: 999px !important;
+    color: rgba(255, 255, 255, .84) !important;
+    line-height: 1.1 !important;
+}
+
+.cx-nav-search {
+    position: relative !important;
+    flex: 1 1 280px !important;
+    order: 0 !important;
+    width: auto !important;
+    min-width: 220px !important;
+    max-width: 460px !important;
+    margin: 0 !important;
+}
+
+.cx-nav-search .form-control {
+    height: 40px !important;
+    border-radius: 999px !important;
+}
+
+.cx-nav-actions {
+    display: flex !important;
+    flex: 0 1 auto !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+}
+
+.theme-switcher,
+.cx-watchlist-open,
+.cx-login-btn,
+.cx-user-menu .dropdown-toggle,
+.cx-icon-btn {
+    flex: 0 0 auto !important;
+}
+
+.cx-user-menu .dropdown-toggle {
+    max-width: 180px !important;
+}
+
+.page-content {
+    width: 100% !important;
+    min-height: calc(100vh - 64px) !important;
+    padding: clamp(18px, 3vw, 36px) 0 76px !important;
+}
+
+.page-content.container-fluid {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.cx-shell,
+.container,
+.container-fluid > .container,
+.cx-detail-page > .cx-shell {
+    width: min(1480px, calc(100% - 28px)) !important;
+    max-width: 1480px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.cx-filter-bar {
+    position: relative !important;
+    top: auto !important;
+    z-index: 1 !important;
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) auto auto !important;
+    gap: 12px !important;
+    align-items: end !important;
+    margin: 18px 0 26px !important;
+    overflow: visible !important;
+}
+
+.cx-filter-bar label {
+    min-width: 0 !important;
+}
+
+.cx-filter-bar .btn {
+    min-height: 44px !important;
+}
+
+.cx-movie-grid,
+.cx-release-grid,
+.cx-theater-grid,
+.cx-analytics-grid,
+.cx-plan-grid,
+.cx-feature-strip,
+.cx-command-grid,
+.cx-stat-strip,
+.cx-action-grid {
+    display: grid !important;
+    gap: clamp(14px, 2vw, 22px) !important;
+    align-items: stretch !important;
+}
+
+.cx-movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)) !important;
+}
+
+.cx-release-grid,
+.cx-theater-grid {
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)) !important;
+}
+
+.cx-plan-grid,
+.cx-analytics-grid,
+.cx-feature-strip {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+}
+
+.cx-stat-strip,
+.cx-action-grid,
+.cx-command-grid {
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)) !important;
+}
+
+.cx-movie-card,
+.cx-release-card,
+.cx-theater-card,
+.cx-plan-card,
+.cx-detail-panel,
+.card,
+.cx-import-panel,
+.cx-manual-panel,
+.cx-filter-bar,
+.cx-table-wrap {
+    min-width: 0 !important;
+    overflow: visible !important;
+    border-radius: 18px !important;
+}
+
+.cx-movie-card,
+.cx-release-card,
+.cx-theater-card,
+.cx-plan-card,
+.card,
+.cx-detail-panel {
+    background: var(--surface) !important;
+    border: 1px solid var(--line) !important;
+    box-shadow: 0 18px 46px rgba(18, 26, 40, .1) !important;
+}
+
+.cx-card-body,
+.cx-release-body,
+.card-body,
+.cx-detail-panel,
+.cx-theater-card {
+    overflow: visible !important;
+}
+
+.cx-card-body h3,
+.cx-release-body h3,
+.cx-theater-card h3,
+.cx-page-head h1,
+.cx-detail-copy h1,
+.cx-hero-carousel .cx-hero-copy h1 {
+    max-width: 100% !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+    letter-spacing: 0 !important;
+}
+
+.cx-poster-link,
+.cx-release-poster,
+.cx-hero-carousel,
+.cx-detail-hero {
+    overflow: hidden !important;
+}
+
+.cx-card-actions,
+.cx-release-actions,
+.cx-hero-actions,
+.cx-page-head,
+.cx-section-head {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+.cx-card-actions a,
+.cx-release-actions a,
+.cx-hero-actions a,
+.cx-hero-actions button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 38px !important;
+    white-space: nowrap !important;
+}
+
+.cx-info-chips {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 7px !important;
+}
+
+.cx-import-form,
+.cx-admin-form {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    gap: 12px !important;
+}
+
+.cx-import-form button,
+.cx-admin-form button,
+.cx-admin-form textarea {
+    grid-column: 1 / -1 !important;
+}
+
+.table-responsive,
+.cx-table-wrap {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+}
+
+.table {
+    width: 100% !important;
+    min-width: 720px !important;
+}
+
+.toast-zone {
+    position: fixed !important;
+    top: 82px !important;
+    right: 16px !important;
+    z-index: 2000 !important;
+}
+
+@media (max-width: 991.98px) {
+    .cine-navbar .navbar-nav,
+    .cx-nav-actions,
+    .cx-nav-search {
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    .cine-navbar .navbar-nav {
+        align-items: stretch !important;
+        padding-top: 12px !important;
+    }
+
+    .cine-navbar .nav-item,
+    .cine-navbar .nav-link {
+        width: 100% !important;
+    }
+
+    .cx-nav-search {
+        margin: 12px 0 !important;
+        min-width: 0 !important;
+    }
+
+    .cx-nav-actions {
+        justify-content: flex-start !important;
+        padding-bottom: 6px !important;
+    }
+
+    .theme-switcher {
+        margin-left: 0 !important;
+    }
+
+    .cx-filter-bar {
+        grid-template-columns: 1fr !important;
+    }
+
+    .cx-hero-carousel,
+    .cx-detail-hero {
+        min-height: auto !important;
+    }
+
+    .cx-hero-slide {
+        position: relative !important;
+        min-height: 520px !important;
+    }
+
+    .cx-hero-slide:not(.is-active) {
+        display: none !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .cx-shell,
+    .container,
+    .container-fluid > .container,
+    .cx-detail-page > .cx-shell {
+        width: min(100% - 18px, 1480px) !important;
+    }
+
+    .cx-movie-grid,
+    .cx-release-grid,
+    .cx-theater-grid,
+    .cx-plan-grid,
+    .cx-analytics-grid,
+    .cx-feature-strip,
+    .cx-stat-strip {
+        grid-template-columns: 1fr !important;
+    }
+
+    .cx-card-actions a,
+    .cx-release-actions a,
+    .cx-hero-actions a,
+    .cx-hero-actions button {
+        flex: 1 1 100% !important;
+    }
+
+    .table {
+        min-width: 640px !important;
+    }
+}
