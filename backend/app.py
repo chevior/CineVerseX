@@ -7,6 +7,7 @@ from flask import Flask, Response, render_template
 from flask_login import LoginManager
 from dotenv import load_dotenv
 
+load_dotenv()
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 

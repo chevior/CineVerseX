@@ -53,6 +53,7 @@ def require_login_for_member_features():
         "api_bp.trending",
         "google_auth_bp.google_login",
         "google_auth_bp.google_callback",
+        "payment_bp.pricing",
         "show_bp.shows",
         "theater_bp.theaters",
     }

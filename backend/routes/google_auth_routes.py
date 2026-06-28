@@ -33,6 +33,21 @@ def google_oauth_config():
     }
 
 
+def missing_google_config_message(config):
+    missing = []
+
+    if not config["client_id"]:
+        missing.append("GOOGLE_CLIENT_ID")
+
+    if not config["client_secret"]:
+        missing.append("GOOGLE_CLIENT_SECRET")
+
+    if not missing:
+        return ""
+
+    return f"Google Login is not configured yet. Missing: {', '.join(missing)}."
+
+
 def post_google_token(code, config):
     data = urlencode({
         "code": code,
@@ -117,9 +132,10 @@ def login_google_user(profile):
 @google_auth_bp.route("/login")
 def google_login():
     config = google_oauth_config()
+    missing_message = missing_google_config_message(config)
 
-    if not config["client_id"] or not config["client_secret"]:
-        flash("Google Login is not configured yet. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.", "warning")
+    if missing_message:
+        flash(missing_message, "warning")
         return redirect(url_for("auth_bp.login"))
 
     state = secrets.token_urlsafe(24)
@@ -152,8 +168,10 @@ def google_callback():
         return redirect(url_for("auth_bp.login"))
 
     config = google_oauth_config()
-    if not config["client_id"] or not config["client_secret"]:
-        flash("Google Login is not configured yet. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.", "warning")
+    missing_message = missing_google_config_message(config)
+
+    if missing_message:
+        flash(missing_message, "warning")
         return redirect(url_for("auth_bp.login"))
 
     try:

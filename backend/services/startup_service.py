@@ -88,6 +88,10 @@ def ensure_schema_updates():
             row[1]
             for row in connection.exec_driver_sql("PRAGMA table_info(users)")
         }
+        payment_columns = {
+            row[1]
+            for row in connection.exec_driver_sql("PRAGMA table_info(payments)")
+        }
 
         connection.exec_driver_sql(
             """
@@ -142,6 +146,28 @@ def ensure_schema_updates():
 
         if "google_id" not in user_columns:
             connection.exec_driver_sql("ALTER TABLE users ADD COLUMN google_id VARCHAR(120)")
+
+        user_updates = {
+            "subscription_plan": "ALTER TABLE users ADD COLUMN subscription_plan VARCHAR(30) DEFAULT 'free'",
+            "subscription_status": "ALTER TABLE users ADD COLUMN subscription_status VARCHAR(30) DEFAULT 'active'",
+            "subscription_started_at": "ALTER TABLE users ADD COLUMN subscription_started_at DATETIME",
+            "subscription_expires_at": "ALTER TABLE users ADD COLUMN subscription_expires_at DATETIME",
+        }
+
+        for column, statement in user_updates.items():
+            if column not in user_columns:
+                connection.exec_driver_sql(statement)
+
+        payment_updates = {
+            "user_id": "ALTER TABLE payments ADD COLUMN user_id INTEGER",
+            "purpose": "ALTER TABLE payments ADD COLUMN purpose VARCHAR(50) DEFAULT 'booking'",
+            "provider_reference": "ALTER TABLE payments ADD COLUMN provider_reference VARCHAR(120)",
+            "created_at": "ALTER TABLE payments ADD COLUMN created_at DATETIME",
+        }
+
+        for column, statement in payment_updates.items():
+            if column not in payment_columns:
+                connection.exec_driver_sql(statement)
 
         setting_updates = {
             "site_name": "ALTER TABLE system_settings ADD COLUMN site_name VARCHAR(100) DEFAULT 'CineVerseX'",

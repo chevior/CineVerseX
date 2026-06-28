@@ -84,6 +84,14 @@ a:hover {
     min-width: 0;
 }
 
+.cine-navbar .navbar-collapse {
+    gap: 8px;
+}
+
+.cine-navbar .navbar-nav {
+    flex: 0 1 auto;
+}
+
 body[data-theme="obsidian"] .cine-navbar,
 body[data-theme="midnight"] .cine-navbar {
     background: rgba(15, 14, 13, .96);
@@ -147,6 +155,41 @@ body[data-theme="midnight"] .cine-navbar {
     min-height: 34px;
     padding: 6px 10px;
     font-size: 13px;
+}
+
+.cx-nav-actions {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    min-width: 0;
+}
+
+.cx-icon-btn {
+    width: 36px;
+    min-width: 36px;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.cx-user-menu {
+    min-width: 0;
+}
+
+.cx-user-menu .dropdown-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 150px;
+}
+
+.cx-user-menu .dropdown-toggle span {
+    display: inline-block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .btn {
@@ -1103,11 +1146,12 @@ h5 {
 }
 
 .cx-nav-search {
-    flex: 0 1 300px;
-    width: min(300px, 22vw);
-    min-width: 190px;
+    flex: 1 1 260px;
+    width: auto;
+    min-width: 180px;
+    max-width: 300px;
     position: relative;
-    margin: 0 8px;
+    margin: 0 4px 0 auto;
 }
 
 .cx-nav-search i {
@@ -1794,6 +1838,73 @@ h5 {
 .cx-feature-strip a:hover {
     transform: translateY(-3px);
     box-shadow: var(--shadow);
+}
+
+.cx-plan-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 26px;
+}
+
+.cx-plan-card {
+    display: grid;
+    gap: 16px;
+    padding: clamp(22px, 4vw, 34px);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.cx-plan-card.is-pro {
+    border-color: rgba(248, 68, 100, .45);
+    background:
+        linear-gradient(145deg, rgba(248, 68, 100, .1), rgba(255, 255, 255, .95)),
+        var(--surface);
+}
+
+.cx-plan-card h2 {
+    margin: 0;
+    color: var(--ink);
+    font-size: clamp(34px, 5vw, 54px);
+    line-height: 1;
+}
+
+.cx-plan-card h2 small {
+    color: var(--muted);
+    font-size: 16px;
+}
+
+.cx-plan-card p {
+    margin: 0;
+    color: var(--muted);
+    font-weight: 700;
+    line-height: 1.6;
+}
+
+.cx-plan-card ul {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.cx-plan-card li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ink);
+    font-weight: 800;
+}
+
+.cx-plan-card li::before {
+    content: "";
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--brand);
 }
 
 .cx-feature-strip i {
@@ -2514,8 +2625,28 @@ h5 {
     .cx-nav-location,
     .cx-nav-search {
         width: 100%;
+        max-width: none;
         min-width: 0;
         margin: 10px 0 0;
+    }
+
+    .cine-navbar .navbar-collapse {
+        align-items: stretch;
+    }
+
+    .cine-navbar .navbar-nav {
+        margin-left: 0 !important;
+        padding-top: 10px;
+    }
+
+    .cx-nav-actions {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+
+    .cx-user-menu .dropdown-toggle {
+        max-width: min(260px, calc(100vw - 48px));
     }
 }
 
@@ -2535,9 +2666,34 @@ h5 {
     }
 
     .cx-nav-search {
-        flex-basis: 220px;
-        width: 220px;
+        flex-basis: 200px;
+        min-width: 150px;
+        max-width: 220px;
+    }
+
+    .cx-watchlist-open span,
+    .cx-user-menu .dropdown-toggle span {
+        display: none;
+    }
+
+    .cx-user-menu .dropdown-toggle {
+        max-width: 42px;
+    }
+}
+
+@media (min-width: 1241px) and (max-width: 1380px) {
+    .cx-nav-search {
+        flex-basis: 230px;
         min-width: 170px;
+        max-width: 250px;
+    }
+
+    .cx-user-menu .dropdown-toggle {
+        max-width: 120px;
+    }
+
+    .cx-watchlist-open span {
+        display: none;
     }
 }
 
@@ -2601,6 +2757,7 @@ h5 {
     .cx-action-grid,
     .cx-command-grid,
     .cx-feature-strip,
+    .cx-plan-grid,
     .cx-analytics-grid,
     .cx-release-metrics,
     .cx-filter-bar {

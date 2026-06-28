@@ -86,113 +86,121 @@
                     aria-label="Search movies, shows, theaters">
             </form>
 
-            {% if system_settings and system_settings.support_discord_link %}
-            <a
-                href="{{ system_settings.support_discord_link }}"
-                class="btn btn-outline-info me-2"
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Support">
-                <i class="fa-brands fa-discord"></i>
-            </a>
-            {% endif %}
+            <div class="cx-nav-actions">
+                {% if system_settings and system_settings.support_discord_link %}
+                <a
+                    href="{{ system_settings.support_discord_link }}"
+                    class="btn btn-outline-info cx-icon-btn"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Support">
+                    <i class="fa-brands fa-discord"></i>
+                </a>
+                {% endif %}
 
-            {% if session.get("user_id") %}
-            <button
-                class="btn btn-outline-light cx-watchlist-open me-2"
-                type="button"
-                data-bs-toggle="offcanvas"
-                data-bs-target="#cxWatchlistPanel"
-                aria-controls="cxWatchlistPanel">
-                <i class="fas fa-heart"></i>
-                <span>Watchlist</span>
-                <b data-watch-count>0</b>
-            </button>
-            {% endif %}
-
-            <div class="theme-switcher me-2" aria-label="Theme selector">
-                <button class="theme-choice" type="button" data-theme-choice="classic" title="Classic theme">
-                    <i class="fas fa-sun"></i>
-                </button>
-                <button class="theme-choice" type="button" data-theme-choice="obsidian" title="Obsidian theme">
-                    <i class="fas fa-circle-half-stroke"></i>
-                </button>
-                <button class="theme-choice" type="button" data-theme-choice="midnight" title="Midnight theme">
-                    <i class="fas fa-moon"></i>
-                </button>
-            </div>
-
-            {% if session.get("user_id") %}
-            <div class="dropdown">
+                {% if session.get("user_id") %}
                 <button
-                    class="btn btn-outline-light dropdown-toggle"
-                    data-bs-toggle="dropdown"
+                    class="btn btn-outline-light cx-watchlist-open"
                     type="button"
-                    aria-expanded="false">
-                    <i class="fas fa-user-circle"></i>
-                    {{ session.get("user_name", "User") }}
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#cxWatchlistPanel"
+                    aria-controls="cxWatchlistPanel">
+                    <i class="fas fa-heart"></i>
+                    <span>Watchlist</span>
+                    <b data-watch-count>0</b>
                 </button>
+                {% endif %}
 
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                        <a class="dropdown-item" href="/dashboard">
-                            Dashboard
-                        </a>
-                    </li>
+                <div class="theme-switcher" aria-label="Theme selector">
+                    <button class="theme-choice" type="button" data-theme-choice="classic" title="Classic theme">
+                        <i class="fas fa-sun"></i>
+                    </button>
+                    <button class="theme-choice" type="button" data-theme-choice="obsidian" title="Obsidian theme">
+                        <i class="fas fa-circle-half-stroke"></i>
+                    </button>
+                    <button class="theme-choice" type="button" data-theme-choice="midnight" title="Midnight theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
 
-                    <li>
-                        <a class="dropdown-item" href="{{ url_for('profile_bp.profile') }}">
-                            Profile
-                        </a>
-                    </li>
+                {% if session.get("user_id") %}
+                <div class="dropdown cx-user-menu">
+                    <button
+                        class="btn btn-outline-light dropdown-toggle"
+                        data-bs-toggle="dropdown"
+                        type="button"
+                        aria-expanded="false">
+                        <i class="fas fa-user-circle"></i>
+                        <span>{{ session.get("user_name", "User") }}</span>
+                    </button>
 
-                    <li>
-                        <a class="dropdown-item" href="{{ url_for('wishlist_bp.wishlist') }}">
-                            Wishlist
-                        </a>
-                    </li>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item" href="/dashboard">
+                                Dashboard
+                            </a>
+                        </li>
 
-                    <li>
-                        <a class="dropdown-item" href="{{ url_for('payment_bp.payment_history') }}">
-                            Payments
-                        </a>
-                    </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('profile_bp.profile') }}">
+                                Profile
+                            </a>
+                        </li>
 
-                    <li>
-                        <a class="dropdown-item" href="{{ url_for('booking_bp.booking_history') }}">
-                            Booking Links
-                        </a>
-                    </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('wishlist_bp.wishlist') }}">
+                                Wishlist
+                            </a>
+                        </li>
 
-                    {% if session.get('user_role') == 'admin' %}
-                    <li>
-                        <a class="dropdown-item" href="/admin/dashboard">
-                            Admin Panel
-                        </a>
-                    </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('payment_bp.pricing') }}">
+                                Free / Pro Plans
+                            </a>
+                        </li>
 
-                    <li>
-                        <a class="dropdown-item" href="{{ url_for('admin_bp.revenue_charts') }}">
-                            Revenue Charts
-                        </a>
-                    </li>
-                    {% endif %}
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('payment_bp.payment_history') }}">
+                                Payments
+                            </a>
+                        </li>
 
-                    <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('booking_bp.booking_history') }}">
+                                Booking Links
+                            </a>
+                        </li>
 
-                    <li>
-                        <a class="dropdown-item text-danger" href="/logout">
-                            Logout
-                        </a>
-                    </li>
-                </ul>
+                        {% if session.get('user_role') == 'admin' %}
+                        <li>
+                            <a class="dropdown-item" href="/admin/dashboard">
+                                Admin Panel
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('admin_bp.revenue_charts') }}">
+                                Revenue Charts
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        <li><hr class="dropdown-divider"></li>
+
+                        <li>
+                            <a class="dropdown-item text-danger" href="/logout">
+                                Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                {% else %}
+                <a href="{{ url_for('google_auth_bp.google_login') }}" class="btn btn-warning cx-login-btn">
+                    <i class="fa-brands fa-google"></i>
+                    Login
+                </a>
+                {% endif %}
             </div>
-            {% else %}
-            <a href="{{ url_for('google_auth_bp.google_login') }}" class="btn btn-warning">
-                <i class="fa-brands fa-google"></i>
-                Login
-            </a>
-            {% endif %}
 
         </div>
     </div>

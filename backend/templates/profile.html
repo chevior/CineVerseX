@@ -15,7 +15,18 @@
         <div><span>Total Bookings</span><strong>{{ total_bookings }}</strong></div>
         <div><span>Total Tickets</span><strong>{{ total_tickets }}</strong></div>
         <div><span>Total Spent</span><strong>Rs. {{ total_spent }}</strong></div>
-        <div><span>Role</span><strong>{{ user.role }}</strong></div>
+        <div><span>Plan</span><strong>{{ user.subscription_plan|default("free", true)|title }}</strong></div>
+    </section>
+
+    <section class="cx-manual-panel">
+        <div class="cx-section-head">
+            <div>
+                <span class="eyebrow">Subscription</span>
+                <h2>{{ user.subscription_plan|default("free", true)|title }} Plan</h2>
+                <p>Status: {{ user.subscription_status|default("active", true)|title }}{% if user.subscription_expires_at %} · Expires {{ user.subscription_expires_at.strftime("%Y-%m-%d") }}{% endif %}</p>
+            </div>
+            <a href="{{ url_for('payment_bp.pricing') }}" class="btn btn-primary">Manage Plan</a>
+        </div>
     </section>
 
     <section class="cx-import-panel">

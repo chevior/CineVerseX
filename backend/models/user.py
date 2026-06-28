@@ -20,4 +20,12 @@ class User(UserMixin, db.Model):
 
     profile_picture = db.Column(db.String(255), default="")
 
+    subscription_plan = db.Column(db.String(30), default="free")
+
+    subscription_status = db.Column(db.String(30), default="active")
+
+    subscription_started_at = db.Column(db.DateTime)
+
+    subscription_expires_at = db.Column(db.DateTime)
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

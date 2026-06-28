@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="cx-shell">
+    <div class="cx-page-head">
+        <div>
+            <span class="eyebrow">Plans</span>
+            <h1>Choose Your CineVerse X Plan</h1>
+            <p>Start free, or unlock Pro tools for watchlists, discovery, and premium account features.</p>
+        </div>
+    </div>
+
+    {% if subscription %}
+    <section class="cx-stat-strip compact">
+        <div>
+            <span>Current Plan</span>
+            <strong>{{ subscription.plan|title }}</strong>
+        </div>
+        <div>
+            <span>Status</span>
+            <strong>{{ subscription.status|title }}</strong>
+        </div>
+        <div>
+            <span>Expires</span>
+            <strong>{{ subscription.expires_at.strftime("%Y-%m-%d") if subscription.expires_at else "Never" }}</strong>
+        </div>
+        <div>
+            <span>Payment Mode</span>
+            <strong>{{ "Razorpay" if razorpay_enabled else "Demo" }}</strong>
+        </div>
+    </section>
+    {% endif %}
+
+    <section class="cx-plan-grid">
+        <article class="cx-plan-card">
+            <span class="eyebrow">Free</span>
+            <h2>Rs. 0</h2>
+            <p>Good for browsing movies, theaters, releases, and basic account use.</p>
+            <ul>
+                <li>Movie and theater discovery</li>
+                <li>Upcoming releases</li>
+                <li>Basic profile</li>
+                <li>External booking links</li>
+            </ul>
+
+            {% if session.get("user_id") %}
+            <form method="POST" action="{{ url_for('payment_bp.subscribe_free') }}">
+                <button class="btn btn-outline-dark w-100">Use Free Plan</button>
+            </form>
+            {% else %}
+            <a class="btn btn-outline-dark w-100" href="{{ url_for('google_auth_bp.google_login') }}">Login to Start</a>
+            {% endif %}
+        </article>
+
+        <article class="cx-plan-card is-pro">
+            <span class="eyebrow">Pro</span>
+            <h2>Rs. {{ pro_price|int }} <small>/ {{ pro_days }} days</small></h2>
+            <p>Best for a polished demo: premium account state, discovery shortcuts, and future Pro-only features.</p>
+            <ul>
+                <li>Everything in Free</li>
+                <li>Pro account badge</li>
+                <li>Priority wishlist workflow</li>
+                <li>Payment history and subscription tracking</li>
+            </ul>
+
+            {% if session.get("user_id") %}
+            <form method="POST" action="{{ url_for('payment_bp.subscribe_pro') }}">
+                <button class="btn btn-primary w-100">
+                    {{ "Pay with Razorpay" if razorpay_enabled else "Activate Pro Demo" }}
+                </button>
+            </form>
+            {% else %}
+            <a class="btn btn-primary w-100" href="{{ url_for('google_auth_bp.google_login') }}">Login to Upgrade</a>
+            {% endif %}
+        </article>
+    </section>
+</div>
+
+{% endblock %}

@@ -27,9 +27,13 @@ class Payment(db.Model):
     __tablename__ = "payments"
 
     id = db.Column(db.Integer, primary_key=True)
-    booking_id = db.Column(db.Integer, db.ForeignKey("bookings.id"))
+    booking_id = db.Column(db.Integer, db.ForeignKey("bookings.id"), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     amount = db.Column(db.Float)
     method = db.Column(db.String(50))
     status = db.Column(db.String(50), default="success")
+    purpose = db.Column(db.String(50), default="booking")
+    provider_reference = db.Column(db.String(120))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     booking = db.relationship("Booking", back_populates="payment")
