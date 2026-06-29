@@ -14,34 +14,6 @@
     --shadow: 0 22px 60px rgba(27, 36, 51, .14);
 }
 
-body[data-theme="obsidian"] {
-    --page-bg: #11100f;
-    --surface: #1b1917;
-    --surface-2: #24211f;
-    --ink: #f7f3ee;
-    --muted: #c9c0b7;
-    --line: #37322f;
-    --brand: #f06449;
-    --brand-strong: #c74634;
-    --accent: #f7f3ee;
-    --accent-soft: #2d2926;
-    --shadow: 0 20px 50px rgba(0, 0, 0, .35);
-}
-
-body[data-theme="midnight"] {
-    --page-bg: #10151f;
-    --surface: #171d29;
-    --surface-2: #1e2635;
-    --ink: #f5f7fb;
-    --muted: #b9c3d3;
-    --line: #30394a;
-    --brand: #d94f3d;
-    --brand-strong: #a93529;
-    --accent: #9fc4ff;
-    --accent-soft: #243247;
-    --shadow: 0 20px 50px rgba(3, 8, 18, .38);
-}
-
 * {
     box-sizing: border-box;
 }
@@ -90,11 +62,6 @@ a:hover {
 
 .cine-navbar .navbar-nav {
     flex: 0 1 auto;
-}
-
-body[data-theme="obsidian"] .cine-navbar,
-body[data-theme="midnight"] .cine-navbar {
-    background: rgba(15, 14, 13, .96);
 }
 
 .cine-logo {
@@ -257,18 +224,6 @@ body[data-theme="midnight"] .cine-navbar {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-}
-
-.theme-choice[data-theme-choice="classic"] {
-    background: #c74634;
-}
-
-.theme-choice[data-theme-choice="obsidian"] {
-    background: #11100f;
-}
-
-.theme-choice[data-theme-choice="midnight"] {
-    background: #17233a;
 }
 
 .theme-choice.is-active {
@@ -2794,88 +2749,6 @@ h5 {
     }
 }
 
-/* Theme readability guardrails */
-body[data-theme] {
-    color: var(--ink);
-}
-
-body[data-theme] .cx-page-head h1,
-body[data-theme] .cx-section-head h2,
-body[data-theme] .cx-release-intro h2,
-body[data-theme] .cx-card-body h3,
-body[data-theme] .cx-release-body h3,
-body[data-theme] .cx-detail-panel h2,
-body[data-theme] .cx-stat-strip strong,
-body[data-theme] .cx-theater-metrics strong,
-body[data-theme] .cx-premiere-poster strong,
-body[data-theme] .cx-mini-poster strong {
-    color: var(--ink);
-}
-
-body[data-theme] .cx-page-head p,
-body[data-theme] .cx-card-body p,
-body[data-theme] .cx-release-body p,
-body[data-theme] .cx-detail-panel p,
-body[data-theme] .cx-language,
-body[data-theme] .cx-stat-strip span,
-body[data-theme] .cx-filter-bar label span,
-body[data-theme] .cx-release-meta,
-body[data-theme] .cx-premiere-poster small,
-body[data-theme] .cx-mini-poster span {
-    color: var(--muted);
-}
-
-body[data-theme] .cx-movie-card,
-body[data-theme] .cx-release-card,
-body[data-theme] .cx-theater-card,
-body[data-theme] .cx-stat-strip > div,
-body[data-theme] .cx-release-intro,
-body[data-theme] .cx-filter-bar {
-    background-color: var(--surface);
-    color: var(--ink);
-}
-
-body[data-theme="obsidian"],
-body[data-theme="midnight"] {
-    color: var(--ink);
-}
-
-body[data-theme="obsidian"] .cx-release-metrics span,
-body[data-theme="midnight"] .cx-release-metrics span,
-body[data-theme="obsidian"] .cx-search-panel,
-body[data-theme="midnight"] .cx-search-panel,
-body[data-theme="obsidian"] .cx-hero-poster-card,
-body[data-theme="midnight"] .cx-hero-poster-card {
-    background: var(--surface-2);
-    color: var(--ink);
-    border-color: var(--line);
-}
-
-body[data-theme="obsidian"] .cx-search-panel input,
-body[data-theme="midnight"] .cx-search-panel input {
-    background: transparent;
-    color: var(--ink);
-}
-
-body[data-theme="obsidian"] .cx-search-panel input::placeholder,
-body[data-theme="midnight"] .cx-search-panel input::placeholder,
-body[data-theme="obsidian"] .cx-nav-search .form-control::placeholder,
-body[data-theme="midnight"] .cx-nav-search .form-control::placeholder {
-    color: var(--muted);
-}
-
-body[data-theme="obsidian"] .cx-hero-poster-card strong,
-body[data-theme="midnight"] .cx-hero-poster-card strong {
-    color: var(--ink);
-}
-
-body[data-theme="obsidian"] .cx-hero-poster-card span,
-body[data-theme="obsidian"] .cx-hero-poster-card small,
-body[data-theme="midnight"] .cx-hero-poster-card span,
-body[data-theme="midnight"] .cx-hero-poster-card small {
-    color: var(--muted);
-}
-
 .btn-outline-info {
     color: #cfe8ff;
     border-color: rgba(207, 232, 255, .7);
@@ -3517,73 +3390,12 @@ body {
     }
 }
 
-/* CineVerse two-theme system: White and Dark. */
-:root,
-body[data-theme="white"] {
-    --page-bg: #f6f7f9 !important;
-    --surface: #ffffff !important;
-    --surface-2: #f9fafb !important;
-    --surface-strong: #f9fafb !important;
-    --ink: #111827 !important;
-    --muted: #6b7280 !important;
-    --line: #dde2ea !important;
-    --brand: #6b7280 !important;
-    --brand-strong: #4b5563 !important;
-    --accent: #374151 !important;
-    --accent-soft: #eef0f3 !important;
-    --shadow: 0 22px 60px rgba(17, 24, 39, .1) !important;
-}
-
-body[data-theme="dark"], body.theme-dark {
-    --page-bg: #0f172a !important;
-    --surface: #172033 !important;
-    --surface-2: #202b40 !important;
-    --surface-strong: #26334a !important;
-    --ink: #f8fafc !important;
-    --muted: #cbd5e1 !important;
-    --line: #334155 !important;
-    --brand: #94a3b8 !important;
-    --brand-strong: #e2e8f0 !important;
-    --accent: #cbd5e1 !important;
-    --accent-soft: #26334a !important;
-    --shadow: 0 22px 60px rgba(0, 0, 0, .34) !important;
-}
-
-html[data-theme="dark"] body {
-    --page-bg: #0f172a !important;
-    --surface: #172033 !important;
-    --surface-2: #202b40 !important;
-    --surface-strong: #26334a !important;
-    --ink: #f8fafc !important;
-    --muted: #cbd5e1 !important;
-    --line: #334155 !important;
-    --brand: #94a3b8 !important;
-    --brand-strong: #e2e8f0 !important;
-    --accent: #cbd5e1 !important;
-    --accent-soft: #26334a !important;
-    --shadow: 0 22px 60px rgba(0, 0, 0, .34) !important;
-}
-
 body {
     background:
         radial-gradient(circle at 10% -10%, rgba(107, 114, 128, .12), transparent 360px),
         radial-gradient(circle at 90% 0%, rgba(75, 85, 99, .08), transparent 320px),
         linear-gradient(180deg, #ffffff, var(--page-bg) 360px) !important;
     color: var(--ink) !important;
-}
-
-body[data-theme="dark"], body.theme-dark {
-    background:
-        radial-gradient(circle at 12% -8%, rgba(148, 163, 184, .18), transparent 360px),
-        radial-gradient(circle at 88% 0%, rgba(203, 213, 225, .1), transparent 320px),
-        linear-gradient(180deg, #111827, var(--page-bg) 360px) !important;
-}
-
-html[data-theme="dark"] body {
-    background:
-        radial-gradient(circle at 12% -8%, rgba(148, 163, 184, .18), transparent 360px),
-        radial-gradient(circle at 88% 0%, rgba(203, 213, 225, .1), transparent 320px),
-        linear-gradient(180deg, #111827, var(--page-bg) 360px) !important;
 }
 
 .theme-switcher {
@@ -3600,15 +3412,6 @@ html[data-theme="dark"] body {
     color: #111827 !important;
     background: #ffffff !important;
     border: 1px solid #d1d5db !important;
-}
-
-.theme-choice[data-theme-choice="white"] {
-    background: #ffffff !important;
-}
-
-.theme-choice[data-theme-choice="dark"] {
-    background: #111827 !important;
-    color: #ffffff !important;
 }
 
 .theme-choice.is-active {
@@ -3871,7 +3674,6 @@ html[data-theme="dark"] body {
     }
 }
 
-/* Keep the original UI structure, locked to white and dark only. */
 .cx-hero-carousel,
 .cx-hero-slide,
 .cx-detail-hero,
@@ -3917,269 +3719,6 @@ html[data-theme="dark"] body {
     background: #4b5563 !important;
     border-color: #4b5563 !important;
     color: #ffffff !important;
-}
-
-/* Visibility fixes for the White/Dark themes. White theme is intentionally untouched below. */
-body[data-theme="white"] .cine-navbar,
-body[data-theme="white"] .cine-navbar.sticky-top,
-body[data-theme="white"] .navbar.sticky-top {
-    background: var(--surface) !important;
-    border-bottom: 1px solid var(--line) !important;
-    box-shadow: 0 12px 34px rgba(17, 24, 39, .08) !important;
-    color: var(--ink) !important;
-}
-
-body[data-theme="white"] .cx-hero-shade,
-body[data-theme="white"] .cx-detail-shade {
-    background: linear-gradient(90deg, rgba(255, 255, 255, .88), rgba(255, 255, 255, .58), rgba(255, 255, 255, .18)) !important;
-}
-
-body[data-theme="white"] .cx-hero-backdrop,
-body[data-theme="white"] .cx-detail-backdrop {
-    opacity: .72 !important;
-    filter: grayscale(.05) contrast(1.05) saturate(.85) !important;
-}
-
-body[data-theme="white"] .cx-hero-carousel .cx-hero-copy,
-body[data-theme="white"] .cx-detail-copy {
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .7) !important;
-}
-
-/* Dark theme final readability layer. */
-body[data-theme="dark"],
-body.theme-dark,
-html[data-theme="dark"] body {
-    background:
-        radial-gradient(circle at 12% -8%, rgba(148, 163, 184, .18), transparent 360px),
-        radial-gradient(circle at 88% 0%, rgba(203, 213, 225, .1), transparent 320px),
-        linear-gradient(180deg, #111827, var(--page-bg) 360px) !important;
-    color: var(--ink) !important;
-}
-
-body[data-theme="dark"] .cine-navbar,
-body[data-theme="dark"] .cine-navbar.sticky-top,
-body[data-theme="dark"] .navbar.sticky-top,
-body.theme-dark .cine-navbar,
-body.theme-dark .cine-navbar.sticky-top,
-body.theme-dark .navbar.sticky-top {
-    background: var(--surface) !important;
-    border-bottom: 1px solid var(--line) !important;
-    box-shadow: 0 12px 34px rgba(0, 0, 0, .22) !important;
-    color: var(--ink) !important;
-}
-
-body[data-theme="dark"] .cx-hero-carousel,
-body[data-theme="dark"] .cx-hero-slide,
-body[data-theme="dark"] .cx-detail-hero,
-body[data-theme="dark"] .cx-mobile-nav,
-body[data-theme="dark"] .dropdown-menu,
-body[data-theme="dark"] .modal-content,
-body[data-theme="dark"] .offcanvas,
-body[data-theme="dark"] .cx-watchlist-panel,
-body[data-theme="dark"] .cx-trailer-modal,
-body.theme-dark .cx-hero-carousel,
-body.theme-dark .cx-hero-slide,
-body.theme-dark .cx-detail-hero,
-body.theme-dark .cx-mobile-nav,
-body.theme-dark .dropdown-menu,
-body.theme-dark .modal-content,
-body.theme-dark .offcanvas,
-body.theme-dark .cx-watchlist-panel,
-body.theme-dark .cx-trailer-modal {
-    background: var(--surface) !important;
-    color: var(--ink) !important;
-    border-color: var(--line) !important;
-}
-
-body[data-theme="dark"] h1,
-body[data-theme="dark"] h2,
-body[data-theme="dark"] h3,
-body[data-theme="dark"] h4,
-body[data-theme="dark"] h5,
-body[data-theme="dark"] h6,
-body[data-theme="dark"] p,
-body[data-theme="dark"] label,
-body[data-theme="dark"] strong,
-body[data-theme="dark"] small,
-body[data-theme="dark"] .navbar-brand,
-body[data-theme="dark"] .nav-link,
-body[data-theme="dark"] .dropdown-toggle,
-body[data-theme="dark"] .dropdown-item,
-body[data-theme="dark"] .card,
-body[data-theme="dark"] .card-body,
-body[data-theme="dark"] .card-header,
-body[data-theme="dark"] .cx-page-head,
-body[data-theme="dark"] .cx-page-head h1,
-body[data-theme="dark"] .cx-section-head h2,
-body[data-theme="dark"] .cx-card-body h3,
-body[data-theme="dark"] .cx-release-body h3,
-body[data-theme="dark"] .cx-theater-card h3,
-body[data-theme="dark"] .cx-detail-panel h2,
-body[data-theme="dark"] .cx-imdb-copy h1,
-body[data-theme="dark"] .cx-imdb-facts strong,
-body[data-theme="dark"] .cx-search-filter label,
-body[data-theme="dark"] .cx-login-form label,
-body[data-theme="dark"] .cx-mobile-nav a,
-body.theme-dark h1,
-body.theme-dark h2,
-body.theme-dark h3,
-body.theme-dark h4,
-body.theme-dark h5,
-body.theme-dark h6,
-body.theme-dark p,
-body.theme-dark label,
-body.theme-dark strong,
-body.theme-dark small,
-body.theme-dark .navbar-brand,
-body.theme-dark .nav-link,
-body.theme-dark .dropdown-toggle,
-body.theme-dark .dropdown-item,
-body.theme-dark .card,
-body.theme-dark .card-body,
-body.theme-dark .card-header,
-body.theme-dark .cx-page-head,
-body.theme-dark .cx-page-head h1,
-body.theme-dark .cx-section-head h2,
-body.theme-dark .cx-card-body h3,
-body.theme-dark .cx-release-body h3,
-body.theme-dark .cx-theater-card h3,
-body.theme-dark .cx-detail-panel h2,
-body.theme-dark .cx-imdb-copy h1,
-body.theme-dark .cx-imdb-facts strong,
-body.theme-dark .cx-search-filter label,
-body.theme-dark .cx-login-form label,
-body.theme-dark .cx-mobile-nav a {
-    color: var(--ink) !important;
-}
-
-body[data-theme="dark"] .text-muted,
-body[data-theme="dark"] .cx-page-head p,
-body[data-theme="dark"] .cx-card-body p,
-body[data-theme="dark"] .cx-release-body p,
-body[data-theme="dark"] .cx-detail-panel p,
-body[data-theme="dark"] .cx-language,
-body[data-theme="dark"] .cx-search-filter label span,
-body[data-theme="dark"] .cx-login-form label span,
-body[data-theme="dark"] .cx-login-divider,
-body[data-theme="dark"] .cx-imdb-summary,
-body[data-theme="dark"] .cx-imdb-facts span,
-body[data-theme="dark"] .cx-release-meta,
-body[data-theme="dark"] .cx-premiere-poster small,
-body[data-theme="dark"] .cx-mini-poster span,
-body.theme-dark .text-muted,
-body.theme-dark .cx-page-head p,
-body.theme-dark .cx-card-body p,
-body.theme-dark .cx-release-body p,
-body.theme-dark .cx-detail-panel p,
-body.theme-dark .cx-language,
-body.theme-dark .cx-search-filter label span,
-body.theme-dark .cx-login-form label span,
-body.theme-dark .cx-login-divider,
-body.theme-dark .cx-imdb-summary,
-body.theme-dark .cx-imdb-facts span,
-body.theme-dark .cx-release-meta,
-body.theme-dark .cx-premiere-poster small,
-body.theme-dark .cx-mini-poster span {
-    color: var(--muted) !important;
-}
-
-body[data-theme="dark"] .form-control,
-body[data-theme="dark"] .form-select,
-body[data-theme="dark"] input,
-body[data-theme="dark"] select,
-body[data-theme="dark"] textarea,
-body.theme-dark .form-control,
-body.theme-dark .form-select,
-body.theme-dark input,
-body.theme-dark select,
-body.theme-dark textarea {
-    background: var(--surface-2) !important;
-    border-color: var(--line) !important;
-    color: var(--ink) !important;
-}
-
-body[data-theme="dark"] .cx-nav-search .form-control,
-body.theme-dark .cx-nav-search .form-control {
-    background: #ffffff !important;
-    color: #111827 !important;
-}
-
-body[data-theme="dark"] .form-control::placeholder,
-body[data-theme="dark"] input::placeholder,
-body[data-theme="dark"] textarea::placeholder,
-body.theme-dark .form-control::placeholder,
-body.theme-dark input::placeholder,
-body.theme-dark textarea::placeholder {
-    color: #94a3b8 !important;
-}
-
-body[data-theme="dark"] .btn-outline-light,
-body[data-theme="dark"] .btn-outline-warning,
-body[data-theme="dark"] .btn-outline-info,
-body[data-theme="dark"] .btn-outline-dark,
-body[data-theme="dark"] .cx-card-actions a,
-body[data-theme="dark"] .cx-release-actions a,
-body.theme-dark .btn-outline-light,
-body.theme-dark .btn-outline-warning,
-body.theme-dark .btn-outline-info,
-body.theme-dark .btn-outline-dark,
-body.theme-dark .cx-card-actions a,
-body.theme-dark .cx-release-actions a {
-    background: var(--surface-2) !important;
-    border-color: var(--line) !important;
-    color: var(--ink) !important;
-}
-
-body[data-theme="dark"] .badge,
-body[data-theme="dark"] .cx-rating,
-body[data-theme="dark"] .cx-chip,
-body[data-theme="dark"] .eyebrow,
-body[data-theme="dark"] .cx-info-chips span,
-body.theme-dark .badge,
-body.theme-dark .cx-rating,
-body.theme-dark .cx-chip,
-body.theme-dark .eyebrow,
-body.theme-dark .cx-info-chips span {
-    background: var(--surface-2) !important;
-    border-color: var(--line) !important;
-    color: var(--ink) !important;
-}
-
-body[data-theme="dark"] .cx-hero-shade,
-body[data-theme="dark"] .cx-detail-shade,
-body.theme-dark .cx-hero-shade,
-body.theme-dark .cx-detail-shade {
-    background: linear-gradient(90deg, rgba(15, 23, 42, .94), rgba(15, 23, 42, .72), rgba(15, 23, 42, .28)) !important;
-}
-
-body[data-theme="dark"] .cx-hero-backdrop,
-body[data-theme="dark"] .cx-detail-backdrop,
-body.theme-dark .cx-hero-backdrop,
-body.theme-dark .cx-detail-backdrop {
-    opacity: .72 !important;
-    filter: grayscale(.05) contrast(1.05) saturate(.85) !important;
-}
-
-body[data-theme="dark"] .cx-hero-carousel .cx-hero-copy,
-body[data-theme="dark"] .cx-detail-copy,
-body.theme-dark .cx-hero-carousel .cx-hero-copy,
-body.theme-dark .cx-detail-copy {
-    text-shadow: 0 1px 1px rgba(0, 0, 0, .55) !important;
-}
-
-body[data-theme="dark"] .btn-primary,
-body[data-theme="dark"] .btn-warning,
-body[data-theme="dark"] .btn-danger,
-body[data-theme="dark"] .btn-dark,
-body[data-theme="dark"] .cx-card-actions a:hover,
-body[data-theme="dark"] .cx-release-actions a:hover,
-body.theme-dark .btn-primary,
-body.theme-dark .btn-warning,
-body.theme-dark .btn-danger,
-body.theme-dark .btn-dark,
-body.theme-dark .cx-card-actions a:hover,
-body.theme-dark .cx-release-actions a:hover {
-    color: #111827 !important;
 }
 
 .cx-dashboard-hero {
@@ -4258,50 +3797,6 @@ body.theme-dark .cx-release-actions a:hover {
     border-style: dashed !important;
 }
 
-body[data-theme="dark"] .cx-dashboard-hero,
-body[data-theme="dark"] .cx-dashboard-card,
-body.theme-dark .cx-dashboard-hero,
-body.theme-dark .cx-dashboard-card {
-    background: var(--surface) !important;
-    color: var(--ink) !important;
-    border-color: var(--line) !important;
-}
-
-body[data-theme="dark"] .cx-dashboard-hero h1,
-body[data-theme="dark"] .cx-dashboard-card strong,
-body[data-theme="dark"] .cx-dashboard-card i,
-body.theme-dark .cx-dashboard-hero h1,
-body.theme-dark .cx-dashboard-card strong,
-body.theme-dark .cx-dashboard-card i {
-    color: var(--ink) !important;
-}
-
-body[data-theme="dark"] .cx-dashboard-hero p,
-body[data-theme="dark"] .cx-dashboard-card span,
-body.theme-dark .cx-dashboard-hero p,
-body.theme-dark .cx-dashboard-card span {
-    color: var(--muted) !important;
-}
-
-body[data-theme="dark"] .theme-switcher,
-body.theme-dark .theme-switcher {
-    background: var(--surface-2) !important;
-    border-color: var(--line) !important;
-}
-
-body[data-theme="dark"] .theme-choice[data-theme-choice="white"],
-body.theme-dark .theme-choice[data-theme-choice="white"] {
-    background: #f8fafc !important;
-    color: #111827 !important;
-}
-
-body[data-theme="dark"] .theme-choice[data-theme-choice="dark"],
-body.theme-dark .theme-choice[data-theme-choice="dark"] {
-    background: #020617 !important;
-    color: #f8fafc !important;
-    border-color: #475569 !important;
-}
-
 @media (max-width: 767.98px) {
     .cx-dashboard-hero {
         align-items: stretch !important;
@@ -4309,4 +3804,449 @@ body.theme-dark .theme-choice[data-theme-choice="dark"] {
     }
 }
 
+/* =========================================================
+   CineVerse X single-theme cleanup
+   Removed conflicting classic / obsidian / midnight / white / dark systems.
+   Keep this as the LAST section of style.css.
+========================================================= */
+:root {
+    --page-bg: #f3f5f8;
+    --surface: #ffffff;
+    --surface-2: #f7f8fb;
+    --ink: #161821;
+    --muted: #657084;
+    --line: #dde3ee;
+    --brand: #f84464;
+    --brand-strong: #d83652;
+    --accent: #1b2433;
+    --accent-soft: #eef2f8;
+    --success: #2f7d54;
+    --warning: #b76e00;
+    --shadow: 0 22px 60px rgba(27, 36, 51, .14);
+}
 
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    margin: 0;
+    background:
+        radial-gradient(circle at 10% -10%, rgba(248, 68, 100, .14), transparent 360px),
+        radial-gradient(circle at 90% 0%, rgba(50, 86, 255, .11), transparent 320px),
+        linear-gradient(180deg, #f7f8fb, var(--page-bg) 360px);
+    color: var(--ink);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Hide old theme buttons if they still exist in base.html */
+.theme-switcher {
+    display: none !important;
+}
+
+/* Navbar: stable, no overlap */
+.cine-navbar,
+.cine-navbar.sticky-top,
+.navbar.fixed-top,
+.navbar.sticky-top {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: linear-gradient(135deg, rgba(16, 20, 31, .98), rgba(27, 36, 51, .96)) !important;
+    box-shadow: 0 12px 34px rgba(10, 15, 28, .24) !important;
+}
+
+.cine-navbar .container-fluid {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 12px !important;
+    min-height: 64px !important;
+    padding: 12px clamp(14px, 3vw, 30px) !important;
+}
+
+.cine-logo,
+.cine-navbar .navbar-brand,
+.cine-navbar .nav-link,
+.cine-navbar .dropdown-toggle,
+.cx-login-btn,
+.cx-watchlist-open,
+.cx-nav-location {
+    color: #ffffff !important;
+}
+
+.cine-navbar .nav-link:hover,
+.cine-navbar .nav-link.active {
+    background: rgba(248, 68, 100, .22) !important;
+    color: #ffffff !important;
+}
+
+@media (min-width: 992px) {
+    .cine-navbar .navbar-collapse {
+        display: flex !important;
+        flex: 1 1 auto !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        gap: 10px !important;
+        min-width: 0 !important;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .cine-navbar .navbar-collapse:not(.show) {
+        display: none !important;
+    }
+
+    .cine-navbar .navbar-collapse.show,
+    .cine-navbar .navbar-collapse.collapsing {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    .cine-navbar .navbar-nav,
+    .cx-nav-actions,
+    .cx-nav-search {
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    .cine-navbar .nav-item,
+    .cine-navbar .nav-link {
+        width: 100% !important;
+    }
+
+    .cx-nav-actions {
+        justify-content: flex-start !important;
+    }
+}
+
+.cine-navbar .navbar-nav {
+    display: flex !important;
+    flex: 0 1 auto !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 6px !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
+}
+
+.cine-navbar .nav-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    min-height: 38px !important;
+    margin: 0 !important;
+    padding: 8px 11px !important;
+    border-radius: 999px !important;
+    line-height: 1.1 !important;
+    white-space: nowrap !important;
+}
+
+.cx-nav-search {
+    position: relative !important;
+    flex: 1 1 280px !important;
+    width: auto !important;
+    min-width: 220px !important;
+    max-width: 460px !important;
+    margin: 0 !important;
+}
+
+.cx-nav-search .form-control {
+    width: 100% !important;
+    height: 40px !important;
+    padding-left: 38px !important;
+    border-radius: 999px !important;
+    background: #ffffff !important;
+    color: #161821 !important;
+    border: 0 !important;
+}
+
+.cx-nav-actions {
+    display: flex !important;
+    flex: 0 1 auto !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+}
+
+.page-content {
+    width: 100% !important;
+    min-height: calc(100vh - 64px) !important;
+    padding: clamp(18px, 3vw, 36px) 0 76px !important;
+}
+
+.cx-shell,
+.container,
+.container-fluid > .container,
+.cx-detail-page > .cx-shell {
+    width: min(1480px, calc(100% - 28px)) !important;
+    max-width: 1480px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Cards and grids */
+.cx-movie-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)) !important;
+    gap: clamp(14px, 2vw, 22px) !important;
+}
+
+.cx-release-grid,
+.cx-theater-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)) !important;
+    gap: clamp(14px, 2vw, 22px) !important;
+}
+
+.cx-plan-grid,
+.cx-analytics-grid,
+.cx-feature-strip,
+.cx-stat-strip,
+.cx-action-grid,
+.cx-command-grid,
+.cx-dashboard-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)) !important;
+    gap: clamp(14px, 2vw, 22px) !important;
+}
+
+.cx-movie-card,
+.cx-release-card,
+.cx-theater-card,
+.cx-plan-card,
+.cx-detail-panel,
+.card,
+.cx-dashboard-card,
+.cx-dashboard-hero {
+    min-width: 0 !important;
+    background: var(--surface) !important;
+    color: var(--ink) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 18px 46px rgba(18, 26, 40, .1) !important;
+}
+
+.cx-card-body h3,
+.cx-release-body h3,
+.cx-theater-card h3,
+.cx-page-head h1,
+.cx-detail-copy h1,
+.cx-hero-carousel .cx-hero-copy h1 {
+    max-width: 100% !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+}
+
+.cx-card-body,
+.cx-release-body,
+.card-body,
+.cx-detail-panel,
+.cx-theater-card {
+    overflow: visible !important;
+}
+
+.cx-card-actions,
+.cx-release-actions,
+.cx-hero-actions,
+.cx-page-head,
+.cx-section-head {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+.cx-card-actions a,
+.cx-release-actions a,
+.cx-hero-actions a,
+.cx-hero-actions button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 38px !important;
+    white-space: nowrap !important;
+}
+
+/* Forms and filters */
+.form-control,
+.form-select,
+input,
+select,
+textarea {
+    background: var(--surface) !important;
+    color: var(--ink) !important;
+    border: 1px solid var(--line) !important;
+}
+
+.form-control:focus,
+.form-select:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--brand) !important;
+    box-shadow: 0 0 0 .2rem rgba(248, 68, 100, .16) !important;
+}
+
+.cx-filter-bar,
+.cx-search-filter {
+    position: relative !important;
+    top: auto !important;
+    z-index: 1 !important;
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) auto auto !important;
+    gap: 12px !important;
+    align-items: end !important;
+    margin: 18px 0 26px !important;
+    padding: 14px !important;
+    overflow: visible !important;
+    background: var(--surface) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 12px 26px rgba(49, 45, 42, .1) !important;
+}
+
+.cx-import-form,
+.cx-admin-form {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    gap: 12px !important;
+}
+
+.cx-import-form button,
+.cx-admin-form button,
+.cx-admin-form textarea {
+    grid-column: 1 / -1 !important;
+}
+
+/* Hero readability */
+.cx-hero-carousel,
+.cx-detail-hero {
+    overflow: hidden !important;
+    background: #111111 !important;
+}
+
+.cx-hero-shade,
+.cx-detail-shade {
+    background:
+        linear-gradient(90deg, rgba(6, 10, 20, .94), rgba(6, 10, 20, .62) 48%, rgba(6, 10, 20, .16)),
+        linear-gradient(0deg, rgba(6, 10, 20, .78), transparent 54%) !important;
+}
+
+.cx-hero-carousel .cx-hero-copy h1,
+.cx-detail-copy h1,
+.cx-hero-carousel .cx-hero-copy p,
+.cx-detail-copy p {
+    color: #ffffff !important;
+}
+
+/* Buttons */
+.btn-primary,
+.btn-warning,
+.btn-danger,
+.cine-btn,
+.cx-card-actions a:first-child {
+    background: var(--brand) !important;
+    border-color: var(--brand) !important;
+    color: #ffffff !important;
+}
+
+.btn-primary:hover,
+.btn-warning:hover,
+.btn-danger:hover,
+.cine-btn:hover,
+.cx-card-actions a:first-child:hover {
+    background: var(--brand-strong) !important;
+    border-color: var(--brand-strong) !important;
+    color: #ffffff !important;
+}
+
+.btn-outline-warning,
+.btn-outline-info,
+.btn-outline-light,
+.btn-outline-dark,
+.cx-card-actions a,
+.cx-release-actions a {
+    background: var(--surface) !important;
+    border: 1px solid var(--line) !important;
+    color: var(--ink) !important;
+}
+
+.btn-outline-warning:hover,
+.btn-outline-info:hover,
+.btn-outline-light:hover,
+.btn-outline-dark:hover,
+.cx-card-actions a:hover,
+.cx-release-actions a:hover {
+    background: var(--brand) !important;
+    border-color: var(--brand) !important;
+    color: #ffffff !important;
+}
+
+.table-responsive,
+.cx-table-wrap {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+}
+
+.table {
+    width: 100% !important;
+    min-width: 720px !important;
+}
+
+.toast-zone {
+    position: fixed !important;
+    top: 82px !important;
+    right: 16px !important;
+    z-index: 2000 !important;
+    width: min(420px, calc(100vw - 32px)) !important;
+}
+
+@media (max-width: 640px) {
+    .cx-shell,
+    .container,
+    .container-fluid > .container,
+    .cx-detail-page > .cx-shell {
+        width: min(100% - 18px, 1480px) !important;
+    }
+
+    .cx-movie-grid,
+    .cx-release-grid,
+    .cx-theater-grid,
+    .cx-plan-grid,
+    .cx-analytics-grid,
+    .cx-feature-strip,
+    .cx-stat-strip,
+    .cx-command-grid,
+    .cx-dashboard-grid,
+    .cx-filter-bar,
+    .cx-search-filter {
+        grid-template-columns: 1fr !important;
+    }
+
+    .cx-card-actions a,
+    .cx-release-actions a,
+    .cx-hero-actions a,
+    .cx-hero-actions button {
+        flex: 1 1 100% !important;
+    }
+
+    .table {
+        min-width: 640px !important;
+    }
+}
