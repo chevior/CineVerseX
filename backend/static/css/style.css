@@ -3517,34 +3517,83 @@ body {
     }
 }
 
-/* CineVerse neutral system: single grey/white theme */
+/* CineVerse two-theme system: White and Grey only. */
 :root,
-body[data-theme="classic"],
-body[data-theme="obsidian"],
-body[data-theme="midnight"] {
-    --page-bg: #f4f5f7 !important;
+body[data-theme="white"] {
+    --page-bg: #f6f7f9 !important;
     --surface: #ffffff !important;
+    --surface-2: #f9fafb !important;
     --surface-strong: #f9fafb !important;
     --ink: #111827 !important;
     --muted: #6b7280 !important;
-    --line: #d9dde4 !important;
-    --brand: #374151 !important;
-    --brand-strong: #111827 !important;
-    --accent: #4b5563 !important;
+    --line: #dde2ea !important;
+    --brand: #6b7280 !important;
+    --brand-strong: #4b5563 !important;
+    --accent: #374151 !important;
     --accent-soft: #eef0f3 !important;
+    --shadow: 0 22px 60px rgba(17, 24, 39, .1) !important;
+}
+
+body[data-theme="grey"] {
+    --page-bg: #e9ecef !important;
+    --surface: #f7f8fa !important;
+    --surface-2: #eef1f4 !important;
+    --surface-strong: #e2e6ea !important;
+    --ink: #1f2933 !important;
+    --muted: #5f6b78 !important;
+    --line: #cbd2da !important;
+    --brand: #4b5563 !important;
+    --brand-strong: #374151 !important;
+    --accent: #2f3945 !important;
+    --accent-soft: #dde2e8 !important;
+    --shadow: 0 22px 60px rgba(31, 41, 51, .14) !important;
 }
 
 body {
-    background: #f4f5f7 !important;
-    color: #111827 !important;
+    background:
+        radial-gradient(circle at 10% -10%, rgba(107, 114, 128, .12), transparent 360px),
+        radial-gradient(circle at 90% 0%, rgba(75, 85, 99, .08), transparent 320px),
+        linear-gradient(180deg, #ffffff, var(--page-bg) 360px) !important;
+    color: var(--ink) !important;
+}
+
+body[data-theme="grey"] {
+    background:
+        radial-gradient(circle at 12% -8%, rgba(75, 85, 99, .16), transparent 360px),
+        radial-gradient(circle at 88% 0%, rgba(55, 65, 81, .12), transparent 320px),
+        linear-gradient(180deg, #f4f5f6, var(--page-bg) 360px) !important;
 }
 
 .theme-switcher {
-    display: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    padding: 5px !important;
+    background: rgba(255, 255, 255, .84) !important;
+    border: 1px solid var(--line) !important;
+    box-shadow: 0 10px 24px rgba(17, 24, 39, .08) !important;
+}
+
+.theme-choice {
+    color: #111827 !important;
+    background: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+}
+
+.theme-choice[data-theme-choice="white"] {
+    background: #ffffff !important;
+}
+
+.theme-choice[data-theme-choice="grey"] {
+    background: #d1d5db !important;
+}
+
+.theme-choice.is-active {
+    outline: 2px solid var(--brand) !important;
 }
 
 .cine-navbar {
-    background: rgba(255, 255, 255, .96) !important;
+    background: color-mix(in srgb, var(--surface) 94%, white) !important;
     border: 1px solid rgba(17, 24, 39, .08) !important;
     box-shadow: 0 12px 34px rgba(17, 24, 39, .08) !important;
 }
@@ -3567,9 +3616,9 @@ body {
 .cx-search-filter .form-control,
 .cx-filter-bar .form-control,
 .cx-login-form .form-control {
-    background: #ffffff !important;
-    border: 1px solid #d1d5db !important;
-    color: #111827 !important;
+    background: var(--surface) !important;
+    border: 1px solid var(--line) !important;
+    color: var(--ink) !important;
     box-shadow: none !important;
 }
 
@@ -3583,8 +3632,8 @@ body {
 .btn-danger,
 .btn-outline-warning:hover,
 .btn-outline-info:hover {
-    background: #6b7280 !important;
-    border-color: #6b7280 !important;
+    background: var(--brand) !important;
+    border-color: var(--brand) !important;
     color: #ffffff !important;
 }
 
@@ -3611,10 +3660,10 @@ body {
 .cx-detail-panel,
 .cx-imdb-facts article,
 .card {
-    background: #ffffff !important;
-    color: #111827 !important;
-    border: 1px solid #d9dde4 !important;
-    box-shadow: 0 18px 46px rgba(17, 24, 39, .08) !important;
+    background: var(--surface) !important;
+    color: var(--ink) !important;
+    border: 1px solid var(--line) !important;
+    box-shadow: var(--shadow) !important;
 }
 
 .cx-card-body h3,
@@ -3641,27 +3690,27 @@ body {
 .cx-rating,
 .cx-chip,
 .eyebrow {
-    background: #eef0f3 !important;
-    color: #111827 !important;
-    border-color: #d1d5db !important;
+    background: var(--accent-soft) !important;
+    color: var(--ink) !important;
+    border-color: var(--line) !important;
 }
 
 .cx-info-chips span {
-    background: #f3f4f6 !important;
-    color: #111827 !important;
-    border: 1px solid #d1d5db !important;
+    background: var(--surface-2) !important;
+    color: var(--ink) !important;
+    border: 1px solid var(--line) !important;
 }
 
 .cx-card-actions a,
 .cx-release-actions a {
-    background: #ffffff !important;
-    color: #111827 !important;
-    border: 1px solid #d1d5db !important;
+    background: var(--surface) !important;
+    color: var(--ink) !important;
+    border: 1px solid var(--line) !important;
 }
 
 .cx-card-actions a:hover,
 .cx-release-actions a:hover {
-    background: #6b7280 !important;
+    background: var(--brand) !important;
     color: #ffffff !important;
 }
 
@@ -3672,8 +3721,8 @@ body {
     align-items: end !important;
     padding: 16px !important;
     margin-bottom: 24px !important;
-    background: #ffffff !important;
-    border: 1px solid #d9dde4 !important;
+    background: var(--surface) !important;
+    border: 1px solid var(--line) !important;
     border-radius: 22px !important;
     box-shadow: 0 18px 46px rgba(17, 24, 39, .08) !important;
 }
@@ -3694,15 +3743,15 @@ body {
 }
 
 .cx-login-card .card-header {
-    background: #6b7280 !important;
+    background: var(--brand) !important;
     color: #ffffff !important;
     border: 0 !important;
 }
 
 .cx-google-login {
-    border: 1px solid #d1d5db !important;
-    color: #111827 !important;
-    background: #ffffff !important;
+    border: 1px solid var(--line) !important;
+    color: var(--ink) !important;
+    background: var(--surface) !important;
 }
 
 .cx-login-divider {
@@ -3719,7 +3768,7 @@ body {
     content: "" !important;
     flex: 1 !important;
     height: 1px !important;
-    background: #d1d5db !important;
+    background: var(--line) !important;
 }
 
 .cx-login-form {
@@ -3733,8 +3782,8 @@ body {
     gap: clamp(20px, 4vw, 42px) !important;
     align-items: center !important;
     padding: clamp(22px, 4vw, 46px) !important;
-    background: linear-gradient(135deg, #ffffff, #eef0f3) !important;
-    border: 1px solid #d9dde4 !important;
+    background: linear-gradient(135deg, var(--surface), var(--accent-soft)) !important;
+    border: 1px solid var(--line) !important;
     border-radius: 28px !important;
     box-shadow: 0 24px 70px rgba(17, 24, 39, .1) !important;
 }

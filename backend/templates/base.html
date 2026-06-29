@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=ui-reset-20260628">
 </head>
 
-<body data-theme="classic">
+<body data-theme="white">
 
 <nav class="navbar navbar-expand-lg navbar-dark cine-navbar sticky-top">
     <div class="container-fluid px-4">
@@ -112,14 +112,11 @@
                 {% endif %}
 
                 <div class="theme-switcher" aria-label="Theme selector">
-                    <button class="theme-choice" type="button" data-theme-choice="classic" title="Classic theme">
+                    <button class="theme-choice" type="button" data-theme-choice="white" title="White theme">
                         <i class="fas fa-sun"></i>
                     </button>
-                    <button class="theme-choice" type="button" data-theme-choice="obsidian" title="Obsidian theme">
+                    <button class="theme-choice" type="button" data-theme-choice="grey" title="Grey theme">
                         <i class="fas fa-circle-half-stroke"></i>
-                    </button>
-                    <button class="theme-choice" type="button" data-theme-choice="midnight" title="Midnight theme">
-                        <i class="fas fa-moon"></i>
                     </button>
                 </div>
 
@@ -308,12 +305,16 @@
             });
         };
 
-        const savedTheme = localStorage.getItem("cineverse-theme") || "classic";
+        const normalizeTheme = function (theme) {
+            return ["white", "grey"].includes(theme) ? theme : "white";
+        };
+
+        const savedTheme = normalizeTheme(localStorage.getItem("cineverse-theme"));
         applyTheme(savedTheme);
 
         themeButtons.forEach(function (button) {
             button.addEventListener("click", function () {
-                applyTheme(button.dataset.themeChoice);
+                applyTheme(normalizeTheme(button.dataset.themeChoice));
             });
         });
     }());
