@@ -2,79 +2,118 @@
 
 {% block content %}
 
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-lg-4">
-            <div class="card shadow text-center p-5">
-                <i class="fas fa-film fa-3x mb-3"></i>
-                <p class="mb-0">IMDb dataset title</p>
-            </div>
+{% set title = movie.primaryTitle %}
+{% set year = movie.startYear|int if movie.startYear else None %}
+{% set runtime = movie.runtimeMinutes|int if movie.runtimeMinutes else None %}
+{% set trailer_year = year|string if year else "" %}
+{% set trailer_query = (title ~ " " ~ trailer_year ~ " official trailer")|trim %}
+
+<div class="cx-shell">
+    <section class="cx-imdb-hero">
+        <div class="cx-imdb-poster">
+            <img
+                src="{{ url_for('movie_bp.imdb_poster', tconst=movie.tconst, title=title) }}"
+                alt="{{ title }}">
         </div>
 
-        <div class="col-lg-8">
-            <h1 class="mb-3">
-                {{ movie.primaryTitle }}
-            </h1>
+        <div class="cx-imdb-copy">
+            <span class="eyebrow">IMDb dataset title</span>
+            <h1>{{ title }}</h1>
 
-            <div class="mb-3">
-                <span class="badge bg-primary">
-                    {{ movie.startYear|int if movie.startYear else "Year not set" }}
-                </span>
-
-                <span class="badge bg-success">
-                    {{ movie.genres or "Genre not set" }}
-                </span>
+            <div class="cx-info-chips">
+                {% if year %}<span>{{ year }}</span>{% endif %}
+                {% for genre in (movie.genres or "").split(",")[:4] %}
+                {% if genre.strip() %}<span>{{ genre.strip() }}</span>{% endif %}
+                {% endfor %}
+                {% if runtime %}<span>{{ runtime // 60 }}h {{ runtime % 60 }}m</span>{% endif %}
+                <span>IMDb {{ movie.averageRating or "N/A" }}/10</span>
             </div>
 
-            <p>
-                <strong>Original Title:</strong>
-                {{ movie.originalTitle or movie.primaryTitle }}
+            <p class="cx-imdb-summary">
+                {{ title }}{% if movie.originalTitle and movie.originalTitle != title %}, originally released as {{ movie.originalTitle }},{% endif %}
+                is a {{ (movie.genres or "feature film").replace(",", ", ") }} movie{% if year %} from {{ year }}{% endif %}.
+                This detail view is built from the local IMDb dataset with rating, vote count,
+                runtime, genre data, trailer discovery, and external discovery links in one place.
             </p>
 
-            <p>
-                <strong>Runtime:</strong>
-                {% if movie.runtimeMinutes %}
-                    {{ movie.runtimeMinutes|int }} minutes
-                {% else %}
-                    Not available
-                {% endif %}
-            </p>
+            <div class="cx-hero-actions">
+                <a
+                    href="https://www.youtube.com/results?search_query={{ trailer_query|urlencode }}"
+                    class="btn btn-dark btn-lg"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    <i class="fas fa-play"></i> Find Trailer
+                </a>
 
-            <p>
-                <strong>IMDb Rating:</strong>
-                {{ movie.averageRating or "N/A" }}/10
-            </p>
-
-            <p>
-                <strong>Votes:</strong>
-                {{ "{:,}".format(movie.numVotes) if movie.numVotes else 0 }}
-            </p>
-
-            <div class="d-flex gap-2 flex-wrap mt-4">
                 <a
                     href="https://www.imdb.com/title/{{ movie.tconst }}/"
-                    class="btn btn-warning"
+                    class="btn btn-outline-dark btn-lg"
                     target="_blank"
                     rel="noopener noreferrer">
-                    <i class="fas fa-star"></i> Open on IMDb
+                    <i class="fas fa-star"></i> IMDb
                 </a>
 
+                {% if year and year >= current_year %}
                 <a
                     href="{{ bookmyshow_url }}"
-                    class="btn btn-primary"
+                    class="btn btn-outline-dark btn-lg"
                     target="_blank"
                     rel="noopener noreferrer">
-                    <i class="fas fa-ticket-alt"></i> Book on BookMyShow
+                    <i class="fas fa-ticket-alt"></i> BookMyShow
                 </a>
+                {% endif %}
 
                 <a
-                    href="{{ url_for('movie_bp.movies') }}"
-                    class="btn btn-outline-warning">
-                    Back to Movies
+                    href="{{ justwatch_url }}"
+                    class="btn btn-outline-dark btn-lg"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    <i class="fas fa-tv"></i> JustWatch
                 </a>
             </div>
         </div>
-    </div>
+    </section>
+
+    <section class="cx-imdb-facts">
+        <article>
+            <span>Original Title</span>
+            <strong>{{ movie.originalTitle or title }}</strong>
+        </article>
+        <article>
+            <span>Runtime</span>
+            <strong>{% if runtime %}{{ runtime }} minutes{% else %}Not available{% endif %}</strong>
+        </article>
+        <article>
+            <span>IMDb Rating</span>
+            <strong>{{ movie.averageRating or "N/A" }}/10</strong>
+        </article>
+        <article>
+            <span>Votes</span>
+            <strong>{{ "{:,}".format(movie.numVotes) if movie.numVotes else 0 }}</strong>
+        </article>
+    </section>
+
+    <section class="cx-detail-grid">
+        <article class="cx-detail-panel">
+            <span class="eyebrow">Why this is listed</span>
+            <h2>Movie intelligence</h2>
+            <p>
+                CineVerse uses this IMDb record to power search, sorting, recommendations,
+                poster lookup, and external discovery. For older titles, BookMyShow is hidden
+                so the page stays focused on useful details instead of dead booking links.
+            </p>
+        </article>
+
+        <article class="cx-detail-panel">
+            <span class="eyebrow">Discovery</span>
+            <h2>Explore next</h2>
+            <div class="cx-card-actions">
+                <a href="{{ url_for('movie_bp.movies', genre=(movie.genres or '').split(',')[0], source='imdb') }}">Similar Genre</a>
+                <a href="{{ url_for('movie_bp.search_movies', q=title) }}">Search CineVerse</a>
+                <a href="{{ url_for('movie_bp.movies') }}">Back to Movies</a>
+            </div>
+        </article>
+    </section>
 </div>
 
 {% endblock %}

@@ -44,6 +44,8 @@ def require_login_for_member_features():
         "auth_bp.reset_password",
         "movie_bp.movies",
         "movie_bp.search_movies",
+        "movie_bp.movie_details",
+        "movie_bp.imdb_movie_details",
         "movie_bp.imdb_poster",
         "api_bp.movies",
         "api_bp.movie_details",

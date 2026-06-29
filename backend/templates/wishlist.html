@@ -27,7 +27,9 @@
                 <p class="cx-language">{{ movie.language or "Movie" }}</p>
                 <div class="cx-card-actions">
                     <a href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}">Details</a>
+                    {% if movie.release_date and movie.release_date >= today_key %}
                     <a href="https://in.bookmyshow.com/" target="_blank" rel="noopener noreferrer">BookMyShow</a>
+                    {% endif %}
                     <a href="{{ url_for('wishlist_bp.remove_from_wishlist', movie_id=movie.id) }}">Remove</a>
                 </div>
             </div>

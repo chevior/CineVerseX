@@ -14,6 +14,42 @@
         </a>
     </div>
 
+    <form method="GET" action="{{ url_for('movie_bp.search_movies') }}" class="cx-search-filter">
+        <label class="cx-search-wide">
+            <span>Search title, genre, language</span>
+            <input class="form-control" type="search" name="q" value="{{ query }}" placeholder="Try Tarzan, Spider-Man, comedy">
+        </label>
+
+        <label>
+            <span>Genre</span>
+            <select class="form-control" name="genre">
+                <option value="">Any genre</option>
+                {% for genre in genres %}
+                <option value="{{ genre }}" {% if selected_genre == genre %}selected{% endif %}>{{ genre }}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label>
+            <span>Year</span>
+            <input class="form-control" type="number" name="year" value="{{ selected_year }}" placeholder="1999" min="1900" max="2100">
+        </label>
+
+        <label>
+            <span>Min rating</span>
+            <select class="form-control" name="rating">
+                <option value="">Any rating</option>
+                {% for rating in [9, 8, 7, 6] %}
+                <option value="{{ rating }}" {% if selected_rating == rating|string %}selected{% endif %}>{{ rating }}+</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <button class="btn btn-dark" type="submit">
+            <i class="fas fa-magnifying-glass"></i> Filter
+        </button>
+    </form>
+
     <div class="cx-movie-grid">
         {% for movie in movies %}
         <article class="cx-movie-card">
@@ -53,7 +89,9 @@
                 <div class="cx-card-actions">
                     <a href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}">Details</a>
                     <a href="{{ movie.justwatch_url or 'https://www.justwatch.com/in/search?q=' ~ movie.title|urlencode }}" target="_blank" rel="noopener noreferrer">JustWatch</a>
+                    {% if movie.release_date and movie.release_date >= today_key %}
                     <a href="https://in.bookmyshow.com/" target="_blank" rel="noopener noreferrer">BookMyShow</a>
+                    {% endif %}
                 </div>
             </div>
         </article>
@@ -97,7 +135,9 @@
                 <div class="cx-card-actions">
                     <a href="{{ url_for('movie_bp.imdb_movie_details', tconst=movie.tconst) }}">Details</a>
                     <a href="https://www.imdb.com/title/{{ movie.tconst }}/" target="_blank" rel="noopener noreferrer">IMDb</a>
+                    {% if movie.startYear and movie.startYear|int >= current_year %}
                     <a href="https://in.bookmyshow.com/" target="_blank" rel="noopener noreferrer">BookMyShow</a>
+                    {% endif %}
                     <a href="https://www.justwatch.com/in/search?q={{ movie.primaryTitle|urlencode }}" target="_blank" rel="noopener noreferrer">JustWatch</a>
                 </div>
             </div>

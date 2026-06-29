@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, render_template, request, redirect, url_for, session
 import bcrypt
-from flask_login import logout_user
+from flask_login import login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from auth.guards import login_required
@@ -40,8 +40,25 @@ def register():
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        flash("Use Google Login to continue.", "info")
-        return redirect(url_for("google_auth_bp.google_login"))
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+        user = User.query.filter_by(email=email).first()
+
+        if user and password_matches(user, password):
+            login_user(user)
+            session["user_id"] = user.id
+            session["user_name"] = user.name
+            session["user_role"] = user.role
+            log_activity("User Login", f"{user.email} logged in.", user_id=user.id)
+            flash("Welcome back.", "success")
+
+            if user.role == "admin":
+                return redirect(url_for("admin_bp.admin_dashboard"))
+
+            return redirect(url_for("auth_bp.dashboard"))
+
+        flash("Invalid email or password.", "danger")
+        return redirect(url_for("auth_bp.login"))
 
     return render_template("login.html")
 

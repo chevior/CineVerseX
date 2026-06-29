@@ -381,6 +381,108 @@ THEATER_NETWORK = [
     ("INOX: Mantri Square", "Bengaluru", "Mantri Square Mall, Malleshwaram, Bengaluru, Karnataka", 6, 146),
 ]
 
+
+INDIA_THEATER_CITIES = [
+    ("Mumbai", "Maharashtra"),
+    ("Delhi", "Delhi"),
+    ("Hyderabad", "Telangana"),
+    ("Chennai", "Tamil Nadu"),
+    ("Kolkata", "West Bengal"),
+    ("Pune", "Maharashtra"),
+    ("Ahmedabad", "Gujarat"),
+    ("Jaipur", "Rajasthan"),
+    ("Lucknow", "Uttar Pradesh"),
+    ("Kochi", "Kerala"),
+    ("Coimbatore", "Tamil Nadu"),
+    ("Surat", "Gujarat"),
+    ("Vadodara", "Gujarat"),
+    ("Indore", "Madhya Pradesh"),
+    ("Bhopal", "Madhya Pradesh"),
+    ("Nagpur", "Maharashtra"),
+    ("Nashik", "Maharashtra"),
+    ("Chandigarh", "Chandigarh"),
+    ("Mohali", "Punjab"),
+    ("Ludhiana", "Punjab"),
+    ("Amritsar", "Punjab"),
+    ("Gurugram", "Haryana"),
+    ("Noida", "Uttar Pradesh"),
+    ("Ghaziabad", "Uttar Pradesh"),
+    ("Faridabad", "Haryana"),
+    ("Patna", "Bihar"),
+    ("Ranchi", "Jharkhand"),
+    ("Raipur", "Chhattisgarh"),
+    ("Bhubaneswar", "Odisha"),
+    ("Guwahati", "Assam"),
+    ("Mysuru", "Karnataka"),
+    ("Mangalore", "Karnataka"),
+    ("Madurai", "Tamil Nadu"),
+    ("Trichy", "Tamil Nadu"),
+    ("Vijayawada", "Andhra Pradesh"),
+    ("Visakhapatnam", "Andhra Pradesh"),
+    ("Thiruvananthapuram", "Kerala"),
+    ("Kozhikode", "Kerala"),
+    ("Kanpur", "Uttar Pradesh"),
+    ("Varanasi", "Uttar Pradesh"),
+    ("Prayagraj", "Uttar Pradesh"),
+    ("Agra", "Uttar Pradesh"),
+    ("Dehradun", "Uttarakhand"),
+    ("Goa", "Goa"),
+    ("Jodhpur", "Rajasthan"),
+    ("Udaipur", "Rajasthan"),
+    ("Rajkot", "Gujarat"),
+    ("Jamshedpur", "Jharkhand"),
+    ("Siliguri", "West Bengal"),
+    ("Shillong", "Meghalaya"),
+]
+
+INDIA_THEATER_CHAINS = [
+    ("PVR INOX", "Nexus Mall", 7, 154),
+    ("Cinepolis", "City Centre", 6, 146),
+    ("Miraj Cinemas", "Central Mall", 5, 136),
+    ("MovieMax", "High Street", 4, 132),
+    ("Carnival Cinemas", "Town Square", 4, 128),
+]
+
+
+def build_india_theater_network(target_count=200):
+    network = []
+    seen = set()
+
+    for theater in THEATER_NETWORK:
+        key = (theater[0].lower(), theater[1].lower())
+
+        if key not in seen:
+            network.append(theater)
+            seen.add(key)
+
+    if len(network) >= target_count:
+        return network[:target_count]
+
+    for city, state in INDIA_THEATER_CITIES:
+        for chain, venue, screens, seats in INDIA_THEATER_CHAINS:
+            name = f"{chain}: {venue} {city}"
+            key = (name.lower(), city.lower())
+
+            if key in seen:
+                continue
+
+            network.append((
+                name,
+                city,
+                f"{venue}, {city}, {state}",
+                screens,
+                seats,
+            ))
+            seen.add(key)
+
+            if len(network) >= target_count:
+                return network
+
+    return network
+
+
+THEATER_NETWORK = build_india_theater_network(200)
+
 THEATER_RENAMES = {
     "CineVerse Orion Mall": ("PVR: Orion Mall", "Bengaluru Urban", "Orion Mall, Brigade Gateway, Dr Rajkumar Road, Rajajinagar, Bengaluru"),
     "CineVerse Phoenix Marketcity": ("PVR: Phoenix Marketcity", "Bengaluru Urban", "Phoenix Marketcity, Whitefield Main Road, Mahadevapura, Bengaluru"),

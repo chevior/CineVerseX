@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import datetime
 
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -126,9 +127,13 @@ def generated_movie_poster(movie_id):
 
 @app.context_processor
 def inject_system_settings():
+    today = datetime.utcnow()
+
     return {
         "system_settings": SystemSetting.query.first(),
         "csrf_token": ensure_csrf_token,
+        "today_key": today.strftime("%Y-%m-%d"),
+        "current_year": today.year,
     }
 
 

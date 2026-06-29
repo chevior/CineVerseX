@@ -9,7 +9,7 @@ from uuid import uuid4
 
 from flask import Blueprint, Response, flash, render_template, request, current_app, redirect, url_for
 from flask_login import current_user
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from werkzeug.utils import secure_filename
 
 from auth.guards import admin_required, login_required
@@ -695,7 +695,7 @@ def fetch_imdb_movie(tconst):
     return movie
 
 
-def search_imdb_movies(query, limit=24):
+def search_imdb_movies(query, limit=24, genre="", year="", min_rating=""):
     query = (query or "").strip()
 
     if not query or not imdb_db_available():
@@ -704,8 +704,8 @@ def search_imdb_movies(query, limit=24):
     conn = sqlite3.connect(f"file:{imdb_db_path()}?mode=ro", uri=True)
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
-    cur.execute(
-        """
+    params = [f"{query}%", f"%{query}%"]
+    filters = """
         SELECT
             t.tconst,
             t.primaryTitle,
@@ -723,6 +723,21 @@ def search_imdb_movies(query, limit=24):
             t.primaryTitle LIKE ?
             OR t.primaryTitle LIKE ?
         )
+    """
+
+    if genre:
+        filters += " AND t.genres LIKE ?"
+        params.append(f"%{genre}%")
+
+    if year:
+        filters += " AND t.startYear = ?"
+        params.append(year)
+
+    if min_rating:
+        filters += " AND COALESCE(r.averageRating, 0) >= ?"
+        params.append(float(min_rating))
+
+    filters += """
         ORDER BY
             CASE
                 WHEN LOWER(t.primaryTitle) = LOWER(?) THEN 0
@@ -732,9 +747,9 @@ def search_imdb_movies(query, limit=24):
             COALESCE(r.numVotes, 0) DESC,
             COALESCE(r.averageRating, 0) DESC
         LIMIT ?
-        """,
-        (f"{query}%", f"%{query}%", query, f"{query}%", limit)
-    )
+        """
+    params.extend([query, f"{query}%", limit])
+    cur.execute(filters, params)
     rows = [dict(row) for row in cur.fetchall()]
     conn.close()
 
@@ -1153,18 +1168,48 @@ def add_review(movie_id):
 @movie_bp.route("/search")
 def search_movies():
 
-    query = request.args.get("q", "")
+    query = request.args.get("q", "").strip()
+    selected_genre = request.args.get("genre", "").strip()
+    selected_year = request.args.get("year", "").strip()
+    selected_rating = request.args.get("rating", "").strip()
 
-    movies = Movie.query.filter(
-        Movie.title.ilike(f"%{query}%")
-    ).limit(36).all()
-    imdb_movies = search_imdb_movies(query)
+    movies_query = Movie.query
+
+    if query:
+        like_query = f"%{query}%"
+        movies_query = movies_query.filter(or_(
+            Movie.title.ilike(like_query),
+            Movie.genre.ilike(like_query),
+            Movie.language.ilike(like_query),
+            Movie.description.ilike(like_query),
+        ))
+
+    if selected_genre:
+        movies_query = movies_query.filter(Movie.genre.ilike(f"%{selected_genre}%"))
+
+    if selected_year:
+        movies_query = movies_query.filter(Movie.release_date.ilike(f"{selected_year}%"))
+
+    if selected_rating:
+        movies_query = movies_query.filter(Movie.rating >= float(selected_rating))
+
+    movies = movies_query.order_by(Movie.release_date.desc(), Movie.rating.desc()).limit(36).all()
+    imdb_movies = search_imdb_movies(
+        query,
+        genre=selected_genre,
+        year=selected_year,
+        min_rating=selected_rating
+    )
 
     return render_template(
         "search_results.html",
         movies=movies,
         imdb_movies=imdb_movies,
-        query=query
+        query=query,
+        genres=GENRES,
+        selected_genre=selected_genre,
+        selected_year=selected_year,
+        selected_rating=selected_rating
     )
 @movie_bp.route("/edit-movie/<int:movie_id>", methods=["GET", "POST"])
 @admin_required

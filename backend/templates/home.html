@@ -44,9 +44,11 @@
                     </a>
                     {% endif %}
 
+                    {% if movie.release_date and movie.release_date >= today_key %}
                     <a href="https://in.bookmyshow.com/" class="btn btn-outline-warning btn-lg" target="_blank" rel="noopener noreferrer">
                         <i class="fas fa-ticket-alt"></i> Book Now
                     </a>
+                    {% endif %}
                 </div>
             </div>
         </article>
