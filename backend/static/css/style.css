@@ -3534,7 +3534,22 @@ body[data-theme="white"] {
     --shadow: 0 22px 60px rgba(17, 24, 39, .1) !important;
 }
 
-body[data-theme="dark"] {
+body[data-theme="dark"], body.theme-dark {
+    --page-bg: #0f172a !important;
+    --surface: #172033 !important;
+    --surface-2: #202b40 !important;
+    --surface-strong: #26334a !important;
+    --ink: #f8fafc !important;
+    --muted: #cbd5e1 !important;
+    --line: #334155 !important;
+    --brand: #94a3b8 !important;
+    --brand-strong: #e2e8f0 !important;
+    --accent: #cbd5e1 !important;
+    --accent-soft: #26334a !important;
+    --shadow: 0 22px 60px rgba(0, 0, 0, .34) !important;
+}
+
+html[data-theme="dark"] body {
     --page-bg: #0f172a !important;
     --surface: #172033 !important;
     --surface-2: #202b40 !important;
@@ -3557,7 +3572,14 @@ body {
     color: var(--ink) !important;
 }
 
-body[data-theme="dark"] {
+body[data-theme="dark"], body.theme-dark {
+    background:
+        radial-gradient(circle at 12% -8%, rgba(148, 163, 184, .18), transparent 360px),
+        radial-gradient(circle at 88% 0%, rgba(203, 213, 225, .1), transparent 320px),
+        linear-gradient(180deg, #111827, var(--page-bg) 360px) !important;
+}
+
+html[data-theme="dark"] body {
     background:
         radial-gradient(circle at 12% -8%, rgba(148, 163, 184, .18), transparent 360px),
         radial-gradient(circle at 88% 0%, rgba(203, 213, 225, .1), transparent 320px),
@@ -3897,70 +3919,14 @@ body[data-theme="dark"] {
     color: #ffffff !important;
 }
 
-/* Visibility fixes for the White/Dark themes. */
+/* Visibility fixes for the White/Dark themes. White theme is intentionally untouched below. */
 body[data-theme="white"] .cine-navbar,
 body[data-theme="white"] .cine-navbar.sticky-top,
-body[data-theme="white"] .navbar.sticky-top,
-body[data-theme="dark"] .cine-navbar,
-body[data-theme="dark"] .cine-navbar.sticky-top,
-body[data-theme="dark"] .navbar.sticky-top {
+body[data-theme="white"] .navbar.sticky-top {
     background: var(--surface) !important;
     border-bottom: 1px solid var(--line) !important;
     box-shadow: 0 12px 34px rgba(17, 24, 39, .08) !important;
     color: var(--ink) !important;
-}
-
-body[data-theme="white"] .cine-logo,
-body[data-theme="dark"] .cine-logo,
-body[data-theme="white"] .cine-navbar .nav-link,
-body[data-theme="dark"] .cine-navbar .nav-link,
-body[data-theme="white"] .cine-navbar .navbar-toggler,
-body[data-theme="dark"] .cine-navbar .navbar-toggler,
-body[data-theme="white"] .cx-nav-actions .btn,
-body[data-theme="dark"] .cx-nav-actions .btn {
-    color: var(--ink) !important;
-    opacity: 1 !important;
-}
-
-body[data-theme="white"] .cine-navbar .nav-link i,
-body[data-theme="dark"] .cine-navbar .nav-link i,
-body[data-theme="white"] .cine-logo i,
-body[data-theme="dark"] .cine-logo i {
-    color: var(--brand-strong) !important;
-    opacity: 1 !important;
-}
-
-body[data-theme="white"] .theme-switcher,
-body[data-theme="dark"] .theme-switcher,
-body[data-theme="white"] .cx-watchlist-open,
-body[data-theme="dark"] .cx-watchlist-open,
-body[data-theme="white"] .cx-user-menu .dropdown-toggle,
-body[data-theme="dark"] .cx-user-menu .dropdown-toggle,
-body[data-theme="white"] .cx-icon-btn,
-body[data-theme="dark"] .cx-icon-btn {
-    background: var(--surface-2) !important;
-    border-color: var(--line) !important;
-    color: var(--ink) !important;
-}
-
-body[data-theme="white"] .cx-nav-search .form-control,
-body[data-theme="dark"] .cx-nav-search .form-control {
-    background: #ffffff !important;
-    color: #111827 !important;
-    border-color: var(--line) !important;
-}
-
-body[data-theme="white"] .cine-navbar .navbar-toggler,
-body[data-theme="dark"] .cine-navbar .navbar-toggler {
-    border-color: var(--line) !important;
-    background: var(--surface-2) !important;
-}
-
-body[data-theme="white"] .cx-hero-carousel,
-body[data-theme="dark"] .cx-hero-carousel,
-body[data-theme="white"] .cx-detail-hero,
-body[data-theme="dark"] .cx-detail-hero {
-    background: var(--surface-2) !important;
 }
 
 body[data-theme="white"] .cx-hero-shade,
@@ -3968,15 +3934,8 @@ body[data-theme="white"] .cx-detail-shade {
     background: linear-gradient(90deg, rgba(255, 255, 255, .88), rgba(255, 255, 255, .58), rgba(255, 255, 255, .18)) !important;
 }
 
-body[data-theme="dark"] .cx-hero-shade,
-body[data-theme="dark"] .cx-detail-shade {
-    background: linear-gradient(90deg, rgba(15, 23, 42, .94), rgba(15, 23, 42, .72), rgba(15, 23, 42, .28)) !important;
-}
-
 body[data-theme="white"] .cx-hero-backdrop,
-body[data-theme="white"] .cx-detail-backdrop,
-body[data-theme="dark"] .cx-hero-backdrop,
-body[data-theme="dark"] .cx-detail-backdrop {
+body[data-theme="white"] .cx-detail-backdrop {
     opacity: .72 !important;
     filter: grayscale(.05) contrast(1.05) saturate(.85) !important;
 }
@@ -3986,21 +3945,26 @@ body[data-theme="white"] .cx-detail-copy {
     text-shadow: 0 1px 0 rgba(255, 255, 255, .7) !important;
 }
 
-body[data-theme="dark"] .cx-hero-carousel .cx-hero-copy,
-body[data-theme="dark"] .cx-detail-copy {
-    text-shadow: 0 1px 1px rgba(0, 0, 0, .55) !important;
+/* Dark theme final readability layer. */
+body[data-theme="dark"],
+body.theme-dark,
+html[data-theme="dark"] body {
+    background:
+        radial-gradient(circle at 12% -8%, rgba(148, 163, 184, .18), transparent 360px),
+        radial-gradient(circle at 88% 0%, rgba(203, 213, 225, .1), transparent 320px),
+        linear-gradient(180deg, #111827, var(--page-bg) 360px) !important;
+    color: var(--ink) !important;
 }
 
-body[data-theme="dark"] .cx-hero-carousel .cx-hero-copy,
-body[data-theme="dark"] .cx-detail-copy,
-body[data-theme="dark"] .cx-hero-carousel .cx-hero-copy h1,
-body[data-theme="dark"] .cx-detail-copy h1,
-body[data-theme="dark"] .cx-hero-carousel .cx-hero-copy p,
-body[data-theme="dark"] .cx-detail-copy p,
-body[data-theme="dark"] .dropdown-item,
-body[data-theme="dark"] .modal-title,
-body[data-theme="dark"] .offcanvas-title,
-body[data-theme="dark"] .cx-mobile-nav a {
+body[data-theme="dark"] .cine-navbar,
+body[data-theme="dark"] .cine-navbar.sticky-top,
+body[data-theme="dark"] .navbar.sticky-top,
+body.theme-dark .cine-navbar,
+body.theme-dark .cine-navbar.sticky-top,
+body.theme-dark .navbar.sticky-top {
+    background: var(--surface) !important;
+    border-bottom: 1px solid var(--line) !important;
+    box-shadow: 0 12px 34px rgba(0, 0, 0, .22) !important;
     color: var(--ink) !important;
 }
 
@@ -4012,24 +3976,19 @@ body[data-theme="dark"] .dropdown-menu,
 body[data-theme="dark"] .modal-content,
 body[data-theme="dark"] .offcanvas,
 body[data-theme="dark"] .cx-watchlist-panel,
-body[data-theme="dark"] .cx-trailer-modal {
+body[data-theme="dark"] .cx-trailer-modal,
+body.theme-dark .cx-hero-carousel,
+body.theme-dark .cx-hero-slide,
+body.theme-dark .cx-detail-hero,
+body.theme-dark .cx-mobile-nav,
+body.theme-dark .dropdown-menu,
+body.theme-dark .modal-content,
+body.theme-dark .offcanvas,
+body.theme-dark .cx-watchlist-panel,
+body.theme-dark .cx-trailer-modal {
     background: var(--surface) !important;
     color: var(--ink) !important;
     border-color: var(--line) !important;
-}
-
-body[data-theme="dark"] .btn-primary,
-body[data-theme="dark"] .btn-warning,
-body[data-theme="dark"] .btn-danger,
-body[data-theme="dark"] .btn-dark,
-body[data-theme="dark"] .cx-card-actions a:hover,
-body[data-theme="dark"] .cx-release-actions a:hover {
-    color: #111827 !important;
-}
-
-/* Dark theme final readability layer. White theme is intentionally untouched. */
-body[data-theme="dark"] {
-    color: var(--ink) !important;
 }
 
 body[data-theme="dark"] h1,
@@ -4060,7 +4019,36 @@ body[data-theme="dark"] .cx-imdb-copy h1,
 body[data-theme="dark"] .cx-imdb-facts strong,
 body[data-theme="dark"] .cx-search-filter label,
 body[data-theme="dark"] .cx-login-form label,
-body[data-theme="dark"] .cx-mobile-nav a {
+body[data-theme="dark"] .cx-mobile-nav a,
+body.theme-dark h1,
+body.theme-dark h2,
+body.theme-dark h3,
+body.theme-dark h4,
+body.theme-dark h5,
+body.theme-dark h6,
+body.theme-dark p,
+body.theme-dark label,
+body.theme-dark strong,
+body.theme-dark small,
+body.theme-dark .navbar-brand,
+body.theme-dark .nav-link,
+body.theme-dark .dropdown-toggle,
+body.theme-dark .dropdown-item,
+body.theme-dark .card,
+body.theme-dark .card-body,
+body.theme-dark .card-header,
+body.theme-dark .cx-page-head,
+body.theme-dark .cx-page-head h1,
+body.theme-dark .cx-section-head h2,
+body.theme-dark .cx-card-body h3,
+body.theme-dark .cx-release-body h3,
+body.theme-dark .cx-theater-card h3,
+body.theme-dark .cx-detail-panel h2,
+body.theme-dark .cx-imdb-copy h1,
+body.theme-dark .cx-imdb-facts strong,
+body.theme-dark .cx-search-filter label,
+body.theme-dark .cx-login-form label,
+body.theme-dark .cx-mobile-nav a {
     color: var(--ink) !important;
 }
 
@@ -4077,7 +4065,21 @@ body[data-theme="dark"] .cx-imdb-summary,
 body[data-theme="dark"] .cx-imdb-facts span,
 body[data-theme="dark"] .cx-release-meta,
 body[data-theme="dark"] .cx-premiere-poster small,
-body[data-theme="dark"] .cx-mini-poster span {
+body[data-theme="dark"] .cx-mini-poster span,
+body.theme-dark .text-muted,
+body.theme-dark .cx-page-head p,
+body.theme-dark .cx-card-body p,
+body.theme-dark .cx-release-body p,
+body.theme-dark .cx-detail-panel p,
+body.theme-dark .cx-language,
+body.theme-dark .cx-search-filter label span,
+body.theme-dark .cx-login-form label span,
+body.theme-dark .cx-login-divider,
+body.theme-dark .cx-imdb-summary,
+body.theme-dark .cx-imdb-facts span,
+body.theme-dark .cx-release-meta,
+body.theme-dark .cx-premiere-poster small,
+body.theme-dark .cx-mini-poster span {
     color: var(--muted) !important;
 }
 
@@ -4085,20 +4087,29 @@ body[data-theme="dark"] .form-control,
 body[data-theme="dark"] .form-select,
 body[data-theme="dark"] input,
 body[data-theme="dark"] select,
-body[data-theme="dark"] textarea {
+body[data-theme="dark"] textarea,
+body.theme-dark .form-control,
+body.theme-dark .form-select,
+body.theme-dark input,
+body.theme-dark select,
+body.theme-dark textarea {
     background: var(--surface-2) !important;
     border-color: var(--line) !important;
     color: var(--ink) !important;
 }
 
-body[data-theme="dark"] .cx-nav-search .form-control {
+body[data-theme="dark"] .cx-nav-search .form-control,
+body.theme-dark .cx-nav-search .form-control {
     background: #ffffff !important;
     color: #111827 !important;
 }
 
 body[data-theme="dark"] .form-control::placeholder,
 body[data-theme="dark"] input::placeholder,
-body[data-theme="dark"] textarea::placeholder {
+body[data-theme="dark"] textarea::placeholder,
+body.theme-dark .form-control::placeholder,
+body.theme-dark input::placeholder,
+body.theme-dark textarea::placeholder {
     color: #94a3b8 !important;
 }
 
@@ -4107,7 +4118,13 @@ body[data-theme="dark"] .btn-outline-warning,
 body[data-theme="dark"] .btn-outline-info,
 body[data-theme="dark"] .btn-outline-dark,
 body[data-theme="dark"] .cx-card-actions a,
-body[data-theme="dark"] .cx-release-actions a {
+body[data-theme="dark"] .cx-release-actions a,
+body.theme-dark .btn-outline-light,
+body.theme-dark .btn-outline-warning,
+body.theme-dark .btn-outline-info,
+body.theme-dark .btn-outline-dark,
+body.theme-dark .cx-card-actions a,
+body.theme-dark .cx-release-actions a {
     background: var(--surface-2) !important;
     border-color: var(--line) !important;
     color: var(--ink) !important;
@@ -4117,9 +4134,52 @@ body[data-theme="dark"] .badge,
 body[data-theme="dark"] .cx-rating,
 body[data-theme="dark"] .cx-chip,
 body[data-theme="dark"] .eyebrow,
-body[data-theme="dark"] .cx-info-chips span {
+body[data-theme="dark"] .cx-info-chips span,
+body.theme-dark .badge,
+body.theme-dark .cx-rating,
+body.theme-dark .cx-chip,
+body.theme-dark .eyebrow,
+body.theme-dark .cx-info-chips span {
     background: var(--surface-2) !important;
     border-color: var(--line) !important;
     color: var(--ink) !important;
 }
+
+body[data-theme="dark"] .cx-hero-shade,
+body[data-theme="dark"] .cx-detail-shade,
+body.theme-dark .cx-hero-shade,
+body.theme-dark .cx-detail-shade {
+    background: linear-gradient(90deg, rgba(15, 23, 42, .94), rgba(15, 23, 42, .72), rgba(15, 23, 42, .28)) !important;
+}
+
+body[data-theme="dark"] .cx-hero-backdrop,
+body[data-theme="dark"] .cx-detail-backdrop,
+body.theme-dark .cx-hero-backdrop,
+body.theme-dark .cx-detail-backdrop {
+    opacity: .72 !important;
+    filter: grayscale(.05) contrast(1.05) saturate(.85) !important;
+}
+
+body[data-theme="dark"] .cx-hero-carousel .cx-hero-copy,
+body[data-theme="dark"] .cx-detail-copy,
+body.theme-dark .cx-hero-carousel .cx-hero-copy,
+body.theme-dark .cx-detail-copy {
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .55) !important;
+}
+
+body[data-theme="dark"] .btn-primary,
+body[data-theme="dark"] .btn-warning,
+body[data-theme="dark"] .btn-danger,
+body[data-theme="dark"] .btn-dark,
+body[data-theme="dark"] .cx-card-actions a:hover,
+body[data-theme="dark"] .cx-release-actions a:hover,
+body.theme-dark .btn-primary,
+body.theme-dark .btn-warning,
+body.theme-dark .btn-danger,
+body.theme-dark .btn-dark,
+body.theme-dark .cx-card-actions a:hover,
+body.theme-dark .cx-release-actions a:hover {
+    color: #111827 !important;
+}
+
 

@@ -9,7 +9,13 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=dark-readable-20260629">
+    <script>
+        (function () {
+            var theme = localStorage.getItem("cineverse-theme") === "dark" ? "dark" : "white";
+            document.documentElement.dataset.theme = theme;
+        }());
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=dark-readable-20260629-2">
 </head>
 
 <body data-theme="white">
@@ -289,36 +295,8 @@
 {% endif %}
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/theme.js') }}?v=dark-readable-20260629-2"></script>
 <script>
-    (function () {
-        const themeButtons = document.querySelectorAll("[data-theme-choice]");
-
-        const applyTheme = function (theme) {
-            document.body.dataset.theme = theme;
-            localStorage.setItem("cineverse-theme", theme);
-
-            themeButtons.forEach(function (button) {
-                button.classList.toggle(
-                    "is-active",
-                    button.dataset.themeChoice === theme
-                );
-            });
-        };
-
-        const normalizeTheme = function (theme) {
-            return ["white", "dark"].includes(theme) ? theme : "white";
-        };
-
-        const savedTheme = normalizeTheme(localStorage.getItem("cineverse-theme"));
-        applyTheme(savedTheme);
-
-        themeButtons.forEach(function (button) {
-            button.addEventListener("click", function () {
-                applyTheme(normalizeTheme(button.dataset.themeChoice));
-            });
-        });
-    }());
-
     (function () {
         const watchKey = "cineverse-watchlist";
         const recentKey = "cineverse-recent";
