@@ -78,8 +78,8 @@
 
     <section class="cx-release-intro">
         <div>
-            <span class="eyebrow">Upcoming Releases</span>
-            <h2>Discover the latest blockbusters, multi-language hits and exclusive premieres coming to cinemas.</h2>
+            <span class="eyebrow">Movies</span>
+            <h2>Discover curated cinema picks, multi-language titles and BookMyShow-ready movie pages.</h2>
         </div>
         <div class="cx-release-metrics">
             <span><i class="fas fa-film"></i> {{ "{:,}".format(movie_count) }} Movies</span>
@@ -93,7 +93,7 @@
         <a href="{{ url_for('movie_bp.movies', sort='popular') }}"><i class="fas fa-fire"></i> Trending</a>
         <a href="{{ url_for('show_bp.shows') }}"><i class="fas fa-calendar-week"></i> Coming This Week</a>
         <a href="{{ url_for('movie_bp.movies', view='upcoming', sort='newest') }}"><i class="fas fa-calendar-days"></i> This Month</a>
-        <a href="{{ url_for('movie_bp.movies', sort='rating', view='') }}"><i class="fas fa-star"></i> Highest Rated</a>
+        <a href="{{ url_for('movie_bp.movies', view='', sort='popular') }}"><i class="fas fa-compass"></i> Discover</a>
         <a href="{{ url_for('movie_bp.movies', view='', sort='popular', genre='Action') }}"><i class="fas fa-clapperboard"></i> Hollywood</a>
         <a href="{{ url_for('show_bp.shows', language='Hindi') }}"><i class="fas fa-music"></i> Bollywood</a>
         <a href="{{ url_for('show_bp.shows', language='Kannada') }}"><i class="fas fa-language"></i> Kannada</a>
@@ -128,7 +128,7 @@
         <a href="{{ url_for('show_bp.shows') }}">
             <i class="fas fa-calendar-check"></i>
             <span>Release Planner</span>
-            <strong>Track upcoming releases by language, genre and rating.</strong>
+            <strong>Track movies by language, genre and booking availability.</strong>
         </a>
     </section>
 
@@ -155,7 +155,7 @@
         <div class="cx-section-head">
             <div>
                 <span class="eyebrow">Coming soon</span>
-                <h2>Upcoming releases</h2>
+                <h2>Movies on the radar</h2>
             </div>
             <a href="{{ url_for('show_bp.shows') }}" class="cx-see-all">
                 See All
@@ -176,16 +176,16 @@
                 <small>{{ movie.release_date or "Coming soon" }} / {{ movie.language.split(",")[0] if movie.language else "Movie" }}</small>
             </a>
             {% else %}
-            <div class="alert alert-info">Upcoming releases will appear here after sync.</div>
+            <div class="alert alert-info">Movie picks will appear here after sync.</div>
             {% endfor %}
         </div>
     </section>
 
     <section class="cx-section cx-feature-strip">
-        <a href="{{ url_for('movie_bp.movies', sort='rating', view='') }}">
+        <a href="{{ url_for('show_bp.shows') }}">
             <i class="fas fa-star"></i>
-            <span>Top Rated</span>
-            <strong>Jump into the highest-rated catalog picks.</strong>
+            <span>BookMyShow Picks</span>
+            <strong>Start with curated movies that open booking search quickly.</strong>
         </a>
         <a href="{{ url_for('movie_bp.movies', genre='Animation', view='') }}">
             <i class="fas fa-child-reaching"></i>
@@ -202,10 +202,10 @@
     <section class="cx-section cx-rail-section">
         <div class="cx-section-head">
             <div>
-                <span class="eyebrow">Audience picks</span>
-                <h2>Highest rated movies</h2>
+                <span class="eyebrow">Booking-ready</span>
+                <h2>Curated movie picks</h2>
             </div>
-            <a href="{{ url_for('movie_bp.movies', sort='rating', view='') }}" class="cx-see-all">
+            <a href="{{ url_for('show_bp.shows') }}" class="cx-see-all">
                 See All
             </a>
         </div>
@@ -218,10 +218,10 @@
                         src="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('generated_movie_poster', movie_id=movie.id)) }}"
                         onerror="this.src='{{ url_for('generated_movie_poster', movie_id=movie.id) }}';"
                         alt="">
-                    <span class="cx-premiere-ribbon">Top</span>
+                    <span class="cx-premiere-ribbon">Pick</span>
                 </span>
                 <strong>{{ movie.title }}</strong>
-                <small><i class="fas fa-star"></i> {{ movie.rating or "N/A" }} / {{ movie.genre or "Movie" }}</small>
+                <small>{{ movie.release_date or "Coming soon" }} / {{ movie.genre or "Movie" }}</small>
             </a>
             {% else %}
             <div class="alert alert-info">More movies will appear here after sync.</div>
@@ -287,8 +287,8 @@
         </a>
         <a href="{{ url_for('show_bp.shows') }}">
             <i class="fas fa-calendar-days"></i>
-            <strong>Upcoming Releases</strong>
-            <span>Upcoming titles with BookMyShow access</span>
+            <strong>BookMyShow Movies</strong>
+            <span>Curated titles with BookMyShow access</span>
         </a>
         <a href="{{ url_for('theater_bp.theaters') }}">
             <i class="fas fa-building"></i>
@@ -300,10 +300,10 @@
             <strong>Booking Links</strong>
             <span>Open BookMyShow and keep useful link history</span>
         </a>
-        <a href="{{ url_for('movie_bp.movies', sort='rating', view='') }}">
+        <a href="{{ url_for('movie_bp.movies', view='', sort='popular') }}">
             <i class="fas fa-star"></i>
-            <strong>Top Rated</strong>
-            <span>Sort the catalog by IMDbAPI and CineVerse ratings</span>
+            <strong>Movie Finder</strong>
+            <span>Filter movies by genre, language, and release type</span>
         </a>
         <a href="{{ url_for('theater_bp.theaters') }}">
             <i class="fas fa-route"></i>

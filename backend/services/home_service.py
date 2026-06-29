@@ -103,11 +103,14 @@ def build_home_context():
         Movie.rating.desc(),
         Movie.title.asc()
     ).offset(10).limit(10).all()
-    top_rated_movies = homepage_movies.order_by(
+    top_rated_movies = homepage_movies.filter(
+        Movie.data_source == "curated",
+        Movie.release_date >= today_key
+    ).order_by(
         *poster_first,
-        Movie.rating.desc(),
+        Movie.release_date.asc(),
         Movie.title.asc()
-    ).limit(10).all()
+    ).offset(5).limit(10).all()
 
     catalog_movie_count = Movie.query.filter(
         Movie.data_source.in_(("tmdb", "imdbapi", "curated"))

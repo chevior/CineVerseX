@@ -5,9 +5,9 @@
 <div class="cx-shell">
     <div class="cx-page-head">
         <div>
-            <span class="eyebrow">Scheduled releases</span>
-            <h1>Upcoming Releases</h1>
-            <p>Browse upcoming movies, inspect details, and continue to BookMyShow.</p>
+            <span class="eyebrow">BookMyShow movies</span>
+            <h1>Movies</h1>
+            <p>Browse curated cinema picks, inspect details, and continue to BookMyShow.</p>
         </div>
 
         {% if session.get('user_role') == 'admin' %}
@@ -47,7 +47,6 @@
             <select name="sort" class="form-control">
                 <option value="release" {% if selected_sort == "release" %}selected{% endif %}>Release Date</option>
                 <option value="movie" {% if selected_sort == "movie" %}selected{% endif %}>Movie</option>
-                <option value="rating" {% if selected_sort == "rating" %}selected{% endif %}>Rating</option>
             </select>
         </label>
 
@@ -63,14 +62,12 @@
     <div class="cx-release-grid">
         {% for card in movie_cards %}
         {% set movie = card.movie %}
-        {% set show = card.show %}
         <article class="cx-release-card">
             <a class="cx-release-poster" href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}">
                 <img
                     src="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('generated_movie_poster', movie_id=movie.id)) }}"
                     onerror="this.src='{{ url_for('generated_movie_poster', movie_id=movie.id) }}';"
                     alt="{{ movie.title }}">
-                <span class="cx-release-rating">{{ movie.rating or "N/A" }}/10</span>
                 <span class="cx-hover-overlay">
                     <span>Details</span>
                 </span>
@@ -81,7 +78,6 @@
                     <small>{{ movie.release_date or "Coming soon" }}</small>
                     <h3>{{ movie.title }}</h3>
                     <div class="cx-info-chips">
-                        <span><i class="fas fa-star"></i> {{ movie.rating or "N/A" }}</span>
                         {% for genre in (movie.genre or "").split(",")[:2] %}
                         {% if genre.strip() %}<span>{{ genre.strip() }}</span>{% endif %}
                         {% endfor %}
@@ -113,12 +109,12 @@
             </div>
         </article>
         {% else %}
-        <div class="alert alert-info">No upcoming releases are available yet.</div>
+        <div class="alert alert-info">No curated movies are available yet.</div>
         {% endfor %}
     </div>
 
     {% if movie_cards and pagination_pages %}
-    <nav class="cx-pagination" aria-label="Upcoming release pages">
+    <nav class="cx-pagination" aria-label="Movie pages">
         {% if selected_page > 1 %}
         <a href="{{ url_for('show_bp.shows', genre=selected_genre, language=selected_language, sort=selected_sort, page=selected_page - 1) }}">
             <i class="fas fa-chevron-left"></i> Previous

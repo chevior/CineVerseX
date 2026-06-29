@@ -19,7 +19,7 @@ from models.review import Review
 from models.show import Show
 from models.theater import Theater
 from services.activity_service import log_activity
-from services.catalog_data import BOOKMYSHOW_HOME_URL
+from services.catalog_data import BOOKMYSHOW_HOME_URL, BOOKMYSHOW_MOVIE_PAGES
 
 movie_bp = Blueprint("movie_bp", __name__)
 
@@ -119,7 +119,8 @@ def imdb_database_label():
 
 
 def normalize_title_key(title):
-    return " ".join((title or "").strip().lower().split())
+    normalized = " ".join((title or "").strip().lower().replace("-", " ").split())
+    return normalized.replace(" :", ":")
 
 
 def bookmyshow_search_url(title):
@@ -128,7 +129,10 @@ def bookmyshow_search_url(title):
     if not title:
         return BOOKMYSHOW_HOME_URL
 
-    return f"https://in.bookmyshow.com/search?q={quote_plus(title)}"
+    return BOOKMYSHOW_MOVIE_PAGES.get(
+        normalize_title_key(title),
+        f"{BOOKMYSHOW_HOME_URL}search?q={quote_plus(title)}"
+    )
 
 
 def justwatch_search_url(title):
@@ -1192,13 +1196,25 @@ def search_movies():
     movies_query = Movie.query
 
     if query:
-        like_query = f"%{query}%"
-        movies_query = movies_query.filter(or_(
-            Movie.title.ilike(like_query),
-            Movie.genre.ilike(like_query),
-            Movie.language.ilike(like_query),
-            Movie.description.ilike(like_query),
-        ))
+        search_tokens = [
+            token
+            for token in query.replace("-", " ").replace(":", " ").split()
+            if token.strip()
+        ]
+
+        token_filters = []
+
+        for token in search_tokens:
+            like_query = f"%{token}%"
+            token_filters.append(or_(
+                Movie.title.ilike(like_query),
+                Movie.genre.ilike(like_query),
+                Movie.language.ilike(like_query),
+                Movie.description.ilike(like_query),
+            ))
+
+        if token_filters:
+            movies_query = movies_query.filter(or_(*token_filters))
 
     if selected_genre:
         movies_query = movies_query.filter(Movie.genre.ilike(f"%{selected_genre}%"))

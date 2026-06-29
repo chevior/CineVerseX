@@ -3410,10 +3410,7 @@ body {
 }
 
 .cx-release-rating {
-    top: 6px !important;
-    left: 6px !important;
-    padding: 4px 7px !important;
-    font-size: .72rem !important;
+    display: none !important;
 }
 
 .cx-release-body {

@@ -3,6 +3,10 @@ TMDB_BASE_URL = "https://api.themoviedb.org/3"
 TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"
 IMDBAPI_BASE_URL = "https://api.imdbapi.dev"
 BOOKMYSHOW_HOME_URL = "https://in.bookmyshow.com/"
+BOOKMYSHOW_MOVIE_PAGES = {
+    "spider man: brand new day": "https://in.bookmyshow.com/movies/bengaluru/spiderman-brand-new-day/ET00447840",
+    "spiderman brand new day": "https://in.bookmyshow.com/movies/bengaluru/spiderman-brand-new-day/ET00447840",
+}
 CURATED_UPCOMING_RELEASES = [
     {
         "title": "The Super Mario Galaxy Movie",

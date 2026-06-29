@@ -14,6 +14,7 @@ from models.show import Show
 from models.theater import Screen, Theater
 from services.catalog_data import (
     BOOKMYSHOW_HOME_URL,
+    BOOKMYSHOW_MOVIE_PAGES,
     CURATED_UPCOMING_RELEASES,
     FEATURED_MOVIE_DETAILS,
     IMDBAPI_BASE_URL,
@@ -38,7 +39,8 @@ def booking_catalog_imdb_path():
 
 
 def normalize_title_key(title):
-    return " ".join((title or "").strip().lower().split())
+    normalized = " ".join((title or "").strip().lower().replace("-", " ").split())
+    return normalized.replace(" :", ":")
 
 
 def bookmyshow_search_url(title):
@@ -47,7 +49,10 @@ def bookmyshow_search_url(title):
     if not title:
         return BOOKMYSHOW_HOME_URL
 
-    return f"https://in.bookmyshow.com/search?q={quote_plus(title)}"
+    return BOOKMYSHOW_MOVIE_PAGES.get(
+        normalize_title_key(title),
+        f"{BOOKMYSHOW_HOME_URL}search?q={quote_plus(title)}"
+    )
 
 
 def normalize_bookmyshow_movie_url(url):

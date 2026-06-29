@@ -15,7 +15,7 @@
             document.documentElement.dataset.theme = theme;
         }());
     </script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=release-compact-20260629-1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=movies-cleanup-20260629-1">
 </head>
 
 <body data-theme="white">
@@ -63,13 +63,13 @@
 
                 <li class="nav-item">
                     <a class="nav-link" href="/shows">
-                        <i class="fas fa-ticket-alt"></i> Releases
+                        <i class="fas fa-ticket-alt"></i> BookMyShow
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('movie_bp.movies', sort='rating', view='') }}">
-                        <i class="fas fa-star"></i> Top Rated
+                    <a class="nav-link" href="{{ url_for('movie_bp.movies', view='', sort='popular') }}">
+                        <i class="fas fa-compass"></i> Discover
                     </a>
                 </li>
 
@@ -228,7 +228,7 @@
     </a>
     <a href="{{ url_for('show_bp.shows') }}">
         <i class="fas fa-ticket-alt"></i>
-        <span>Releases</span>
+        <span>BookMyShow</span>
     </a>
     <a href="{{ url_for('theater_bp.theaters') }}">
         <i class="fas fa-building"></i>

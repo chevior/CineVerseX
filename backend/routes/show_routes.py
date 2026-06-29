@@ -88,12 +88,10 @@ def shows():
     today_key = datetime.utcnow().strftime("%Y-%m-%d")
 
     query = (
-        Show.query
-        .join(Movie)
-        .join(Theater)
+        Movie.query
         .filter(~Movie.title.in_(LEGACY_DEMO_MOVIES))
-        .filter(Movie.data_source.in_(("tmdb", "imdbapi", "curated")))
-        .filter(Show.show_time >= today_key)
+        .filter(Movie.data_source == "curated")
+        .filter(Movie.release_date >= today_key)
     )
 
     if selected_genre:
@@ -102,31 +100,23 @@ def shows():
     if selected_language:
         query = query.filter(Movie.language.ilike(f"%{selected_language}%"))
 
-    poster_query = query.filter(Movie.poster_url.isnot(None), Movie.poster_url != "")
-
-    if poster_query.count() >= 24:
-        query = poster_query
-
     poster_first = Movie.poster_url.isnot(None).desc(), (Movie.poster_url != "").desc()
 
     if selected_sort == "movie":
-        query = query.order_by(*poster_first, Movie.title.asc(), Movie.release_date.asc(), Show.show_time.asc())
-    elif selected_sort == "rating":
-        query = query.order_by(*poster_first, Movie.rating.desc(), Movie.release_date.asc(), Show.show_time.asc())
+        query = query.order_by(*poster_first, Movie.title.asc(), Movie.release_date.asc())
     else:
-        query = query.order_by(*poster_first, Movie.release_date.asc(), Show.show_time.asc())
+        query = query.order_by(*poster_first, Movie.release_date.asc(), Movie.title.asc())
 
     movie_cards = []
     seen_movie_ids = set()
 
-    for show in query.all():
-        if not show.movie or show.movie_id in seen_movie_ids:
+    for movie in query.all():
+        if movie.id in seen_movie_ids:
             continue
 
-        seen_movie_ids.add(show.movie_id)
+        seen_movie_ids.add(movie.id)
         movie_cards.append({
-            "movie": show.movie,
-            "show": show,
+            "movie": movie,
         })
 
     total_movies = len(movie_cards)
