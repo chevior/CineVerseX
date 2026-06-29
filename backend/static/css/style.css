@@ -3583,8 +3583,8 @@ body {
 .btn-danger,
 .btn-outline-warning:hover,
 .btn-outline-info:hover {
-    background: #111827 !important;
-    border-color: #111827 !important;
+    background: #6b7280 !important;
+    border-color: #6b7280 !important;
     color: #ffffff !important;
 }
 
@@ -3661,7 +3661,7 @@ body {
 
 .cx-card-actions a:hover,
 .cx-release-actions a:hover {
-    background: #111827 !important;
+    background: #6b7280 !important;
     color: #ffffff !important;
 }
 
@@ -3694,7 +3694,7 @@ body {
 }
 
 .cx-login-card .card-header {
-    background: #111827 !important;
+    background: #6b7280 !important;
     color: #ffffff !important;
     border: 0 !important;
 }
@@ -3799,62 +3799,24 @@ body {
     }
 }
 
-/* Final hard override: no dark theme surfaces */
-html,
-body,
-main,
-.page-content,
-.container-fluid,
-.cx-shell,
-.cx-detail-page,
-.offcanvas,
-.offcanvas-body,
-.offcanvas-header,
-.modal-content,
-.dropdown-menu,
-.list-group-item,
-.table,
-.table th,
-.table td {
-    background-color: #f5f6f8 !important;
-    color: #20242a !important;
-}
-
-.cine-navbar,
-.cx-mobile-nav,
+/* Keep the original UI structure, locked to white and grey only. */
 .cx-hero-carousel,
 .cx-hero-slide,
 .cx-detail-hero,
-.cx-trailer-modal,
-.cx-watchlist-panel,
-.card,
-.card-header,
-.card-body,
+.cx-mobile-nav,
 .dropdown-menu,
 .modal-content,
-.cx-filter-bar,
-.cx-search-filter,
-.cx-import-panel,
-.cx-manual-panel,
-.cx-table-wrap,
-.cx-detail-panel,
-.cx-movie-card,
-.cx-release-card,
-.cx-theater-card,
-.cx-plan-card,
-.cx-analytics-card,
-.cx-stat-card,
-.cx-action-card,
-.cx-imdb-hero,
-.cx-imdb-facts article {
+.offcanvas,
+.cx-watchlist-panel,
+.cx-trailer-modal {
     background: #ffffff !important;
-    color: #20242a !important;
-    border-color: #d8dde4 !important;
+    color: #111827 !important;
+    border-color: #d9dde4 !important;
 }
 
 .cx-hero-shade,
 .cx-detail-shade {
-    background: linear-gradient(90deg, rgba(245, 246, 248, .96), rgba(245, 246, 248, .78), rgba(245, 246, 248, .58)) !important;
+    background: linear-gradient(90deg, rgba(255, 255, 255, .94), rgba(255, 255, 255, .76), rgba(255, 255, 255, .44)) !important;
 }
 
 .cx-hero-carousel .cx-hero-copy,
@@ -3863,76 +3825,24 @@ main,
 .cx-detail-copy h1,
 .cx-hero-carousel .cx-hero-copy p,
 .cx-detail-copy p,
-.cx-hero-carousel .cx-info-chips span,
-.cx-detail-copy .cx-info-chips span,
+.cx-mobile-nav a,
 .dropdown-item,
-.dropdown-item-text,
 .modal-title,
-.offcanvas-title,
-.table {
-    color: #20242a !important;
+.offcanvas-title {
+    color: #111827 !important;
 }
 
 .cx-hero-backdrop,
 .cx-detail-backdrop {
-    opacity: .18 !important;
-    filter: grayscale(.25) contrast(.95) !important;
-}
-
-.btn-primary,
-.btn-warning,
-.btn-danger,
-.btn-dark,
-.cx-login-card .card-header {
-    background: #6b7280 !important;
-    border-color: #6b7280 !important;
-    color: #ffffff !important;
+    opacity: .34 !important;
+    filter: grayscale(.15) contrast(.98) !important;
 }
 
 .btn-primary:hover,
 .btn-warning:hover,
 .btn-danger:hover,
-.btn-dark:hover,
-.cx-card-actions a:hover,
-.cx-release-actions a:hover {
+.btn-dark:hover {
     background: #4b5563 !important;
     border-color: #4b5563 !important;
     color: #ffffff !important;
-}
-
-.btn-outline-light,
-.btn-outline-warning,
-.btn-outline-info,
-.btn-outline-dark,
-.cx-card-actions a,
-.cx-release-actions a,
-.dropdown-item {
-    background: #ffffff !important;
-    border-color: #cfd5dd !important;
-    color: #20242a !important;
-}
-
-.dropdown-item:hover,
-.dropdown-item:focus,
-.cx-mobile-nav a:hover,
-.cx-mobile-nav a:focus,
-.cine-navbar .nav-link:hover,
-.cine-navbar .nav-link.active {
-    background: #eef0f3 !important;
-    color: #20242a !important;
-}
-
-.cx-login-card .card-header h1,
-.cx-login-card .card-header h2,
-.cx-login-card .card-header p {
-    color: #ffffff !important;
-}
-
-.badge.bg-primary,
-.badge.bg-success,
-.badge.bg-warning,
-.badge.bg-dark {
-    background: #eef0f3 !important;
-    color: #20242a !important;
-    border: 1px solid #cfd5dd !important;
 }
