@@ -6,11 +6,13 @@
 
     <section class="cx-hero-carousel" data-hero-carousel>
         {% for movie in hero_movies[:5] %}
+        {% set fallback_poster = url_for('generated_movie_poster', movie_id=movie.id) %}
+        {% set hero_backdrop = movie.backdrop_url if movie.backdrop_url and movie.backdrop_url.startswith('http') else (movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else fallback_poster) %}
         <article class="cx-hero-slide {% if loop.first %}is-active{% endif %}" data-hero-slide>
             <img
                 class="cx-hero-backdrop"
-                src="{{ movie.backdrop_url if movie.backdrop_url and movie.backdrop_url.startswith('http') else (movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else url_for('generated_movie_poster', movie_id=movie.id)) }}"
-                onerror="this.src='{{ url_for('generated_movie_poster', movie_id=movie.id) }}';"
+                src="{{ hero_backdrop }}"
+                onerror="this.onerror=null; this.src='{{ fallback_poster }}';"
                 alt="">
             <div class="cx-hero-shade"></div>
 
