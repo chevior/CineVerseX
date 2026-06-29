@@ -43,7 +43,15 @@ def normalize_title_key(title):
 
 
 def bookmyshow_search_url(title):
-    return KNOWN_BOOKMYSHOW_LINKS.get(normalize_title_key(title), BOOKMYSHOW_HOME_URL)
+    title = (title or "").strip()
+
+    if not title:
+        return BOOKMYSHOW_HOME_URL
+
+    return KNOWN_BOOKMYSHOW_LINKS.get(
+        normalize_title_key(title),
+        f"https://in.bookmyshow.com/search?q={quote_plus(title)}"
+    )
 
 
 def normalize_bookmyshow_movie_url(url):
