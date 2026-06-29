@@ -32,8 +32,6 @@
                     <span>{{ movie.certificate or "UA" }}</span>
                 </div>
 
-                <p>{{ movie.description|neutral_copy }}</p>
-
                 <div class="cx-hero-actions">
                     {% if movie.trailer_url %}
                     <button class="btn btn-primary btn-lg" type="button" data-bs-toggle="modal" data-bs-target="#trailerModal">

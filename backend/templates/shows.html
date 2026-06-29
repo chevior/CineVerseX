@@ -93,9 +93,6 @@
 
                 <div class="cx-release-meta">
                     <span><i class="fas fa-language"></i> {{ movie.language or "Language not set" }}</span>
-                    {% if movie.description %}
-                    <span><i class="fas fa-align-left"></i> {{ (movie.description|neutral_copy)[:110] }}{% if (movie.description|neutral_copy)|length > 110 %}...{% endif %}</span>
-                    {% endif %}
                 </div>
 
                 <div class="cx-release-actions">

@@ -33,8 +33,6 @@
                     <span>{{ movie.certificate or "UA" }}</span>
                 </div>
 
-                <p>{{ (movie.description|neutral_copy)[:210] }}{% if (movie.description|neutral_copy)|length > 210 %}...{% endif %}</p>
-
                 <div class="cx-hero-actions">
                     {% if movie.trailer_url %}
                     <a href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}#trailer" class="btn btn-primary btn-lg">
