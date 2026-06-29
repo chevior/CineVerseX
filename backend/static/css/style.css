@@ -4027,3 +4027,99 @@ body[data-theme="dark"] .cx-release-actions a:hover {
     color: #111827 !important;
 }
 
+/* Dark theme final readability layer. White theme is intentionally untouched. */
+body[data-theme="dark"] {
+    color: var(--ink) !important;
+}
+
+body[data-theme="dark"] h1,
+body[data-theme="dark"] h2,
+body[data-theme="dark"] h3,
+body[data-theme="dark"] h4,
+body[data-theme="dark"] h5,
+body[data-theme="dark"] h6,
+body[data-theme="dark"] p,
+body[data-theme="dark"] label,
+body[data-theme="dark"] strong,
+body[data-theme="dark"] small,
+body[data-theme="dark"] .navbar-brand,
+body[data-theme="dark"] .nav-link,
+body[data-theme="dark"] .dropdown-toggle,
+body[data-theme="dark"] .dropdown-item,
+body[data-theme="dark"] .card,
+body[data-theme="dark"] .card-body,
+body[data-theme="dark"] .card-header,
+body[data-theme="dark"] .cx-page-head,
+body[data-theme="dark"] .cx-page-head h1,
+body[data-theme="dark"] .cx-section-head h2,
+body[data-theme="dark"] .cx-card-body h3,
+body[data-theme="dark"] .cx-release-body h3,
+body[data-theme="dark"] .cx-theater-card h3,
+body[data-theme="dark"] .cx-detail-panel h2,
+body[data-theme="dark"] .cx-imdb-copy h1,
+body[data-theme="dark"] .cx-imdb-facts strong,
+body[data-theme="dark"] .cx-search-filter label,
+body[data-theme="dark"] .cx-login-form label,
+body[data-theme="dark"] .cx-mobile-nav a {
+    color: var(--ink) !important;
+}
+
+body[data-theme="dark"] .text-muted,
+body[data-theme="dark"] .cx-page-head p,
+body[data-theme="dark"] .cx-card-body p,
+body[data-theme="dark"] .cx-release-body p,
+body[data-theme="dark"] .cx-detail-panel p,
+body[data-theme="dark"] .cx-language,
+body[data-theme="dark"] .cx-search-filter label span,
+body[data-theme="dark"] .cx-login-form label span,
+body[data-theme="dark"] .cx-login-divider,
+body[data-theme="dark"] .cx-imdb-summary,
+body[data-theme="dark"] .cx-imdb-facts span,
+body[data-theme="dark"] .cx-release-meta,
+body[data-theme="dark"] .cx-premiere-poster small,
+body[data-theme="dark"] .cx-mini-poster span {
+    color: var(--muted) !important;
+}
+
+body[data-theme="dark"] .form-control,
+body[data-theme="dark"] .form-select,
+body[data-theme="dark"] input,
+body[data-theme="dark"] select,
+body[data-theme="dark"] textarea {
+    background: var(--surface-2) !important;
+    border-color: var(--line) !important;
+    color: var(--ink) !important;
+}
+
+body[data-theme="dark"] .cx-nav-search .form-control {
+    background: #ffffff !important;
+    color: #111827 !important;
+}
+
+body[data-theme="dark"] .form-control::placeholder,
+body[data-theme="dark"] input::placeholder,
+body[data-theme="dark"] textarea::placeholder {
+    color: #94a3b8 !important;
+}
+
+body[data-theme="dark"] .btn-outline-light,
+body[data-theme="dark"] .btn-outline-warning,
+body[data-theme="dark"] .btn-outline-info,
+body[data-theme="dark"] .btn-outline-dark,
+body[data-theme="dark"] .cx-card-actions a,
+body[data-theme="dark"] .cx-release-actions a {
+    background: var(--surface-2) !important;
+    border-color: var(--line) !important;
+    color: var(--ink) !important;
+}
+
+body[data-theme="dark"] .badge,
+body[data-theme="dark"] .cx-rating,
+body[data-theme="dark"] .cx-chip,
+body[data-theme="dark"] .eyebrow,
+body[data-theme="dark"] .cx-info-chips span {
+    background: var(--surface-2) !important;
+    border-color: var(--line) !important;
+    color: var(--ink) !important;
+}
+
