@@ -17,6 +17,7 @@ from services.catalog_data import (
     CURATED_UPCOMING_RELEASES,
     FEATURED_MOVIE_DETAILS,
     IMDBAPI_BASE_URL,
+    KNOWN_BOOKMYSHOW_LINKS,
     THEATER_NETWORK,
     THEATER_RENAMES,
     TMDB_BASE_URL,
@@ -37,19 +38,25 @@ def booking_catalog_imdb_path():
     return os.path.abspath(os.path.join(current_app.root_path, "..", "cineversex.db"))
 
 
+def normalize_title_key(title):
+    return " ".join((title or "").strip().lower().split())
+
+
 def bookmyshow_search_url(title):
-    return BOOKMYSHOW_HOME_URL
+    return KNOWN_BOOKMYSHOW_LINKS.get(normalize_title_key(title), BOOKMYSHOW_HOME_URL)
 
 
 def normalize_bookmyshow_movie_url(url):
-    return BOOKMYSHOW_HOME_URL
+    cleaned_url = (url or "").strip()
+    return cleaned_url or BOOKMYSHOW_HOME_URL
 
 
 def bookmyshow_links_for_title(title):
+    direct_url = bookmyshow_search_url(title)
     return {
-        "movie": BOOKMYSHOW_HOME_URL,
-        "ticket": "",
-        "primary": BOOKMYSHOW_HOME_URL,
+        "movie": direct_url,
+        "ticket": direct_url if direct_url != BOOKMYSHOW_HOME_URL else "",
+        "primary": direct_url,
     }
 
 

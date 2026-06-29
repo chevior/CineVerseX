@@ -44,6 +44,7 @@
             </select>
         </label>
 
+        {% if session.get('user_role') == 'admin' %}
         <label>
             <span>Database</span>
             <select name="source" class="form-control">
@@ -51,6 +52,9 @@
                 <option value="imdb" {% if selected_source == "imdb" %}selected{% endif %}>Full Local IMDb DB</option>
             </select>
         </label>
+        {% else %}
+        <input type="hidden" name="source" value="local">
+        {% endif %}
 
         <label>
             <span>View</span>
@@ -137,7 +141,7 @@
                     <a href="{{ url_for('movie_bp.imdb_movie_details', tconst=movie.tconst) }}">Details</a>
                     <a target="_blank" rel="noopener noreferrer" href="https://www.imdb.com/title/{{ movie.tconst }}/">IMDb</a>
                     {% if movie.startYear and movie.startYear|int >= current_year %}
-                    <a target="_blank" rel="noopener noreferrer" href="https://in.bookmyshow.com/">BookMyShow</a>
+                    <a target="_blank" rel="noopener noreferrer" href="{{ bookmyshow_url_for_title(movie.primaryTitle) }}">BookMyShow</a>
                     {% endif %}
                     <a target="_blank" rel="noopener noreferrer" href="https://www.justwatch.com/in/search?q={{ movie.primaryTitle|urlencode }}">JustWatch</a>
                 </div>
@@ -188,7 +192,7 @@
                     <a href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}">Details</a>
                     <a target="_blank" rel="noopener noreferrer" href="{{ movie.justwatch_url or 'https://www.justwatch.com/in/search?q=' ~ movie.title|urlencode }}">JustWatch</a>
                     {% if movie.release_date and movie.release_date >= today_key %}
-                    <a target="_blank" rel="noopener noreferrer" href="https://in.bookmyshow.com/">BookMyShow</a>
+                    <a target="_blank" rel="noopener noreferrer" href="{{ bookmyshow_movie_url(movie) }}">BookMyShow</a>
                     {% endif %}
                     {% if session.get("user_id") %}
                     <a href="{{ url_for('wishlist_bp.add_to_wishlist', movie_id=movie.id) }}">Wishlist</a>

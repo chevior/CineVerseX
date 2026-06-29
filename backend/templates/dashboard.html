@@ -2,22 +2,75 @@
 
 {% block content %}
 
-<div class="container-fluid">
+<div class="cx-shell">
+    <section class="cx-dashboard-hero">
+        <div>
+            <span class="eyebrow">Dashboard</span>
+            <h1>Welcome, {{ name }}</h1>
+            <p>Jump back into movies, releases, saved picks, and account tools from one clean place.</p>
+        </div>
+        <a class="btn btn-primary btn-lg" href="{{ url_for('movie_bp.movies') }}">
+            <i class="fas fa-film"></i> Browse Movies
+        </a>
+    </section>
 
-    <div class="hero-banner">
-
-        <h1>CineVerse X</h1>
-
-        <p>
-            Discover movies, book tickets, select seats, and manage your cinema experience.
-        </p>
-
-        <a href="/movies" class="btn btn-warning btn-lg">
-            Browse Movies
+    <section class="cx-dashboard-grid">
+        <a class="cx-dashboard-card" href="{{ url_for('movie_bp.movies') }}">
+            <i class="fas fa-clapperboard"></i>
+            <strong>Movies</strong>
+            <span>Posters, trailers, reviews, ratings, and watch links.</span>
         </a>
 
-    </div>
+        <a class="cx-dashboard-card" href="{{ url_for('show_bp.shows') }}">
+            <i class="fas fa-calendar-days"></i>
+            <strong>Upcoming Releases</strong>
+            <span>Release-focused listings with booking redirects when available.</span>
+        </a>
 
+        <a class="cx-dashboard-card" href="{{ url_for('theater_bp.theaters') }}">
+            <i class="fas fa-building"></i>
+            <strong>Theaters</strong>
+            <span>Browse cinema locations, screens, amenities, and filters.</span>
+        </a>
+
+        <a class="cx-dashboard-card" href="{{ url_for('wishlist_bp.wishlist') }}">
+            <i class="fas fa-heart"></i>
+            <strong>Wishlist</strong>
+            <span>Keep movies ready for details, trailers, and quick actions.</span>
+        </a>
+
+        <a class="cx-dashboard-card" href="{{ url_for('booking_bp.booking_history') }}">
+            <i class="fas fa-arrow-up-right-from-square"></i>
+            <strong>Booking Links</strong>
+            <span>Review the BookMyShow links opened from CineVerse X.</span>
+        </a>
+
+        <a class="cx-dashboard-card" href="{{ url_for('profile_bp.profile') }}">
+            <i class="fas fa-user-gear"></i>
+            <strong>Profile</strong>
+            <span>Manage account details, profile picture, and preferences.</span>
+        </a>
+
+        <a class="cx-dashboard-card" href="{{ url_for('payment_bp.pricing') }}">
+            <i class="fas fa-gem"></i>
+            <strong>Free / Pro</strong>
+            <span>View subscription options and premium account benefits.</span>
+        </a>
+
+        {% if role == "admin" %}
+        <a class="cx-dashboard-card is-admin" href="{{ url_for('admin_bp.admin_dashboard') }}">
+            <i class="fas fa-chart-line"></i>
+            <strong>Admin Dashboard</strong>
+            <span>Analytics, reports, users, movies, theaters, and settings.</span>
+        </a>
+
+        <a class="cx-dashboard-card is-admin" href="{{ url_for('movie_bp.add_movie') }}">
+            <i class="fas fa-plus"></i>
+            <strong>Add Movie</strong>
+            <span>Create a curated movie entry with links and metadata.</span>
+        </a>
+        {% endif %}
+    </section>
 </div>
 
 {% endblock %}

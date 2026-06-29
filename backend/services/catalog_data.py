@@ -3,7 +3,9 @@ TMDB_BASE_URL = "https://api.themoviedb.org/3"
 TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"
 IMDBAPI_BASE_URL = "https://api.imdbapi.dev"
 BOOKMYSHOW_HOME_URL = "https://in.bookmyshow.com/"
-KNOWN_BOOKMYSHOW_LINKS = {}
+KNOWN_BOOKMYSHOW_LINKS = {
+    "cocktail 2": "https://in.bookmyshow.com/movies/mumbai/cocktail-2/ET00491386",
+}
 CURATED_UPCOMING_RELEASES = [
     {
         "title": "The Super Mario Galaxy Movie",

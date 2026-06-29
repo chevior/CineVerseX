@@ -45,7 +45,7 @@
                     {% endif %}
 
                     {% if movie.release_date and movie.release_date >= today_key %}
-                    <a href="https://in.bookmyshow.com/" class="btn btn-outline-warning btn-lg" target="_blank" rel="noopener noreferrer">
+                    <a href="{{ bookmyshow_movie_url(movie) }}" class="btn btn-outline-warning btn-lg" target="_blank" rel="noopener noreferrer">
                         <i class="fas fa-ticket-alt"></i> Book Now
                     </a>
                     {% endif %}
@@ -94,17 +94,19 @@
         <a href="{{ url_for('show_bp.shows') }}"><i class="fas fa-calendar-week"></i> Coming This Week</a>
         <a href="{{ url_for('movie_bp.movies', view='upcoming', sort='newest') }}"><i class="fas fa-calendar-days"></i> This Month</a>
         <a href="{{ url_for('movie_bp.movies', sort='rating', view='') }}"><i class="fas fa-star"></i> Highest Rated</a>
-        <a href="{{ url_for('movie_bp.movies', source='imdb', genre='Action', view='', sort='popular') }}"><i class="fas fa-clapperboard"></i> Hollywood</a>
+        <a href="{{ url_for('movie_bp.movies', view='', sort='popular', genre='Action') }}"><i class="fas fa-clapperboard"></i> Hollywood</a>
         <a href="{{ url_for('show_bp.shows', language='Hindi') }}"><i class="fas fa-music"></i> Bollywood</a>
         <a href="{{ url_for('show_bp.shows', language='Kannada') }}"><i class="fas fa-language"></i> Kannada</a>
     </section>
 
     <section class="cx-command-grid">
+        {% if session.get('user_role') == 'admin' %}
         <a href="{{ url_for('movie_bp.movies', source='imdb', view='', sort='popular') }}">
             <i class="fas fa-database"></i>
             <span>Full IMDb Library</span>
             <strong>Browse the local 12 GB dataset with lazy image caching.</strong>
         </a>
+        {% endif %}
         {% if session.get("user_id") %}
         <button type="button" data-bs-toggle="offcanvas" data-bs-target="#cxWatchlistPanel">
             <i class="fas fa-heart"></i>

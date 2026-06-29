@@ -7,7 +7,13 @@
         <div>
             <span class="eyebrow">Search</span>
             <h1>Results for "{{ query }}"</h1>
-            <p>CineVerse picks and local IMDb database matches in one place.</p>
+            <p>
+                {% if session.get('user_role') == 'admin' %}
+                    CineVerse picks and local IMDb database matches in one place.
+                {% else %}
+                    CineVerse picks, trailers, watch options, and upcoming releases.
+                {% endif %}
+            </p>
         </div>
         <a href="{{ url_for('movie_bp.movies') }}" class="btn btn-primary">
             <i class="fas fa-film"></i> Browse Movies
@@ -90,13 +96,14 @@
                     <a href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}">Details</a>
                     <a href="{{ movie.justwatch_url or 'https://www.justwatch.com/in/search?q=' ~ movie.title|urlencode }}" target="_blank" rel="noopener noreferrer">JustWatch</a>
                     {% if movie.release_date and movie.release_date >= today_key %}
-                    <a href="https://in.bookmyshow.com/" target="_blank" rel="noopener noreferrer">BookMyShow</a>
+                    <a href="{{ bookmyshow_movie_url(movie) }}" target="_blank" rel="noopener noreferrer">BookMyShow</a>
                     {% endif %}
                 </div>
             </div>
         </article>
         {% endfor %}
 
+        {% if session.get('user_role') == 'admin' %}
         {% for movie in imdb_movies %}
         <article class="cx-movie-card">
             <a
@@ -136,13 +143,14 @@
                     <a href="{{ url_for('movie_bp.imdb_movie_details', tconst=movie.tconst) }}">Details</a>
                     <a href="https://www.imdb.com/title/{{ movie.tconst }}/" target="_blank" rel="noopener noreferrer">IMDb</a>
                     {% if movie.startYear and movie.startYear|int >= current_year %}
-                    <a href="https://in.bookmyshow.com/" target="_blank" rel="noopener noreferrer">BookMyShow</a>
+                    <a href="{{ bookmyshow_url_for_title(movie.primaryTitle) }}" target="_blank" rel="noopener noreferrer">BookMyShow</a>
                     {% endif %}
                     <a href="https://www.justwatch.com/in/search?q={{ movie.primaryTitle|urlencode }}" target="_blank" rel="noopener noreferrer">JustWatch</a>
                 </div>
             </div>
         </article>
         {% endfor %}
+        {% endif %}
     </div>
 
     {% if not movies and not imdb_movies %}

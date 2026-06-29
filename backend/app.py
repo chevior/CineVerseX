@@ -35,6 +35,8 @@ from routes.reports_routes import reports_bp
 from routes.wishlist_routes import wishlist_bp
 
 from services.display_service import neutral_public_copy
+from services.catalog_data import BOOKMYSHOW_HOME_URL
+from services.catalog_sync_service import bookmyshow_search_url
 from services.home_service import build_home_context, generated_movie_poster_svg
 from services.request_hook_service import (
     check_maintenance_mode as check_maintenance_mode_service,
@@ -129,11 +131,28 @@ def generated_movie_poster(movie_id):
 def inject_system_settings():
     today = datetime.utcnow()
 
+    def effective_bookmyshow_movie_url(movie):
+        title = getattr(movie, "title", "") or getattr(movie, "primaryTitle", "")
+        direct_url = bookmyshow_search_url(title)
+
+        if direct_url != BOOKMYSHOW_HOME_URL:
+            return direct_url
+
+        for attribute_name in ("bookmyshow_url", "bookmyshow_movie_url", "bookmyshow_ticket_url"):
+            candidate = (getattr(movie, attribute_name, "") or "").strip()
+
+            if candidate and candidate != BOOKMYSHOW_HOME_URL:
+                return candidate
+
+        return BOOKMYSHOW_HOME_URL
+
     return {
         "system_settings": SystemSetting.query.first(),
         "csrf_token": ensure_csrf_token,
         "today_key": today.strftime("%Y-%m-%d"),
         "current_year": today.year,
+        "bookmyshow_url_for_title": bookmyshow_search_url,
+        "bookmyshow_movie_url": effective_bookmyshow_movie_url,
     }
 
 

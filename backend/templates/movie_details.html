@@ -42,7 +42,7 @@
                     {% endif %}
 
                     {% if movie.release_date and movie.release_date >= today_key %}
-                    <a class="btn btn-primary btn-lg" href="https://in.bookmyshow.com/" target="_blank" rel="noopener noreferrer">
+                    <a class="btn btn-primary btn-lg" href="{{ bookmyshow_movie_url(movie) }}" target="_blank" rel="noopener noreferrer">
                         <i class="fas fa-ticket-alt"></i> Book Now
                     </a>
                     {% endif %}

@@ -24,6 +24,7 @@ from models.setting import SystemSetting
 from models.ticket import Ticket
 from services.activity_service import log_activity
 from services.catalog_data import BOOKMYSHOW_HOME_URL
+from services.catalog_sync_service import bookmyshow_search_url
 
 booking_bp = Blueprint("booking_bp", __name__)
 
@@ -64,6 +65,24 @@ def parse_show_time(show_time):
     return None
 
 
+def effective_bookmyshow_url(movie):
+    if not movie:
+        return BOOKMYSHOW_HOME_URL
+
+    direct_url = bookmyshow_search_url(movie.title)
+
+    if direct_url != BOOKMYSHOW_HOME_URL:
+        return direct_url
+
+    for attribute_name in ("bookmyshow_url", "bookmyshow_movie_url", "bookmyshow_ticket_url"):
+        candidate = (getattr(movie, attribute_name, "") or "").strip()
+
+        if candidate and candidate != BOOKMYSHOW_HOME_URL:
+            return candidate
+
+    return BOOKMYSHOW_HOME_URL
+
+
 def send_ticket_email(booking, ticket):
     if not current_user.email:
         return
@@ -96,7 +115,7 @@ Thank you for booking with CineVerseX.
 @booking_bp.route("/show/<int:show_id>/seats")
 def seat_selection(show_id):
     show = Show.query.get_or_404(show_id)
-    bookmyshow_url = BOOKMYSHOW_HOME_URL
+    bookmyshow_url = effective_bookmyshow_url(show.movie)
 
     if show.movie:
         if session.get("user_id"):

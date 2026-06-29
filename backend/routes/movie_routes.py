@@ -19,6 +19,7 @@ from models.review import Review
 from models.show import Show
 from models.theater import Theater
 from services.activity_service import log_activity
+from services.catalog_data import BOOKMYSHOW_HOME_URL, KNOWN_BOOKMYSHOW_LINKS
 
 movie_bp = Blueprint("movie_bp", __name__)
 
@@ -117,8 +118,12 @@ def imdb_database_label():
     return f"Local IMDb database ({size_gb:.1f} GB)"
 
 
+def normalize_title_key(title):
+    return " ".join((title or "").strip().lower().split())
+
+
 def bookmyshow_search_url(title):
-    return "https://in.bookmyshow.com/"
+    return KNOWN_BOOKMYSHOW_LINKS.get(normalize_title_key(title), BOOKMYSHOW_HOME_URL)
 
 
 def justwatch_search_url(title):
@@ -798,7 +803,10 @@ def movies():
     selected_genre = request.args.get("genre", "")
     selected_view = request.args.get("view", "upcoming")
     selected_sort = request.args.get("sort", "popular")
-    selected_source = request.args.get("source") or ("imdb" if imdb_db_available() else "local")
+    is_admin = current_user.is_authenticated and getattr(current_user, "role", "") == "admin"
+    selected_source = request.args.get("source") or ("imdb" if is_admin and imdb_db_available() else "local")
+    if selected_source == "imdb" and not is_admin:
+        selected_source = "local"
     selected_page = max(request.args.get("page", 1, type=int), 1)
     per_page = 36
     today_key = datetime.utcnow().strftime("%Y-%m-%d")
@@ -825,6 +833,7 @@ def movies():
                 selected_source=selected_source,
                 selected_page=selected_page,
                 movie_source="imdb",
+                is_admin=is_admin,
                 imdb_database_label=imdb_database_label(),
                 bookmyshow_search_url=bookmyshow_search_url,
                 total_pages=total_pages,
@@ -841,6 +850,7 @@ def movies():
             selected_source=selected_source,
             selected_page=selected_page,
             movie_source="imdb",
+            is_admin=is_admin,
             bookmyshow_search_url=bookmyshow_search_url,
             total_pages=1,
             pagination_pages=[],
@@ -891,11 +901,12 @@ def movies():
             selected_source=selected_source,
             selected_page=selected_page,
             movie_source="local",
+            is_admin=is_admin,
             total_pages=total_pages,
             pagination_pages=pagination_window(selected_page, total_pages)
         )
 
-    if imdb_db_available():
+    if is_admin and imdb_db_available():
         total_movies = count_imdb_movies(selected_genre, selected_view)
         total_pages = max((total_movies + per_page - 1) // per_page, 1)
         selected_page = min(selected_page, total_pages)
@@ -910,6 +921,7 @@ def movies():
             selected_source="imdb",
             selected_page=selected_page,
             movie_source="imdb",
+            is_admin=is_admin,
             imdb_database_label=imdb_database_label(),
             bookmyshow_search_url=bookmyshow_search_url,
             total_pages=total_pages,
@@ -923,9 +935,10 @@ def movies():
         selected_genre=selected_genre,
         selected_view=selected_view,
         selected_sort=selected_sort,
-        selected_source="imdb",
+        selected_source="local",
         selected_page=selected_page,
-        movie_source="imdb",
+        movie_source="local",
+        is_admin=is_admin,
         bookmyshow_search_url=bookmyshow_search_url,
         total_pages=1,
         pagination_pages=[],
@@ -937,6 +950,7 @@ def movies():
 
 
 @movie_bp.route("/imdb/movie/<tconst>")
+@admin_required
 def imdb_movie_details(tconst):
     if not imdb_db_available():
         return "IMDb database not found", 404
@@ -1191,13 +1205,17 @@ def search_movies():
         movies_query = movies_query.filter(Movie.rating >= float(selected_rating))
 
     movies = movies_query.order_by(Movie.release_date.desc(), Movie.rating.desc()).limit(36).all()
-    imdb_movies = search_imdb_movies(
-        query,
-        limit=12,
-        genre=selected_genre,
-        year=selected_year,
-        min_rating=selected_rating
-    )
+    is_admin = current_user.is_authenticated and getattr(current_user, "role", "") == "admin"
+    imdb_movies = []
+
+    if is_admin:
+        imdb_movies = search_imdb_movies(
+            query,
+            limit=12,
+            genre=selected_genre,
+            year=selected_year,
+            min_rating=selected_rating
+        )
 
     return render_template(
         "search_results.html",
@@ -1207,7 +1225,8 @@ def search_movies():
         genres=GENRES,
         selected_genre=selected_genre,
         selected_year=selected_year,
-        selected_rating=selected_rating
+        selected_rating=selected_rating,
+        is_admin=is_admin
     )
 @movie_bp.route("/edit-movie/<int:movie_id>", methods=["GET", "POST"])
 @admin_required
