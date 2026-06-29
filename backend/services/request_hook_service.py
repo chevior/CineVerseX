@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 
 from flask import current_app, redirect, render_template, request, session, url_for
 
@@ -73,6 +74,9 @@ def require_login_for_member_features():
 
 
 def refresh_booking_catalog_daily():
+    if os.environ.get("ENABLE_DAILY_CATALOG_SYNC", "").lower() not in {"1", "true", "yes"}:
+        return None
+
     if request.endpoint not in {"home", "movie_bp.movies", "show_bp.shows"}:
         return None
 

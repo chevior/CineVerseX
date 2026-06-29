@@ -1,3 +1,5 @@
+import os
+
 from werkzeug.security import generate_password_hash
 
 from extensions import db
@@ -199,8 +201,12 @@ def initialize_app_data():
     create_default_admin()
     sync_theater_network()
 
-    if not sync_booking_catalog_from_tmdb() and not sync_booking_catalog_from_imdbapi():
+    if os.environ.get("ENABLE_STARTUP_CATALOG_SYNC", "").lower() in {"1", "true", "yes"}:
+        if not sync_booking_catalog_from_tmdb() and not sync_booking_catalog_from_imdbapi():
+            sync_curated_upcoming_catalog()
+
+        backfill_missing_movie_posters(limit=12)
+    elif not os.environ.get("SKIP_CURATED_CATALOG_SEED", "").lower() in {"1", "true", "yes"}:
         sync_curated_upcoming_catalog()
 
     apply_featured_movie_details()
-    backfill_missing_movie_posters(limit=12)

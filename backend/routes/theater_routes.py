@@ -65,7 +65,7 @@ def theaters():
     selected_area = request.args.get("area", "")
     selected_city = request.args.get("city", "")
     selected_page = max(request.args.get("page", 1, type=int), 1)
-    per_page = 48
+    per_page = 30
     query_text = request.args.get("q", "").strip()
     all_theaters = Theater.query.filter(Theater.name != "BookMyShow")\
         .order_by(Theater.city.asc(), Theater.name.asc()).all()

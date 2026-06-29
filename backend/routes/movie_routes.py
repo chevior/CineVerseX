@@ -704,7 +704,7 @@ def search_imdb_movies(query, limit=24, genre="", year="", min_rating=""):
     conn = sqlite3.connect(f"file:{imdb_db_path()}?mode=ro", uri=True)
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
-    params = [f"{query}%", f"%{query}%"]
+    params = [f"{query}%"]
     filters = """
         SELECT
             t.tconst,
@@ -719,10 +719,7 @@ def search_imdb_movies(query, limit=24, genre="", year="", min_rating=""):
         LEFT JOIN imdb_ratings r ON t.tconst = r.tconst
         WHERE t.titleType = 'movie'
         AND t.isAdult = 0
-        AND (
-            t.primaryTitle LIKE ?
-            OR t.primaryTitle LIKE ?
-        )
+        AND t.primaryTitle LIKE ?
     """
 
     if genre:
@@ -803,7 +800,7 @@ def movies():
     selected_sort = request.args.get("sort", "popular")
     selected_source = request.args.get("source") or ("imdb" if imdb_db_available() else "local")
     selected_page = max(request.args.get("page", 1, type=int), 1)
-    per_page = 60
+    per_page = 36
     today_key = datetime.utcnow().strftime("%Y-%m-%d")
 
     if selected_source == "imdb":
@@ -1196,6 +1193,7 @@ def search_movies():
     movies = movies_query.order_by(Movie.release_date.desc(), Movie.rating.desc()).limit(36).all()
     imdb_movies = search_imdb_movies(
         query,
+        limit=12,
         genre=selected_genre,
         year=selected_year,
         min_rating=selected_rating
