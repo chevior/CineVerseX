@@ -1,110 +1,100 @@
 # CineVerseX
 
-CineVerseX is a Flask movie discovery and cinema management web application. It combines a local movie database, IMDb-style detail pages, upcoming releases, theater listings, admin tools, reports, Google login, wishlist, and external booking links.
+## About
+
+CineVerseX is a movie ticket booking and movie information web application built using Flask. Users can explore movies, view theaters, check upcoming releases, save movies to their wishlist, and access movie details. Administrators can manage movies, theaters, shows, and users through the admin panel.
 
 ## Features
 
-- Google login and direct email/password login
-- Admin and user roles
-- Movie discovery with posters, ratings, genres, runtime, and descriptions
-- IMDb dataset movie detail pages
-- Trailer discovery links
-- JustWatch links for movie availability
-- BookMyShow redirect links for upcoming/releasing movies
-- Wishlist and recently viewed movies
-- Upcoming releases page
-- Theater directory with filters and pagination
-- Admin dashboard with platform metrics
-- Reports module for CSV exports
-- Revenue and analytics views
-- Activity logging
-- REST API endpoints for movies, theaters, shows, upcoming, and trending data
-- White and dark themes
+* User registration and login
+* Google Sign-In
+* Browse and search movies
+* Movie details with posters
+* Upcoming movies
+* Theater listing
+* Wishlist
+* Admin dashboard
+* Manage movies, theaters, and shows
+* CSV report export
+* Light and Dark mode
 
-## Tech Stack
+## Technologies Used
 
-- Python
-- Flask
-- SQLite
-- SQLAlchemy
-- HTML
-- CSS
-- Bootstrap
-- JavaScript
+* Python
+* Flask
+* SQLAlchemy
+* SQLite
+* HTML
+* CSS
+* Bootstrap
+* JavaScript
 
 ## Project Structure
 
 ```text
 CineVerseX/
-+-- backend/
-|   +-- app.py
-|   +-- routes/
-|   +-- services/
-|   +-- models/
-|   +-- templates/
-|   +-- static/
-|   +-- data/
-+-- scripts/
-+-- requirements.txt
-+-- README.md
+│
+├── backend/
+│   ├── app.py
+│   ├── models/
+│   ├── routes/
+│   ├── services/
+│   ├── templates/
+│   ├── static/
+│   └── data/
+│
+├── scripts/
+├── requirements.txt
+└── README.md
 ```
 
-## How to Run Locally
+## Installation
+
+Create a virtual environment:
 
 ```bash
 python -m venv venv
+```
+
+Activate the virtual environment:
+
+```bash
 venv\Scripts\activate
+```
+
+Install the required packages:
+
+```bash
 pip install -r requirements.txt
+```
+
+Run the application:
+
+```bash
 python backend\app.py
 ```
 
-Open:
+Open your browser:
 
-```text
+```
 http://127.0.0.1:5000
 ```
 
 ## Environment Variables
 
-For local development, create a `.env` file in the project root.
+Create a `.env` file and add:
 
-```env
-SECRET_KEY=change-this-secret
+```text
+SECRET_KEY=your-secret-key
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 GOOGLE_REDIRECT_URI=http://127.0.0.1:5000/auth/google/callback
 ```
 
-Optional catalog sync settings:
+## Deployment
 
-```env
-ENABLE_STARTUP_CATALOG_SYNC=false
-ENABLE_DAILY_CATALOG_SYNC=false
-```
+For Render deployment, set the same environment variables in the Render dashboard and update the Google OAuth redirect URI with your Render URL.
 
-Keep these disabled on free Render deployments unless you specifically want startup or daily external sync work.
+## Developer
 
-## Database Notes
-
-Large local database files are ignored by Git. The repository includes only the smaller seed data needed for deployment.
-
-Ignored generated/runtime paths include:
-
-- `*.db`
-- `backend/instance/`
-- `instance/`
-- `backend/static/tickets/`
-- `backend/static/qrcodes/`
-- `backend/static/posters/`
-
-## Render Notes
-
-Set these in Render Environment settings:
-
-```env
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-GOOGLE_REDIRECT_URI=https://your-render-app.onrender.com/auth/google/callback
-```
-
-Also add the same Render callback URL in Google Cloud Console under Authorized redirect URIs.
+Developed by **Chethan N**.
