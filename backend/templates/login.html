@@ -2,18 +2,27 @@
 
 {% block content %}
 
-<div class="row justify-content-center">
+<div class="cx-auth-page">
+    <section class="cx-auth-panel">
+        <div class="cx-auth-copy">
+            <span class="eyebrow">Welcome back</span>
+            <h1>CineVerse X</h1>
+            <p>Continue your movie discovery, saved picks, booking links, and theater shortcuts from one cinematic dashboard.</p>
+            <div class="cx-auth-points">
+                <span><i class="fas fa-film"></i> Curated movies</span>
+                <span><i class="fas fa-heart"></i> Personal watchlist</span>
+                <span><i class="fas fa-arrow-up-right-from-square"></i> Public booking links</span>
+            </div>
+        </div>
 
-    <div class="col-md-5">
-
-        <div class="card shadow-lg cx-login-card">
-
-            <div class="card-header text-center">
-                <h2>Login - CineVerse X</h2>
-                <p class="mb-0">Use Google or your CineVerse account.</p>
+        <div class="cx-auth-card">
+            <div class="cx-auth-card-head">
+                <span class="eyebrow">Sign in</span>
+                <h2>Login</h2>
+                <p>Use Google or your CineVerse account.</p>
             </div>
 
-            <div class="card-body">
+            <div class="cx-auth-card-body">
                 <a href="{{ url_for('google_auth_bp.google_login') }}" class="btn btn-light btn-lg w-100 cx-google-login">
                     <i class="fa-brands fa-google"></i> Continue with Google
                 </a>
@@ -56,11 +65,8 @@
                 {% endif %}
 
             </div>
-
         </div>
-
-    </div>
-
+    </section>
 </div>
 
 {% endblock %}

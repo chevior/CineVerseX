@@ -31,7 +31,22 @@
         {% endif %}
     </div>
 
-    <form method="GET" action="{{ url_for('movie_bp.movies') }}" class="cx-filter-bar">
+    <div class="cx-movie-toolbar" data-movie-toolbar>
+        <label class="cx-page-search">
+            <i class="fas fa-magnifying-glass"></i>
+            <input type="search" data-movie-page-search placeholder="Search this page" aria-label="Search movies on this page">
+        </label>
+        <div class="cx-view-toggle" aria-label="Movie card density">
+            <button type="button" class="is-active" data-density="comfortable" title="Comfortable view">
+                <i class="fas fa-grip"></i>
+            </button>
+            <button type="button" data-density="compact" title="Compact view">
+                <i class="fas fa-table-cells"></i>
+            </button>
+        </div>
+    </div>
+
+    <form method="GET" action="{{ url_for('movie_bp.movies') }}" class="cx-filter-bar" data-auto-filter>
         <label>
             <span>Genre</span>
             <select name="genre" class="form-control">
@@ -100,6 +115,16 @@
         {% endif %}
     </form>
 
+    {% if selected_genre or selected_view or selected_month or selected_sort != "popular" or selected_source == "imdb" %}
+    <div class="cx-active-filters" aria-label="Active filters">
+        {% if selected_source == "imdb" %}<span><i class="fas fa-database"></i> IMDb database</span>{% endif %}
+        {% if selected_genre %}<span><i class="fas fa-masks-theater"></i> {{ selected_genre }}</span>{% endif %}
+        {% if selected_view %}<span><i class="fas fa-eye"></i> {{ selected_view|replace("-", " ")|title }}</span>{% endif %}
+        {% if selected_month %}<span><i class="fas fa-calendar-days"></i> {{ selected_month }}</span>{% endif %}
+        {% if selected_sort != "popular" %}<span><i class="fas fa-arrow-down-wide-short"></i> {{ selected_sort|title }}</span>{% endif %}
+    </div>
+    {% endif %}
+
     {% if imdb_status_message %}
     <div class="alert alert-warning">
         {{ imdb_status_message }}
@@ -110,7 +135,7 @@
         {% for movie in movies %}
         {% if selected_view == "upcoming" %}
         {% if movie_source == "imdb" %}
-        <article class="cx-upcoming-card">
+        <article class="cx-upcoming-card" data-movie-card>
             <a
                 class="cx-upcoming-poster"
                 href="{{ url_for('movie_bp.imdb_movie_details', tconst=movie.tconst) }}"
@@ -136,6 +161,22 @@
             </div>
 
             <div class="cx-upcoming-actions">
+                <button
+                    class="cx-upcoming-quick"
+                    type="button"
+                    data-quick-view
+                    data-title="{{ movie.primaryTitle }}"
+                    data-meta="{{ movie.startYear|int if movie.startYear else 'Coming soon' }} / {{ (movie.genres or 'Movie').split(',')[0] }}"
+                    data-rating="{{ movie.averageRating or 'N/A' }}"
+                    data-poster="{{ movie.poster_url or url_for('movie_bp.imdb_poster', tconst=movie.tconst, title=movie.primaryTitle) }}"
+                    data-details="{{ url_for('movie_bp.imdb_movie_details', tconst=movie.tconst) }}"
+                    data-primary="IMDb"
+                    data-primary-url="https://www.imdb.com/title/{{ movie.tconst }}/"
+                    data-secondary="BookMyShow"
+                    data-secondary-url="{{ url_for('movie_bp.bookmyshow_title_redirect', title=movie.primaryTitle) }}">
+                    <i class="fas fa-up-right-and-down-left-from-center"></i>
+                    Quick View
+                </button>
                 <a class="cx-upcoming-details" href="{{ url_for('movie_bp.imdb_movie_details', tconst=movie.tconst) }}">
                     <i class="fas fa-circle-info"></i>
                     Details
@@ -157,7 +198,7 @@
             </div>
         </article>
         {% else %}
-        <article class="cx-upcoming-card">
+        <article class="cx-upcoming-card" data-movie-card>
             <a
                 class="cx-upcoming-poster"
                 href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}"
@@ -191,6 +232,22 @@
             </div>
 
             <div class="cx-upcoming-actions">
+                <button
+                    class="cx-upcoming-quick"
+                    type="button"
+                    data-quick-view
+                    data-title="{{ movie.title }}"
+                    data-meta="{{ movie.release_date or 'Coming soon' }} / {{ movie.language.split(',')[0] if movie.language else 'Movie' }}"
+                    data-rating="{{ movie.rating or 'N/A' }}"
+                    data-poster="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('static', filename='images/no-poster.svg')) }}"
+                    data-details="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}"
+                    data-primary="BookMyShow"
+                    data-primary-url="{{ url_for('movie_bp.bookmyshow_movie_redirect', movie_id=movie.id) }}"
+                    data-secondary="JustWatch"
+                    data-secondary-url="{{ movie.justwatch_url or 'https://www.justwatch.com/in/search?q=' ~ movie.title|urlencode }}">
+                    <i class="fas fa-up-right-and-down-left-from-center"></i>
+                    Quick View
+                </button>
                 <a class="cx-upcoming-details" href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}">
                     <i class="fas fa-circle-info"></i>
                     Details
@@ -216,7 +273,7 @@
         </article>
         {% endif %}
         {% else %}
-        <article class="cx-movie-card">
+        <article class="cx-movie-card" data-movie-card>
             {% if movie_source == "imdb" %}
             <a
                 class="cx-poster-link"
@@ -258,9 +315,24 @@
                 </div>
 
                 <div class="cx-card-actions">
+                    <button
+                        type="button"
+                        class="cx-quick-view"
+                        data-quick-view
+                        data-title="{{ movie.primaryTitle }}"
+                        data-meta="{{ (movie.startYear|int if movie.startYear else 'Year') }}{% if movie.runtimeMinutes %} / {{ movie.runtimeMinutes // 60 }}h {{ movie.runtimeMinutes % 60 }}m{% endif %}"
+                        data-rating="{{ movie.averageRating or 'N/A' }}"
+                        data-poster="{{ movie.poster_url or url_for('movie_bp.imdb_poster', tconst=movie.tconst, title=movie.primaryTitle) }}"
+                        data-details="{{ url_for('movie_bp.imdb_movie_details', tconst=movie.tconst) }}"
+                        data-primary="IMDb"
+                        data-primary-url="https://www.imdb.com/title/{{ movie.tconst }}/"
+                        data-secondary="BookMyShow"
+                        data-secondary-url="{{ url_for('movie_bp.bookmyshow_title_redirect', title=movie.primaryTitle) }}">
+                        <i class="fas fa-up-right-and-down-left-from-center"></i> Quick View
+                    </button>
                     <a href="{{ url_for('movie_bp.imdb_movie_details', tconst=movie.tconst) }}">Details</a>
                     <a target="_blank" rel="noopener noreferrer" href="https://www.imdb.com/title/{{ movie.tconst }}/">IMDb</a>
-                    <a target="_blank" rel="noopener noreferrer" href="https://www.justwatch.com/in/search?q={{ movie.primaryTitle|urlencode }}">JustWatch</a>
+                    <a target="_blank" rel="noopener noreferrer" href="{{ url_for('movie_bp.bookmyshow_title_redirect', title=movie.primaryTitle) }}">BookMyShow</a>
                 </div>
             </div>
             {% else %}
@@ -306,8 +378,23 @@
                 <p class="cx-language">{{ movie.release_date or "Coming soon" }}</p>
 
                 <div class="cx-card-actions">
+                    <button
+                        type="button"
+                        class="cx-quick-view"
+                        data-quick-view
+                        data-title="{{ movie.title }}"
+                        data-meta="{{ movie.release_date or 'Coming soon' }} / {{ movie.language.split(',')[0] if movie.language else 'Movie' }}"
+                        data-rating="{{ movie.rating or 'N/A' }}"
+                        data-poster="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('static', filename='images/no-poster.svg')) }}"
+                        data-details="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}"
+                        data-primary="BookMyShow"
+                        data-primary-url="{{ url_for('movie_bp.bookmyshow_movie_redirect', movie_id=movie.id) }}"
+                        data-secondary="JustWatch"
+                        data-secondary-url="{{ movie.justwatch_url or 'https://www.justwatch.com/in/search?q=' ~ movie.title|urlencode }}">
+                        <i class="fas fa-up-right-and-down-left-from-center"></i> Quick View
+                    </button>
                     <a href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}">Details</a>
-                    <a target="_blank" rel="noopener noreferrer" href="{{ movie.justwatch_url or 'https://www.justwatch.com/in/search?q=' ~ movie.title|urlencode }}">JustWatch</a>
+                    <a target="_blank" rel="noopener noreferrer" href="{{ url_for('movie_bp.bookmyshow_movie_redirect', movie_id=movie.id) }}">BookMyShow</a>
                     {% if session.get("user_id") %}
                     <a href="{{ url_for('wishlist_bp.add_to_wishlist', movie_id=movie.id) }}">Wishlist</a>
                     {% endif %}
@@ -352,5 +439,93 @@
     </nav>
     {% endif %}
 </div>
+
+<div class="modal fade cx-quick-modal" id="movieQuickViewModal" tabindex="-1" aria-labelledby="movieQuickViewTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="cx-quick-modal-grid">
+                <img data-quick-poster src="{{ url_for('static', filename='images/no-poster.svg') }}" alt="">
+                <div>
+                    <span class="eyebrow">Quick view</span>
+                    <h2 id="movieQuickViewTitle" data-quick-title>Movie</h2>
+                    <p data-quick-meta></p>
+                    <div class="cx-quick-rating"><i class="fas fa-star"></i> <span data-quick-rating>N/A</span></div>
+                    <div class="cx-quick-actions">
+                        <a class="btn btn-primary" data-quick-details href="#">Details</a>
+                        <a class="btn btn-outline-warning" data-quick-primary href="#" target="_blank" rel="noopener noreferrer">Open</a>
+                        <a class="btn btn-outline-info" data-quick-secondary href="#" target="_blank" rel="noopener noreferrer">More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const form = document.querySelector("[data-auto-filter]");
+        const grid = document.querySelector(".cx-movie-grid, .cx-upcoming-grid");
+        const cards = Array.from(document.querySelectorAll("[data-movie-card]"));
+        const search = document.querySelector("[data-movie-page-search]");
+        const modalEl = document.getElementById("movieQuickViewModal");
+
+        if (form) {
+            form.querySelectorAll("select").forEach(select => {
+                select.addEventListener("change", () => form.requestSubmit());
+            });
+        }
+
+        if (search && cards.length) {
+            search.addEventListener("input", () => {
+                const term = search.value.trim().toLowerCase();
+                let visible = 0;
+
+                cards.forEach(card => {
+                    const match = card.textContent.toLowerCase().includes(term);
+                    card.hidden = !match;
+                    if (match) visible += 1;
+                });
+
+                grid && grid.classList.toggle("is-filtering", term.length > 0);
+                search.dataset.resultCount = String(visible);
+            });
+        }
+
+        document.querySelectorAll("[data-density]").forEach(button => {
+            button.addEventListener("click", () => {
+                const compact = button.dataset.density === "compact";
+                document.querySelectorAll("[data-density]").forEach(item => {
+                    item.classList.toggle("is-active", item === button);
+                });
+                grid && grid.classList.toggle("is-compact", compact);
+            });
+        });
+
+        document.querySelectorAll("[data-quick-view]").forEach(button => {
+            button.addEventListener("click", () => {
+                if (!modalEl || !window.bootstrap) return;
+
+                modalEl.querySelector("[data-quick-poster]").src = button.dataset.poster || "";
+                modalEl.querySelector("[data-quick-title]").textContent = button.dataset.title || "Movie";
+                modalEl.querySelector("[data-quick-meta]").textContent = button.dataset.meta || "";
+                modalEl.querySelector("[data-quick-rating]").textContent = button.dataset.rating || "N/A";
+
+                const details = modalEl.querySelector("[data-quick-details]");
+                const primary = modalEl.querySelector("[data-quick-primary]");
+                const secondary = modalEl.querySelector("[data-quick-secondary]");
+
+                details.href = button.dataset.details || "#";
+                primary.href = button.dataset.primaryUrl || "#";
+                primary.textContent = button.dataset.primary || "Open";
+                secondary.href = button.dataset.secondaryUrl || "#";
+                secondary.textContent = button.dataset.secondary || "More";
+
+                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modal.show();
+            });
+        });
+    }());
+</script>
 
 {% endblock %}

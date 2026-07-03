@@ -12,7 +12,7 @@
             <img
                 class="cx-hero-backdrop"
                 src="{{ hero_backdrop }}"
-                onerror="this.onerror=null; this.src='{{ fallback_poster }}';"
+                data-fallback-src="{{ fallback_poster }}"
                 alt="">
             <div class="cx-hero-shade"></div>
 
@@ -169,7 +169,7 @@
                     data-poster="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('static', filename='images/no-poster.svg')) }}">
                     <img
                         src="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('static', filename='images/no-poster.svg')) }}"
-                        onerror="this.src='{{ url_for('static', filename='images/no-poster.svg') }}';"
+                        data-fallback-src="{{ url_for('static', filename='images/no-poster.svg') }}"
                         alt="{{ movie.title }}">
                 </a>
 
@@ -257,7 +257,7 @@
                 <span class="cx-premiere-img">
                     <img
                         src="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('static', filename='images/no-poster.svg')) }}"
-                        onerror="this.src='{{ url_for('static', filename='images/no-poster.svg') }}';"
+                        data-fallback-src="{{ url_for('static', filename='images/no-poster.svg') }}"
                         alt="">
                     <span class="cx-premiere-ribbon">Pick</span>
                 </span>
@@ -287,7 +287,7 @@
                 <span class="cx-premiere-img">
                     <img
                         src="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else url_for('static', filename='images/no-poster.svg')) }}"
-                        onerror="this.src='{{ url_for('static', filename='images/no-poster.svg') }}';"
+                        data-fallback-src="{{ url_for('static', filename='images/no-poster.svg') }}"
                         alt="">
                     <span class="cx-premiere-ribbon">Explore</span>
                 </span>
@@ -382,6 +382,13 @@
         if (slides.length > 1) {
             window.setInterval(() => showSlide(index + 1), 5000);
         }
+
+        document.querySelectorAll("img[data-fallback-src]").forEach((image) => {
+            image.addEventListener("error", () => {
+                if (image.src === image.dataset.fallbackSrc) return;
+                image.src = image.dataset.fallbackSrc;
+            });
+        });
     }());
 </script>
 

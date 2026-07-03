@@ -14,6 +14,25 @@
         </a>
     </section>
 
+    <section class="cx-dashboard-strip">
+        <a href="{{ url_for('movie_bp.movies', view='upcoming', sort='newest') }}">
+            <i class="fas fa-calendar-days"></i>
+            <span>Upcoming</span>
+        </a>
+        <a href="{{ url_for('movie_bp.movies', sort='rating') }}">
+            <i class="fas fa-star"></i>
+            <span>Top Rated</span>
+        </a>
+        <a href="{{ url_for('theater_bp.theaters') }}">
+            <i class="fas fa-location-dot"></i>
+            <span>Theaters</span>
+        </a>
+        <a href="{{ url_for('wishlist_bp.wishlist') }}">
+            <i class="fas fa-heart"></i>
+            <span>Watchlist</span>
+        </a>
+    </section>
+
     <section class="cx-dashboard-grid">
         <a class="cx-dashboard-card" href="{{ url_for('movie_bp.movies') }}">
             <i class="fas fa-clapperboard"></i>

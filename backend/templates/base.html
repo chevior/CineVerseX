@@ -11,20 +11,18 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
     <script>
         (function () {
-            var theme = localStorage.getItem("cineverse-theme") === "dark" ? "dark" : "white";
-            document.documentElement.dataset.theme = theme;
+            document.documentElement.dataset.theme = "dark";
+            document.documentElement.classList.add("theme-dark");
         }());
     </script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=movie-rich-cards-20260630-1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=dark-only-ui-20260703-6">
 </head>
 
-<body data-theme="white">
+<body data-theme="dark">
 <script>
     (function () {
-        var theme = localStorage.getItem("cineverse-theme") === "dark" ? "dark" : "white";
-        document.body.dataset.theme = theme;
-        document.body.classList.toggle("theme-dark", theme === "dark");
-        document.body.classList.toggle("theme-white", theme === "white");
+        document.body.dataset.theme = "dark";
+        document.body.classList.add("theme-dark");
     }());
 </script>
 
@@ -67,12 +65,6 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('wishlist_bp.wishlist') if session.get('user_id') else url_for('auth_bp.login') }}">
-                        <i class="fas fa-heart"></i> Wishlist
-                    </a>
-                </li>
-
                 {% if session.get("user_id") %}
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('booking_bp.booking_history') }}">
@@ -101,20 +93,14 @@
             </form>
 
             <div class="cx-nav-actions">
-                {% if system_settings and system_settings.support_discord_link %}
-                <a
-                    href="{{ system_settings.support_discord_link }}"
-                    class="btn btn-outline-info cx-icon-btn"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title="Support">
-                    <i class="fa-brands fa-discord"></i>
-                </a>
-                {% endif %}
-
                 <button
                     class="btn btn-outline-light cx-icon-btn cx-notification-btn"
                     type="button"
+                    {% if session.get("user_id") %}
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#cxWatchlistPanel"
+                    aria-controls="cxWatchlistPanel"
+                    {% endif %}
                     title="Notifications"
                     aria-label="Notifications">
                     <i class="fas fa-bell"></i>
@@ -122,15 +108,6 @@
                     <b data-watch-count>0</b>
                     {% endif %}
                 </button>
-
-                <div class="theme-switcher cx-theme-nav" aria-label="Theme selector" title="Theme">
-                    <button class="theme-choice" type="button" data-theme-choice="white" title="White theme">
-                        <i class="fas fa-sun"></i>
-                    </button>
-                    <button class="theme-choice" type="button" data-theme-choice="dark" title="Dark theme">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                </div>
 
                 {% if session.get("user_id") %}
                 <div class="dropdown cx-user-menu">
@@ -229,9 +206,9 @@
         <i class="fas fa-ticket-alt"></i>
         <span>Shows</span>
     </a>
-    <a href="{{ url_for('wishlist_bp.wishlist') if session.get('user_id') else url_for('auth_bp.login') }}">
-        <i class="fas fa-heart"></i>
-        <span>Wishlist</span>
+    <a href="{{ url_for('auth_bp.dashboard') if session.get('user_id') else url_for('auth_bp.login') }}">
+        <i class="fas fa-user-circle"></i>
+        <span>{{ "Profile" if session.get('user_id') else "Login" }}</span>
     </a>
 </nav>
 
@@ -302,8 +279,19 @@
 {% endif %}
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='js/theme.js') }}?v=dark-readable-20260629-3"></script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}?v=dark-only-20260703-2"></script>
 <script>
+    (function () {
+        document.querySelectorAll(".cine-navbar .nav-link, .cx-mobile-nav a").forEach(function (link) {
+            var linkPath = new URL(link.href, window.location.origin).pathname;
+            var active = linkPath === window.location.pathname || (linkPath !== "/" && window.location.pathname.startsWith(linkPath));
+            link.classList.toggle("is-active", active);
+            if (active) {
+                link.setAttribute("aria-current", "page");
+            }
+        });
+    }());
+
     (function () {
         const watchKey = "cineverse-watchlist";
         const recentKey = "cineverse-recent";

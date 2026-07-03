@@ -2,93 +2,75 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<div class="cx-shell">
 
-    <div class="cx-page-head text-center">
-        <span class="eyebrow">Admin</span>
-        <h1>CineVerse X Admin Dashboard</h1>
-        <p>Live platform health, active booking metrics, revenue, and admin tools.</p>
-    </div>
-
-    <div class="row">
-        <div class="col-md-3 mb-3">
-            <div class="card bg-primary text-white shadow">
-                <div class="card-body text-center">
-                    <h5>Total Users</h5>
-                    <h1>{{ total_users }}</h1>
-                </div>
-            </div>
+    <section class="cx-dashboard-hero cx-admin-hero">
+        <div>
+            <span class="eyebrow">Admin</span>
+            <h1>CineVerse X Admin</h1>
+            <p>Live platform health, active booking metrics, revenue, and operational tools.</p>
         </div>
+        <a href="{{ url_for('reports_bp.reports') }}" class="btn btn-primary btn-lg">
+            <i class="fa-solid fa-file-csv"></i> Reports
+        </a>
+    </section>
 
-        <div class="col-md-3 mb-3">
-            <div class="card bg-success text-white shadow">
-                <div class="card-body text-center">
-                    <h5>Total Movies</h5>
-                    <h1>{{ total_movies }}</h1>
-                </div>
-            </div>
-        </div>
+    <section class="cx-admin-kpi-grid">
+        <article>
+            <i class="fas fa-users"></i>
+            <span>Total Users</span>
+            <strong>{{ total_users }}</strong>
+        </article>
 
-        <div class="col-md-3 mb-3">
-            <div class="card bg-warning text-dark shadow">
-                <div class="card-body text-center">
-                    <h5>Total Theaters</h5>
-                    <h1>{{ total_theaters }}</h1>
-                </div>
-            </div>
-        </div>
+        <article>
+            <i class="fas fa-film"></i>
+            <span>Total Movies</span>
+            <strong>{{ total_movies }}</strong>
+        </article>
 
-        <div class="col-md-3 mb-3">
-            <div class="card bg-danger text-white shadow">
-                <div class="card-body text-center">
-                    <h5>Active Bookings</h5>
-                    <h1>{{ total_bookings }}</h1>
-                </div>
-            </div>
-        </div>
-    </div>
+        <article>
+            <i class="fas fa-building"></i>
+            <span>Total Theaters</span>
+            <strong>{{ total_theaters }}</strong>
+        </article>
 
-    <div class="card shadow mt-4">
-        <div class="card-body text-center">
-            <h3>Active Revenue</h3>
-            <h1 class="text-success">Rs. {{ total_revenue }}</h1>
+        <article>
+            <i class="fas fa-ticket"></i>
+            <span>Active Bookings</span>
+            <strong>{{ total_bookings }}</strong>
+        </article>
+    </section>
+
+    <section class="cx-admin-revenue">
+        <div>
+            <span class="eyebrow">Active Revenue</span>
+            <strong>Rs. {{ total_revenue }}</strong>
             <p class="text-muted mb-0">
                 Confirmed bookings only. Cancelled tickets and BookMyShow link opens are excluded.
             </p>
         </div>
-    </div>
+        <i class="fas fa-indian-rupee-sign"></i>
+    </section>
 
-    <div class="row mt-4">
-        <div class="col-md-4 mb-3">
-            <div class="card shadow text-center h-100">
-                <div class="card-body">
-                    <h5>All Booking Records</h5>
-                    <h2>{{ all_booking_rows }}</h2>
-                    <p class="text-muted mb-0">Active bookings, cancelled bookings, and external link opens.</p>
-                </div>
-            </div>
-        </div>
+    <section class="cx-admin-insights">
+        <article>
+            <span>All Booking Records</span>
+            <strong>{{ all_booking_rows }}</strong>
+            <p>Active bookings, cancelled bookings, and external link opens.</p>
+        </article>
 
-        <div class="col-md-4 mb-3">
-            <div class="card shadow text-center h-100">
-                <div class="card-body">
-                    <h5>Cancelled Bookings</h5>
-                    <h2>{{ cancelled_bookings }}</h2>
-                    <p class="text-muted mb-0">Excluded from revenue and active booking totals.</p>
-                </div>
-            </div>
-        </div>
+        <article>
+            <span>Cancelled Bookings</span>
+            <strong>{{ cancelled_bookings }}</strong>
+            <p>Excluded from revenue and active booking totals.</p>
+        </article>
 
-        <div class="col-md-4 mb-3">
-            <div class="card shadow text-center h-100">
-                <div class="card-body">
-                    <h5>BookMyShow Opens</h5>
-                    <h2>{{ external_link_opens }}</h2>
-                    <p class="text-muted mb-0">Tracked separately because payment happens outside CineVerse X.</p>
-                </div>
-            </div>
-        </div>
-    </div>
+        <article>
+            <span>BookMyShow Opens</span>
+            <strong>{{ external_link_opens }}</strong>
+            <p>Tracked separately because payment happens outside CineVerse X.</p>
+        </article>
+    </section>
 
     <div class="row mt-4">
         <div class="col-md-6 mb-3">
@@ -120,64 +102,25 @@
         </div>
     </div>
 
-    <div class="card shadow mt-4">
+    <div class="card shadow mt-4 cx-chart-card">
         <div class="card-body">
             <h3 class="text-center mb-4">Platform Analytics</h3>
             <canvas id="revenueChart" style="max-height: 350px;"></canvas>
         </div>
     </div>
 
-    <div class="row mt-4">
-        <div class="col-md-3 mb-3">
-            <a href="/movies" class="btn btn-dark w-100">Manage Movies</a>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <a href="/theaters" class="btn btn-dark w-100">Manage Theaters</a>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <a href="/shows" class="btn btn-dark w-100">Manage Shows</a>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <a href="/bookings" class="btn btn-dark w-100">View Bookings</a>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <a href="/admin/users" class="btn btn-dark w-100">Manage Users</a>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <a href="{{ url_for('admin_bp.system_settings') }}" class="btn btn-dark w-100">
-                <i class="fa-solid fa-gear"></i> System Settings
-            </a>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <a href="{{ url_for('admin_bp.revenue_charts') }}" class="btn btn-dark w-100">
-                <i class="fa-solid fa-chart-column"></i> Revenue Charts
-            </a>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <a href="{{ url_for('admin_bp.advanced_analytics') }}" class="btn btn-dark w-100">
-                <i class="fa-solid fa-chart-pie"></i> Advanced Analytics
-            </a>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <a href="{{ url_for('reports_bp.reports') }}" class="btn btn-dark w-100">
-                <i class="fa-solid fa-file-csv"></i> Reports
-            </a>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <a href="{{ url_for('activity_bp.activity_logs') }}" class="btn btn-dark w-100">
-                <i class="fa-solid fa-list-check"></i> Activity Logs
-            </a>
-        </div>
-    </div>
+    <section class="cx-admin-action-grid">
+        <a href="/movies"><i class="fas fa-film"></i><span>Manage Movies</span></a>
+        <a href="/theaters"><i class="fas fa-building"></i><span>Manage Theaters</span></a>
+        <a href="/shows"><i class="fas fa-ticket"></i><span>Manage Shows</span></a>
+        <a href="/bookings"><i class="fas fa-receipt"></i><span>View Bookings</span></a>
+        <a href="/admin/users"><i class="fas fa-users-gear"></i><span>Manage Users</span></a>
+        <a href="{{ url_for('admin_bp.system_settings') }}"><i class="fa-solid fa-gear"></i><span>System Settings</span></a>
+        <a href="{{ url_for('admin_bp.revenue_charts') }}"><i class="fa-solid fa-chart-column"></i><span>Revenue Charts</span></a>
+        <a href="{{ url_for('admin_bp.advanced_analytics') }}"><i class="fa-solid fa-chart-pie"></i><span>Advanced Analytics</span></a>
+        <a href="{{ url_for('reports_bp.reports') }}"><i class="fa-solid fa-file-csv"></i><span>Reports</span></a>
+        <a href="{{ url_for('activity_bp.activity_logs') }}"><i class="fa-solid fa-list-check"></i><span>Activity Logs</span></a>
+    </section>
 
 </div>
 
@@ -217,19 +160,19 @@
             plugins: {
                 legend: {
                     labels: {
-                        color: "#111827"
+                        color: "#F7F3EE"
                     }
                 }
             },
             scales: {
                 x: {
                     ticks: {
-                        color: "#111827"
+                        color: "#B8B7C6"
                     }
                 },
                 y: {
                     ticks: {
-                        color: "#111827"
+                        color: "#B8B7C6"
                     }
                 }
             }
