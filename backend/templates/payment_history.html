@@ -42,6 +42,7 @@
                     <th>Status</th>
                     <th>Reference</th>
                     <th>Date</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -55,9 +56,24 @@
                     <td>{{ payment.status }}</td>
                     <td>{{ payment.provider_reference or "-" }}</td>
                     <td>{{ payment.created_at.strftime("%Y-%m-%d %H:%M") if payment.created_at else "-" }}</td>
+                    <td class="d-flex gap-2 flex-wrap">
+                        <a class="btn btn-sm btn-outline-light" href="{{ url_for('payment_bp.payment_receipt', payment_id=payment.id) }}">Receipt</a>
+                        {% if payment.status == "failed" %}
+                        <form method="POST" action="{{ url_for('payment_bp.retry_payment', payment_id=payment.id) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="btn btn-sm btn-warning">Retry</button>
+                        </form>
+                        {% endif %}
+                        {% if session.get('user_role') == 'admin' and payment.status == "success" %}
+                        <form method="POST" action="{{ url_for('payment_bp.refund_payment', payment_id=payment.id) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="btn btn-sm btn-danger">Refund</button>
+                        </form>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% else %}
-                <tr><td colspan="8">No payment history yet.</td></tr>
+                <tr><td colspan="9">No payment history yet.</td></tr>
                 {% endfor %}
             </tbody>
         </table>

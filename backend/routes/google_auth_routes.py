@@ -100,12 +100,14 @@ def login_google_user(profile):
             email=email,
             google_id=google_id,
             password=generate_password_hash(secrets.token_urlsafe(32)),
+            email_verified=True,
         )
         db.session.add(user)
         db.session.flush()
         created = True
     else:
         user.google_id = user.google_id or google_id
+        user.email_verified = True
         if not user.name:
             user.name = name
 

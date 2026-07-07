@@ -10,6 +10,7 @@ from models.booking import Booking
 from models.ticket import Ticket
 from models.show import Show
 from models.booking import Payment
+from models.review import Review
 from models.setting import SystemSetting
 from services.activity_service import log_activity
 from services.analytics_service import build_advanced_analytics
@@ -57,6 +58,36 @@ def advanced_analytics():
         "advanced_analytics.html",
         analytics=build_advanced_analytics()
     )
+
+
+@admin_bp.route("/admin/reviews")
+@admin_required
+def moderate_reviews():
+    reviews = Review.query.order_by(Review.report_count.desc(), Review.created_at.desc()).all()
+    return render_template("moderate_reviews.html", reviews=reviews)
+
+
+@admin_bp.route("/admin/reviews/<int:review_id>/approve", methods=["POST"])
+@admin_required
+def approve_review(review_id):
+    review = Review.query.get_or_404(review_id)
+    review.status = "approved"
+    review.report_count = 0
+    db.session.commit()
+    log_activity("Review Approved", f"Approved review #{review.id}.", notify=True)
+    flash("Review approved.", "success")
+    return redirect(url_for("admin_bp.moderate_reviews"))
+
+
+@admin_bp.route("/admin/reviews/<int:review_id>/delete", methods=["POST"])
+@admin_required
+def delete_review(review_id):
+    review = Review.query.get_or_404(review_id)
+    db.session.delete(review)
+    db.session.commit()
+    log_activity("Review Deleted", f"Deleted review #{review_id}.", notify=True)
+    flash("Review deleted.", "success")
+    return redirect(url_for("admin_bp.moderate_reviews"))
 
 
 @admin_bp.route("/admin/delete-user/<int:user_id>")

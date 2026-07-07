@@ -5,6 +5,7 @@
 <h2>Add Screen</h2>
 
 <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
     <select name="theater_id" class="form-control mb-3" required>
         <option value="">Select Theater</option>
@@ -30,6 +31,24 @@
         placeholder="Total Seats"
         required
     >
+
+    <div class="row">
+        <div class="col-md-2">
+            <input type="number" name="vip_seats" class="form-control mb-3" placeholder="VIP">
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="premium_seats" class="form-control mb-3" placeholder="Premium">
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="standard_seats" class="form-control mb-3" placeholder="Standard">
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="couple_seats" class="form-control mb-3" placeholder="Couple">
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="wheelchair_seats" class="form-control mb-3" placeholder="Wheelchair">
+        </div>
+    </div>
 
     <button class="btn btn-success" type="submit">
         Add Screen

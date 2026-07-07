@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="cx-shell">
+    <div class="cx-page-head">
+        <div>
+            <span class="eyebrow">{{ theater.city }}</span>
+            <h1>{{ theater.name }}</h1>
+            <p>{{ theater.address or "Address not set" }}</p>
+        </div>
+        <a class="btn btn-outline-warning" href="{{ map_url }}" target="_blank" rel="noopener noreferrer">Open Map</a>
+    </div>
+
+    <section class="cx-stat-strip compact">
+        <div><span>Screens</span><strong>{{ theater.total_screens }}</strong></div>
+        <div><span>Capacity</span><strong>{{ theater.screens|sum(attribute='total_seats') }}</strong></div>
+        <div><span>Food</span><strong>{{ "Available" if theater.food_available else "No" }}</strong></div>
+        <div><span>Parking</span><strong>{{ theater.parking_info or "Check venue" }}</strong></div>
+    </section>
+
+    <section class="cx-theater-grid">
+        <article class="cx-theater-card">
+            <div class="cx-theater-body">
+                <h3>Amenities</h3>
+                <div class="amenity-row">
+                    {% for amenity in amenities %}
+                    <span>{{ amenity }}</span>
+                    {% else %}
+                    <span>Standard seating</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </article>
+
+        <article class="cx-theater-card">
+            <div class="cx-theater-body">
+                <h3>Screens</h3>
+                <div class="screen-list">
+                    {% for screen in theater.screens %}
+                    <span>
+                        {{ screen.screen_name }} / {{ screen.total_seats }} seats
+                        / VIP {{ screen.vip_seats or 0 }}
+                        / Premium {{ screen.premium_seats or 0 }}
+                        / Wheelchair {{ screen.wheelchair_seats or 0 }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <h2 class="mt-4">Nearby Theaters</h2>
+    <div class="cx-theater-grid">
+        {% for nearby in nearby_theaters %}
+        <article class="cx-theater-card">
+            <div class="cx-theater-top">
+                <h3>{{ nearby.name }}</h3>
+                <p>{{ nearby.address or nearby.city }}</p>
+            </div>
+            <div class="cx-theater-body">
+                <a class="btn btn-primary" href="{{ url_for('theater_bp.theater_details', theater_id=nearby.id) }}">Details</a>
+            </div>
+        </article>
+        {% else %}
+        <div class="alert alert-info">No nearby theaters found in this city.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

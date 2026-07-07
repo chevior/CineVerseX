@@ -14,6 +14,13 @@ AMENITY_SETS = [
 ]
 
 
+def split_amenities(theater, fallback_index=0):
+    if theater.amenities:
+        return [item.strip() for item in theater.amenities.split(",") if item.strip()]
+
+    return AMENITY_SETS[fallback_index % len(AMENITY_SETS)]
+
+
 def pagination_window(current_page, total_pages, radius=2):
     if total_pages <= 1:
         return []
@@ -113,11 +120,11 @@ def theaters():
             "seats": seats,
             "screens": sorted(theater.screens, key=lambda screen: screen.screen_name or ""),
             "linked_titles": linked_titles[:4],
-            "amenities": AMENITY_SETS[index % len(AMENITY_SETS)],
+            "amenities": split_amenities(theater, index),
             "area": area,
             "city": city_display,
             "address_display": address_display,
-            "map_query": f"{display_name} {address_display}".strip(),
+            "map_query": theater.map_url or f"https://www.google.com/maps/search/?api=1&query={(display_name + ' ' + address_display).strip()}",
             "format": theater_format,
         })
 
@@ -170,7 +177,11 @@ def add_theater():
             name=request.form["name"],
             city=request.form["city"],
             address=request.form["address"],
-            total_screens=int(request.form["total_screens"] or 1)
+            total_screens=int(request.form["total_screens"] or 1),
+            amenities=request.form.get("amenities", "").strip(),
+            parking_info=request.form.get("parking_info", "").strip(),
+            food_available="food_available" in request.form,
+            map_url=request.form.get("map_url", "").strip(),
         )
 
         db.session.add(theater)
@@ -199,7 +210,12 @@ def add_screen():
         screen = Screen(
             theater_id=int(request.form["theater_id"]),
             screen_name=request.form["screen_name"],
-            total_seats=int(request.form["total_seats"])
+            total_seats=int(request.form["total_seats"]),
+            vip_seats=int(request.form.get("vip_seats") or 0),
+            premium_seats=int(request.form.get("premium_seats") or 0),
+            standard_seats=int(request.form.get("standard_seats") or 0),
+            couple_seats=int(request.form.get("couple_seats") or 0),
+            wheelchair_seats=int(request.form.get("wheelchair_seats") or 0),
         )
 
         db.session.add(screen)
@@ -223,6 +239,23 @@ def screens():
         "screens.html",
         screens=all_screens
     )
+
+
+@theater_bp.route("/theater/<int:theater_id>")
+def theater_details(theater_id):
+    theater = Theater.query.get_or_404(theater_id)
+    nearby_theaters = Theater.query.filter(
+        Theater.id != theater.id,
+        Theater.city == theater.city
+    ).order_by(Theater.name.asc()).limit(6).all()
+
+    return render_template(
+        "theater_details.html",
+        theater=theater,
+        amenities=split_amenities(theater),
+        nearby_theaters=nearby_theaters,
+        map_url=theater.map_url or f"https://www.google.com/maps/search/?api=1&query={theater.name} {theater.city}",
+    )
 @theater_bp.route("/edit-theater/<int:theater_id>",
                   methods=["GET","POST"])
 @admin_required
@@ -236,6 +269,10 @@ def edit_theater(theater_id):
         theater.city = request.form["city"]
         theater.address = request.form["address"]
         theater.total_screens = int(request.form["total_screens"] or 1)
+        theater.amenities = request.form.get("amenities", "").strip()
+        theater.parking_info = request.form.get("parking_info", "").strip()
+        theater.food_available = "food_available" in request.form
+        theater.map_url = request.form.get("map_url", "").strip()
 
         db.session.commit()
         log_activity("Theater Edited", f"Edited theater: {theater.name}", notify=True)

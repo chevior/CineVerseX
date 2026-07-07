@@ -15,6 +15,7 @@
             <div class="card-body">
 
                 <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                     <div class="mb-3">
                         <label class="form-label">
@@ -54,6 +55,20 @@
                             name="password"
                             class="form-control"
                             placeholder="Create a password"
+                            required
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Confirm Password
+                        </label>
+
+                        <input
+                            type="password"
+                            name="confirm_password"
+                            class="form-control"
+                            placeholder="Confirm your password"
                             required
                         >
                     </div>

@@ -13,6 +13,14 @@ class Theater(db.Model):
 
     total_screens = db.Column(db.Integer, default=1)
 
+    amenities = db.Column(db.Text, default="")
+
+    parking_info = db.Column(db.String(255), default="")
+
+    food_available = db.Column(db.Boolean, default=True)
+
+    map_url = db.Column(db.String(500), default="")
+
     screens = db.relationship(
         "Screen",
         back_populates="theater",
@@ -39,6 +47,16 @@ class Screen(db.Model):
     screen_name = db.Column(db.String(100))
 
     total_seats = db.Column(db.Integer)
+
+    vip_seats = db.Column(db.Integer, default=0)
+
+    premium_seats = db.Column(db.Integer, default=0)
+
+    standard_seats = db.Column(db.Integer, default=0)
+
+    couple_seats = db.Column(db.Integer, default=0)
+
+    wheelchair_seats = db.Column(db.Integer, default=0)
 
     theater = db.relationship("Theater", back_populates="screens")
     shows = db.relationship(

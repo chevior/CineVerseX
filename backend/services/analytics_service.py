@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from sqlalchemy import func
 
 from extensions import db
-from models.booking import Booking
+from models.booking import Booking, Payment
 from models.movie import Movie
 from models.show import Show
 from models.theater import Screen, Theater
@@ -58,7 +58,16 @@ def _top_rows(query, limit=10):
 
 
 def build_advanced_analytics():
+    cache_key = "ADVANCED_ANALYTICS_CACHE"
     now = datetime.utcnow()
+    try:
+        from flask import current_app
+        cached_payload = current_app.config.get(cache_key)
+        if cached_payload and (now - cached_payload["created_at"]).total_seconds() < 60:
+            return cached_payload["data"]
+    except RuntimeError:
+        current_app = None
+
     month_start = datetime(now.year, now.month, 1)
     active_since = now - timedelta(days=30)
 
@@ -89,6 +98,21 @@ def build_advanced_analytics():
         for hour, count in peak_hours.most_common(10)
     ]
 
+    city_analytics = db.session.query(
+        Theater.city,
+        func.count(Booking.id)
+    ).join(Show, Show.theater_id == Theater.id)\
+     .join(Booking, Booking.show_id == Show.id)\
+     .filter(active_engagement_filter())\
+     .group_by(Theater.city)\
+     .order_by(func.count(Booking.id).desc())
+
+    payment_statuses = db.session.query(
+        Payment.status,
+        func.count(Payment.id)
+    ).group_by(Payment.status)\
+     .order_by(func.count(Payment.id).desc())
+
     bookings_by_movie = db.session.query(
         Movie.title,
         func.count(Booking.id)
@@ -114,12 +138,13 @@ def build_advanced_analytics():
 
     new_users_this_month = User.query.filter(User.created_at >= month_start).count()
 
-    return {
+    data = {
         "summary": {
             "total_revenue": round(total_revenue, 2),
             "total_bookings": total_bookings,
             "all_booking_records": all_booking_records,
             "cancelled_bookings": cancelled_count,
+            "cancellation_rate": round((cancelled_count / all_booking_records) * 100, 1) if all_booking_records else 0,
             "external_link_opens": external_link_opens,
             "occupancy_percent": occupancy_percent,
             "active_users": active_users,
@@ -135,4 +160,14 @@ def build_advanced_analytics():
         "top_movies": _top_rows(bookings_by_movie.filter(confirmed_booking_filter()), 10),
         "top_theaters": _top_rows(bookings_by_theater.filter(confirmed_booking_filter()), 10),
         "peak_hours": top_peak_hours,
+        "city_analytics": _top_rows(city_analytics, 10),
+        "payment_statuses": _top_rows(payment_statuses, 10),
     }
+
+    if current_app:
+        current_app.config[cache_key] = {
+            "created_at": now,
+            "data": data,
+        }
+
+    return data

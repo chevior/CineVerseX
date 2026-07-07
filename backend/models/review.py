@@ -12,6 +12,9 @@ class Review(db.Model):
     movie_id = db.Column(db.Integer, db.ForeignKey("movies.id"), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.Text, default="")
+    likes = db.Column(db.Integer, default=0)
+    report_count = db.Column(db.Integer, default=0)
+    status = db.Column(db.String(30), default="approved")
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(
         db.DateTime,

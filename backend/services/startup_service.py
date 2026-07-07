@@ -94,6 +94,18 @@ def ensure_schema_updates():
             row[1]
             for row in connection.exec_driver_sql("PRAGMA table_info(payments)")
         }
+        theater_columns = {
+            row[1]
+            for row in connection.exec_driver_sql("PRAGMA table_info(theaters)")
+        }
+        screen_columns = {
+            row[1]
+            for row in connection.exec_driver_sql("PRAGMA table_info(screens)")
+        }
+        review_columns = {
+            row[1]
+            for row in connection.exec_driver_sql("PRAGMA table_info(reviews)")
+        }
 
         connection.exec_driver_sql(
             """
@@ -116,6 +128,15 @@ def ensure_schema_updates():
 
         if "external_booking_url" not in booking_columns:
             connection.exec_driver_sql("ALTER TABLE bookings ADD COLUMN external_booking_url VARCHAR(500)")
+
+        booking_updates = {
+            "refund_status": "ALTER TABLE bookings ADD COLUMN refund_status VARCHAR(50) DEFAULT ''",
+            "refund_reference": "ALTER TABLE bookings ADD COLUMN refund_reference VARCHAR(120) DEFAULT ''",
+        }
+
+        for column, statement in booking_updates.items():
+            if column not in booking_columns:
+                connection.exec_driver_sql(statement)
 
         if "booking_id" not in ticket_columns:
             connection.exec_driver_sql("ALTER TABLE tickets ADD COLUMN booking_id INTEGER")
@@ -152,6 +173,11 @@ def ensure_schema_updates():
             connection.exec_driver_sql("ALTER TABLE users ADD COLUMN google_id VARCHAR(120)")
 
         user_updates = {
+            "email_verified": "ALTER TABLE users ADD COLUMN email_verified BOOLEAN DEFAULT 0",
+            "email_verification_token": "ALTER TABLE users ADD COLUMN email_verification_token VARCHAR(120) DEFAULT ''",
+            "password_reset_token": "ALTER TABLE users ADD COLUMN password_reset_token VARCHAR(120) DEFAULT ''",
+            "password_reset_expires_at": "ALTER TABLE users ADD COLUMN password_reset_expires_at DATETIME",
+            "remember_login": "ALTER TABLE users ADD COLUMN remember_login BOOLEAN DEFAULT 0",
             "subscription_plan": "ALTER TABLE users ADD COLUMN subscription_plan VARCHAR(30) DEFAULT 'free'",
             "subscription_status": "ALTER TABLE users ADD COLUMN subscription_status VARCHAR(30) DEFAULT 'active'",
             "subscription_started_at": "ALTER TABLE users ADD COLUMN subscription_started_at DATETIME",
@@ -166,11 +192,47 @@ def ensure_schema_updates():
             "user_id": "ALTER TABLE payments ADD COLUMN user_id INTEGER",
             "purpose": "ALTER TABLE payments ADD COLUMN purpose VARCHAR(50) DEFAULT 'booking'",
             "provider_reference": "ALTER TABLE payments ADD COLUMN provider_reference VARCHAR(120)",
+            "receipt_number": "ALTER TABLE payments ADD COLUMN receipt_number VARCHAR(80) DEFAULT ''",
+            "failure_reason": "ALTER TABLE payments ADD COLUMN failure_reason VARCHAR(255) DEFAULT ''",
+            "refunded_at": "ALTER TABLE payments ADD COLUMN refunded_at DATETIME",
             "created_at": "ALTER TABLE payments ADD COLUMN created_at DATETIME",
         }
 
         for column, statement in payment_updates.items():
             if column not in payment_columns:
+                connection.exec_driver_sql(statement)
+
+        theater_updates = {
+            "amenities": "ALTER TABLE theaters ADD COLUMN amenities TEXT DEFAULT ''",
+            "parking_info": "ALTER TABLE theaters ADD COLUMN parking_info VARCHAR(255) DEFAULT ''",
+            "food_available": "ALTER TABLE theaters ADD COLUMN food_available BOOLEAN DEFAULT 1",
+            "map_url": "ALTER TABLE theaters ADD COLUMN map_url VARCHAR(500) DEFAULT ''",
+        }
+
+        for column, statement in theater_updates.items():
+            if column not in theater_columns:
+                connection.exec_driver_sql(statement)
+
+        screen_updates = {
+            "vip_seats": "ALTER TABLE screens ADD COLUMN vip_seats INTEGER DEFAULT 0",
+            "premium_seats": "ALTER TABLE screens ADD COLUMN premium_seats INTEGER DEFAULT 0",
+            "standard_seats": "ALTER TABLE screens ADD COLUMN standard_seats INTEGER DEFAULT 0",
+            "couple_seats": "ALTER TABLE screens ADD COLUMN couple_seats INTEGER DEFAULT 0",
+            "wheelchair_seats": "ALTER TABLE screens ADD COLUMN wheelchair_seats INTEGER DEFAULT 0",
+        }
+
+        for column, statement in screen_updates.items():
+            if column not in screen_columns:
+                connection.exec_driver_sql(statement)
+
+        review_updates = {
+            "likes": "ALTER TABLE reviews ADD COLUMN likes INTEGER DEFAULT 0",
+            "report_count": "ALTER TABLE reviews ADD COLUMN report_count INTEGER DEFAULT 0",
+            "status": "ALTER TABLE reviews ADD COLUMN status VARCHAR(30) DEFAULT 'approved'",
+        }
+
+        for column, statement in review_updates.items():
+            if column not in review_columns:
                 connection.exec_driver_sql(statement)
 
         setting_updates = {

@@ -109,6 +109,7 @@
 
             {% if current_user.is_authenticated %}
             <form method="POST" action="{{ url_for('movie_bp.add_review', movie_id=movie.id) }}" class="cx-review-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <select name="rating" class="form-control" required>
                     <option value="5">5 - Excellent</option>
                     <option value="4">4 - Good</option>
@@ -127,7 +128,19 @@
                     <strong>{{ review.user.name }}</strong>
                     <span><i class="fas fa-star"></i> {{ review.rating }}/5</span>
                     {% if review.comment %}<p>{{ review.comment }}</p>{% endif %}
-                    <small>{{ review.created_at.strftime("%d %b %Y, %I:%M %p") }}</small>
+                    <small>{{ review.created_at.strftime("%d %b %Y, %I:%M %p") }} / {{ review.likes or 0 }} likes</small>
+                    {% if current_user.is_authenticated %}
+                    <div class="d-flex gap-2 mt-2">
+                        <form method="POST" action="{{ url_for('movie_bp.like_review', review_id=review.id) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="btn btn-sm btn-outline-light">Like</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('movie_bp.report_review', review_id=review.id) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="btn btn-sm btn-outline-warning">Report</button>
+                        </form>
+                    </div>
+                    {% endif %}
                 </article>
                 {% else %}
                 <p class="text-muted">No reviews yet.</p>

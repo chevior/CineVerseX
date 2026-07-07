@@ -20,6 +20,16 @@ class User(UserMixin, db.Model):
 
     profile_picture = db.Column(db.String(255), default="")
 
+    email_verified = db.Column(db.Boolean, default=False)
+
+    email_verification_token = db.Column(db.String(120), default="")
+
+    password_reset_token = db.Column(db.String(120), default="")
+
+    password_reset_expires_at = db.Column(db.DateTime)
+
+    remember_login = db.Column(db.Boolean, default=False)
+
     subscription_plan = db.Column(db.String(30), default="free")
 
     subscription_status = db.Column(db.String(30), default="active")

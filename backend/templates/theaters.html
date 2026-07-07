@@ -141,7 +141,7 @@
 
                 <div class="cx-release-actions">
                     <a
-                        href="https://www.google.com/maps/search/?api=1&query={{ card.map_query|urlencode }}"
+                        href="{{ card.map_query }}"
                         class="btn btn-outline-warning"
                         target="_blank"
                         rel="noopener noreferrer">
@@ -149,6 +149,9 @@
                     </a>
                     <a href="{{ url_for('show_bp.shows') }}" class="btn btn-primary">
                         Releases
+                    </a>
+                    <a href="{{ url_for('theater_bp.theater_details', theater_id=theater.id) }}" class="btn btn-outline-light">
+                        Details
                     </a>
                 </div>
 

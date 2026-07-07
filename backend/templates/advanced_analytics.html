@@ -30,7 +30,7 @@
         </div>
         <div>
             <span>Cancelled</span>
-            <strong>{{ analytics.summary.cancelled_bookings }}</strong>
+            <strong>{{ analytics.summary.cancelled_bookings }} / {{ analytics.summary.cancellation_rate }}%</strong>
         </div>
     </section>
 
@@ -94,6 +94,14 @@
             <h3>Bookings by Theater</h3>
             <canvas id="theaterBookingsChart"></canvas>
         </article>
+        <article>
+            <h3>City-wise Analytics</h3>
+            <canvas id="cityAnalyticsChart"></canvas>
+        </article>
+        <article>
+            <h3>Payment Status</h3>
+            <canvas id="paymentStatusChart"></canvas>
+        </article>
     </section>
 </div>
 
@@ -149,6 +157,8 @@ chart("topMoviesChart", "bar", analytics.top_movies, "Booked Tickets");
 chart("topTheatersChart", "bar", analytics.top_theaters, "Booked Tickets");
 chart("movieBookingsChart", "bar", analytics.bookings_by_movie, "Bookings");
 chart("theaterBookingsChart", "bar", analytics.bookings_by_theater, "Bookings");
+chart("cityAnalyticsChart", "bar", analytics.city_analytics, "Bookings");
+chart("paymentStatusChart", "bar", analytics.payment_statuses, "Payments");
 </script>
 
 {% endblock %}

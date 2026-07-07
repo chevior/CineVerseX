@@ -7,7 +7,7 @@ from urllib.parse import parse_qs, quote_plus, urlencode, urlparse
 from urllib.request import Request, urlopen
 from uuid import uuid4
 
-from flask import Blueprint, Response, flash, render_template, request, current_app, redirect, url_for
+from flask import Blueprint, Response, flash, render_template, request, current_app, redirect, session, url_for
 from flask_login import current_user
 from sqlalchemy import func, or_
 from werkzeug.utils import secure_filename
@@ -1162,7 +1162,7 @@ def movie_details(movie_id):
 
     movie = Movie.query.get_or_404(movie_id)
     enrich_movie_from_imdbapi(movie)
-    reviews = Review.query.filter_by(movie_id=movie_id)\
+    reviews = Review.query.filter_by(movie_id=movie_id, status="approved")\
         .order_by(Review.created_at.desc())\
         .all()
     avg_rating = db.session.query(
@@ -1221,7 +1221,7 @@ def add_review(movie_id):
         return redirect(url_for("movie_bp.movie_details", movie_id=movie_id))
 
     existing_review = Review.query.filter_by(
-        user_id=current_user.id,
+        user_id=session["user_id"],
         movie_id=movie_id
     ).first()
 
@@ -1230,16 +1230,39 @@ def add_review(movie_id):
         existing_review.comment = comment
     else:
         review = Review(
-            user_id=current_user.id,
+            user_id=session["user_id"],
             movie_id=movie_id,
             rating=rating,
-            comment=comment
+            comment=comment,
+            status="approved"
         )
         db.session.add(review)
 
     db.session.commit()
     flash("Review submitted successfully.", "success")
     return redirect(url_for("movie_bp.movie_details", movie_id=movie_id))
+
+
+@movie_bp.route("/review/<int:review_id>/like", methods=["POST"])
+@login_required
+def like_review(review_id):
+    review = Review.query.get_or_404(review_id)
+    review.likes = (review.likes or 0) + 1
+    db.session.commit()
+    flash("Review liked.", "success")
+    return redirect(url_for("movie_bp.movie_details", movie_id=review.movie_id))
+
+
+@movie_bp.route("/review/<int:review_id>/report", methods=["POST"])
+@login_required
+def report_review(review_id):
+    review = Review.query.get_or_404(review_id)
+    review.report_count = (review.report_count or 0) + 1
+    if review.report_count >= 3:
+        review.status = "reported"
+    db.session.commit()
+    flash("Review reported for moderation.", "warning")
+    return redirect(url_for("movie_bp.movie_details", movie_id=review.movie_id))
 
 
 @movie_bp.route("/search")

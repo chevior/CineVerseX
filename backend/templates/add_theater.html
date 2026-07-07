@@ -7,6 +7,7 @@
 <h2>Add Theater</h2>
 
 <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
     <input
         name="name"
@@ -34,6 +35,29 @@
         class="form-control mb-3"
         placeholder="Total Screens"
     >
+
+    <input
+        name="amenities"
+        class="form-control mb-3"
+        placeholder="Amenities, comma separated"
+    >
+
+    <input
+        name="parking_info"
+        class="form-control mb-3"
+        placeholder="Parking information"
+    >
+
+    <input
+        name="map_url"
+        class="form-control mb-3"
+        placeholder="Google Maps URL"
+    >
+
+    <label class="form-check mb-3">
+        <input type="checkbox" class="form-check-input" name="food_available" checked>
+        <span class="form-check-label">Food available</span>
+    </label>
 
     <button
         class="btn btn-success"

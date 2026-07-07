@@ -7,6 +7,7 @@
     <h2>Edit Theater</h2>
 
     <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
         <input
             type="text"
@@ -33,6 +34,35 @@
             value="{{ theater.total_screens }}"
             class="form-control mb-3"
         >
+
+        <input
+            type="text"
+            name="amenities"
+            value="{{ theater.amenities or '' }}"
+            class="form-control mb-3"
+            placeholder="Amenities, comma separated"
+        >
+
+        <input
+            type="text"
+            name="parking_info"
+            value="{{ theater.parking_info or '' }}"
+            class="form-control mb-3"
+            placeholder="Parking information"
+        >
+
+        <input
+            type="url"
+            name="map_url"
+            value="{{ theater.map_url or '' }}"
+            class="form-control mb-3"
+            placeholder="Google Maps URL"
+        >
+
+        <label class="form-check mb-3">
+            <input type="checkbox" class="form-check-input" name="food_available" {% if theater.food_available %}checked{% endif %}>
+            <span class="form-check-label">Food available</span>
+        </label>
 
         <button class="btn btn-success">
             Update Theater

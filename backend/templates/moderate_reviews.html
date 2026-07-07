@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="cx-shell">
+    <div class="cx-page-head">
+        <div>
+            <span class="eyebrow">Admin</span>
+            <h1>Review Moderation</h1>
+            <p>Approve reported reviews or remove comments that should not stay public.</p>
+        </div>
+    </div>
+
+    <div class="table-responsive cx-table-wrap">
+        <table class="table table-dark table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Movie</th>
+                    <th>User</th>
+                    <th>Rating</th>
+                    <th>Comment</th>
+                    <th>Likes</th>
+                    <th>Reports</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for review in reviews %}
+                <tr>
+                    <td>{{ review.id }}</td>
+                    <td>{{ review.movie.title if review.movie else "-" }}</td>
+                    <td>{{ review.user.email if review.user else "-" }}</td>
+                    <td>{{ review.rating }}/5</td>
+                    <td>{{ review.comment or "-" }}</td>
+                    <td>{{ review.likes or 0 }}</td>
+                    <td>{{ review.report_count or 0 }}</td>
+                    <td>{{ review.status }}</td>
+                    <td class="d-flex gap-2">
+                        <form method="POST" action="{{ url_for('admin_bp.approve_review', review_id=review.id) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="btn btn-sm btn-success">Approve</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('admin_bp.delete_review', review_id=review.id) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="9">No reviews yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

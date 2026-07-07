@@ -11,6 +11,8 @@ class Booking(db.Model):
     total_amount = db.Column(db.Float)
     status = db.Column(db.String(50), default="Booked")
     external_booking_url = db.Column(db.String(500))
+    refund_status = db.Column(db.String(50), default="")
+    refund_reference = db.Column(db.String(120), default="")
     booked_at = db.Column(db.DateTime, default=datetime.utcnow)
     cancelled_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -34,6 +36,9 @@ class Payment(db.Model):
     status = db.Column(db.String(50), default="success")
     purpose = db.Column(db.String(50), default="booking")
     provider_reference = db.Column(db.String(120))
+    receipt_number = db.Column(db.String(80), default="")
+    failure_reason = db.Column(db.String(255), default="")
+    refunded_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     booking = db.relationship("Booking", back_populates="payment")
