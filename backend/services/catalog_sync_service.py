@@ -18,6 +18,7 @@ from services.catalog_data import (
     CURATED_UPCOMING_RELEASES,
     FEATURED_MOVIE_DETAILS,
     IMDBAPI_BASE_URL,
+    SAMPLE_POSTER_MOVIES,
     THEATER_NETWORK,
     THEATER_RENAMES,
     TMDB_BASE_URL,
@@ -697,6 +698,80 @@ def sync_curated_upcoming_catalog():
         )
 
     db.session.commit()
+
+
+def sync_sample_poster_catalog():
+    theater = Theater.query.filter_by(name="BookMyShow", city="Bengaluru").first()
+
+    if not theater:
+        theater = Theater(
+            name="BookMyShow",
+            city="Bengaluru",
+            address="External booking partner",
+            total_screens=1
+        )
+        db.session.add(theater)
+        db.session.flush()
+
+    screen = ensure_screen(theater, "External Booking", 0)
+    db.session.flush()
+
+    for item in SAMPLE_POSTER_MOVIES:
+        movie = Movie.query.filter_by(title=item["title"]).first()
+
+        if not movie:
+            movie = Movie(
+                title=item["title"],
+                description=item["description"]
+            )
+            db.session.add(movie)
+
+        movie.description = item["description"]
+        movie.poster_url = item["poster_url"]
+        movie.backdrop_url = item.get("backdrop_url") or item["poster_url"]
+        movie.language = item["language"]
+        movie.genre = item["genre"]
+        movie.release_date = item["release_date"]
+        movie.rating = item["rating"]
+        movie.runtime_minutes = item["runtime_minutes"]
+        movie.certificate = item["certificate"]
+        movie.cast_names = item["cast_names"]
+        movie.director_names = item["director_names"]
+        movie.trailer_url = item["trailer_url"]
+        movie.data_source = "curated"
+
+        bookmyshow_links = bookmyshow_links_for_title(item["title"])
+        movie.bookmyshow_movie_url = bookmyshow_links["movie"]
+        movie.bookmyshow_ticket_url = bookmyshow_links["ticket"]
+        movie.bookmyshow_url = bookmyshow_links["primary"]
+        movie.justwatch_url = f"https://www.justwatch.com/in/search?q={quote_plus(item['title'])}"
+
+        db.session.flush()
+
+        show_time = f"{item['release_date']} 19:30"
+        existing_show = Show.query.filter_by(
+            movie_id=movie.id,
+            theater_id=theater.id,
+            screen_id=screen.id
+        ).first()
+
+        if existing_show:
+            existing_show.show_time = show_time
+            existing_show.price = 0
+            continue
+
+        db.session.add(
+            Show(
+                movie_id=movie.id,
+                theater_id=theater.id,
+                screen_id=screen.id,
+                show_time=show_time,
+                price=0
+            )
+        )
+
+    db.session.commit()
+    return True
 
 
 def sync_booking_catalog_from_imdbapi():

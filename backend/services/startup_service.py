@@ -13,6 +13,7 @@ from services.catalog_data import DEFAULT_DISCORD_LINK
 from services.catalog_sync_service import (
     apply_featured_movie_details,
     backfill_missing_movie_posters,
+    sync_sample_poster_catalog,
     sync_booking_catalog_from_imdbapi,
     sync_booking_catalog_from_tmdb,
     sync_curated_upcoming_catalog,
@@ -273,4 +274,5 @@ def initialize_app_data():
     elif not os.environ.get("SKIP_CURATED_CATALOG_SEED", "").lower() in {"1", "true", "yes"}:
         sync_curated_upcoming_catalog()
 
+    sync_sample_poster_catalog()
     apply_featured_movie_details()
