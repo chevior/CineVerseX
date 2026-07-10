@@ -18,47 +18,23 @@
         <div class="cx-auth-card">
             <div class="cx-auth-card-head">
                 <span class="eyebrow">Sign in</span>
-                <h2>Login</h2>
-                <p>Use Google or your CineVerse account.</p>
+                <h2>Continue with Google</h2>
+                <p>Use your Google account to enter CineVerse X. New accounts are created automatically after Google verifies your email.</p>
             </div>
 
-            <div class="cx-auth-card-body">
+            <div class="cx-auth-card-body cx-google-only-login">
                 <a href="{{ url_for('google_auth_bp.google_login') }}" class="btn btn-light btn-lg w-100 cx-google-login">
-                    <i class="fa-brands fa-google"></i> Continue with Google
+                    <i class="fa-brands fa-google"></i>
+                    Sign in with Google
                 </a>
 
-                <div class="cx-login-divider"><span>or</span></div>
-
-                <form method="POST" action="{{ url_for('auth_bp.login') }}" class="cx-login-form">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-                    <label>
-                        <span>Email</span>
-                        <input class="form-control" type="email" name="email" autocomplete="email" required>
-                    </label>
-
-                    <label>
-                        <span>Password</span>
-                        <input class="form-control" type="password" name="password" autocomplete="current-password" required>
-                    </label>
-
-                    <label class="d-flex align-items-center gap-2">
-                        <input type="checkbox" name="remember" value="1">
-                        <span>Remember me</span>
-                    </label>
-
-                    <button class="btn btn-dark btn-lg w-100" type="submit">
-                        Login
-                    </button>
-                </form>
-
-                <div class="d-flex justify-content-between flex-wrap gap-2 mt-3">
-                    <a href="{{ url_for('auth_bp.reset_password') }}">Reset password</a>
-                    <a href="{{ url_for('auth_bp.register') }}">Create account</a>
+                <div class="cx-google-login-note">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>No password is stored for Google sign-ins. You can manage account access from your Google account.</span>
                 </div>
 
                 {% if system_settings and system_settings.support_discord_link %}
-                <div class="mt-3 text-center">
+                <div class="cx-auth-help">
                     <a
                         href="{{ system_settings.support_discord_link }}"
                         target="_blank"

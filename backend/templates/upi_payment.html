@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="cx-shell">
+    <section class="cx-upi-page">
+        <div class="cx-upi-copy">
+            <span class="eyebrow">UPI Pay</span>
+            <h1>Complete Pro Payment</h1>
+            <p>Scan the QR code or open your UPI app to activate CineVerse X Pro.</p>
+
+            <div class="cx-upi-details">
+                <div>
+                    <span>Amount</span>
+                    <strong>Rs. {{ amount|int }}</strong>
+                </div>
+                <div>
+                    <span>Plan</span>
+                    <strong>Pro / {{ days }} days</strong>
+                </div>
+            </div>
+
+            <ul class="cx-upi-benefits">
+                <li>Pro badge and premium account state</li>
+                <li>Priority wishlist and saved movie workflow</li>
+                <li>Premium discovery shortcuts and booking-link history</li>
+            </ul>
+
+            <div class="cx-upi-actions">
+                <a class="btn btn-primary" href="{{ open_payment_url }}">
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                    Open UPI App
+                </a>
+                <a class="btn btn-outline-warning" href="{{ url_for('payment_bp.payment_history') }}">
+                    Payment History
+                </a>
+            </div>
+        </div>
+
+        <div class="cx-upi-qr-card">
+            <img src="{{ qr_data_uri }}" alt="Scan to pay">
+            <p>Scan with any UPI app.</p>
+        </div>
+    </section>
+</div>
+
+{% endblock %}

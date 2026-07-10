@@ -1,7 +1,11 @@
 import os
+from base64 import b64encode
+from io import BytesIO
 from datetime import datetime, timedelta
+from urllib.parse import quote_plus, urlencode
 from uuid import uuid4
 
+import qrcode
 from flask import Blueprint, Response, flash, redirect, render_template, request, session, url_for
 
 from auth.guards import login_required
@@ -12,12 +16,72 @@ from services.activity_service import log_activity
 
 payment_bp = Blueprint("payment_bp", __name__, url_prefix="/payments")
 
-PRO_PLAN_PRICE = 199.0
+PRO_PLAN_PRICE = 69.0
 PRO_PLAN_DAYS = 30
+UPI_PAYEE_NAME = "CineVerseX"
 
 
-def razorpay_configured():
-    return bool(os.environ.get("RAZORPAY_KEY_ID") and os.environ.get("RAZORPAY_KEY_SECRET"))
+def env_file_value(key):
+    env_paths = [
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".env")),
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".env")),
+    ]
+
+    for env_path in env_paths:
+        if not os.path.isfile(env_path):
+            continue
+
+        with open(env_path, "r", encoding="utf-8") as env_file:
+            for line in env_file:
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+
+                name, value = line.split("=", 1)
+                if name.strip() == key:
+                    return value.strip().strip('"').strip("'")
+
+    return ""
+
+
+def configured_upi_id():
+    return (
+        os.environ.get("UPI_ID", "").strip()
+        or env_file_value("UPI_ID")
+    )
+
+
+def upi_payment_enabled():
+    return bool(configured_upi_id())
+
+
+def upi_payment_url(amount=None, note=None):
+    upi_id = configured_upi_id()
+
+    if not upi_id:
+        return ""
+
+    params = {
+        "pa": upi_id,
+        "pn": UPI_PAYEE_NAME,
+        "am": str(int(amount or PRO_PLAN_PRICE)),
+        "cu": "INR",
+        "tn": note or f"{UPI_PAYEE_NAME} Pro Plan",
+    }
+    return f"upi://pay?{urlencode(params, quote_via=quote_plus)}"
+
+
+def upi_qr_data_uri(payment_url):
+    qr_image = qrcode.make(payment_url)
+    buffer = BytesIO()
+    qr_image.save(buffer, format="PNG")
+    encoded = b64encode(buffer.getvalue()).decode("ascii")
+    return f"data:image/png;base64,{encoded}"
+
+
+def upi_url_for_payment(payment):
+    note = f"{UPI_PAYEE_NAME} Pro"
+    return upi_payment_url(payment.amount or PRO_PLAN_PRICE, note)
 
 
 def current_subscription(user):
@@ -52,8 +116,57 @@ def pricing():
         subscription=subscription,
         pro_price=PRO_PLAN_PRICE,
         pro_days=PRO_PLAN_DAYS,
-        razorpay_enabled=razorpay_configured(),
+        upi_id=configured_upi_id(),
+        upi_payment_enabled=upi_payment_enabled(),
     )
+
+
+@payment_bp.route("/upi/pro")
+@login_required
+def upi_pro_payment():
+    if not upi_payment_enabled():
+        flash("UPI is not configured yet. Add UPI_ID in .env.", "warning")
+        return redirect(url_for("payment_bp.pricing"))
+
+    user = User.query.get_or_404(session["user_id"])
+    reference = f"upi_{uuid4().hex[:12]}"
+    payment_url = upi_payment_url(PRO_PLAN_PRICE, f"{UPI_PAYEE_NAME} Pro")
+    payment = Payment(
+        user_id=user.id,
+        amount=PRO_PLAN_PRICE,
+        method="UPI",
+        status=f"pending:{reference}",
+        purpose="subscription_pro",
+        provider_reference=reference,
+        created_at=datetime.utcnow(),
+    )
+    db.session.add(payment)
+    db.session.commit()
+    log_activity("Payment Success", f"UPI Pro payment page opened for {user.email}.", user_id=user.id)
+
+    return render_template(
+        "upi_payment.html",
+        payment=payment,
+        amount=PRO_PLAN_PRICE,
+        days=PRO_PLAN_DAYS,
+        open_payment_url=url_for("payment_bp.open_upi_payment", payment_id=payment.id),
+        qr_data_uri=upi_qr_data_uri(payment_url),
+    )
+
+
+@payment_bp.route("/upi/open/<int:payment_id>")
+@login_required
+def open_upi_payment(payment_id):
+    payment = Payment.query.get_or_404(payment_id)
+
+    if payment.user_id != session["user_id"]:
+        return "Access denied", 403
+
+    if not upi_payment_enabled():
+        flash("UPI is not configured yet. Add UPI_ID in .env.", "warning")
+        return redirect(url_for("payment_bp.pricing"))
+
+    return redirect(upi_url_for_payment(payment))
 
 
 @payment_bp.route("/subscribe/free", methods=["POST"])
@@ -77,7 +190,7 @@ def subscribe_pro():
     user = User.query.get_or_404(session["user_id"])
     now = datetime.utcnow()
     reference = f"sub_{uuid4().hex[:14]}"
-    method = "Razorpay" if razorpay_configured() else "Demo"
+    method = "UPI" if upi_payment_enabled() else "Demo"
     status = "success" if method == "Demo" else f"pending:{reference}"
 
     payment = Payment(
@@ -97,12 +210,12 @@ def subscribe_pro():
         user.subscription_status = "active"
         user.subscription_started_at = now
         user.subscription_expires_at = now + timedelta(days=PRO_PLAN_DAYS)
-        flash("Pro activated in demo mode. Add Razorpay keys on Render for live payments.", "success")
+        flash("Pro activated in demo mode. Add UPI_ID for live UPI payments.", "success")
         log_activity("Payment Success", f"Demo Pro subscription activated for {user.email}.", user_id=user.id, notify=True)
     else:
         user.subscription_status = "pending"
-        flash("Razorpay checkout initialized. Complete payment verification to activate Pro.", "info")
-        log_activity("Payment Success", f"Razorpay Pro checkout initialized for {user.email}.", user_id=user.id)
+        flash("UPI payment initialized. Complete payment in your UPI app and keep the UPI reference.", "info")
+        log_activity("Payment Success", f"UPI Pro payment initialized for {user.email}.", user_id=user.id)
 
     db.session.commit()
     return redirect(url_for("payment_bp.payment_history"))
@@ -203,17 +316,17 @@ def refund_payment(payment_id):
     return redirect(url_for("payment_bp.payment_history"))
 
 
-@payment_bp.route("/razorpay/<int:booking_id>")
+@payment_bp.route("/upi/<int:booking_id>")
 @login_required
-def razorpay_checkout(booking_id):
+def upi_checkout(booking_id):
     booking = Booking.query.get_or_404(booking_id)
 
     if booking.user_id != session["user_id"]:
         return "Access denied", 403
 
-    if not razorpay_configured():
-        flash("Razorpay is not configured yet. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET.", "warning")
-        log_activity("Payment Failure", f"Razorpay not configured for booking #{booking.id}")
+    if not upi_payment_enabled():
+        flash("UPI is not configured yet. Add UPI_ID in .env.", "warning")
+        log_activity("Payment Failure", f"UPI not configured for booking #{booking.id}")
         return redirect(url_for("payment_bp.payment_history"))
 
     payment = Payment.query.filter_by(booking_id=booking.id).first()
@@ -222,15 +335,15 @@ def razorpay_checkout(booking_id):
             booking_id=booking.id,
             user_id=booking.user_id,
             amount=booking.total_amount,
-            method="Razorpay",
+            method="UPI",
             purpose="booking",
         )
         db.session.add(payment)
 
-    payment.method = "Razorpay"
+    payment.method = "UPI"
     payment.status = f"pending:{uuid4().hex[:12]}"
     payment.receipt_number = payment.receipt_number or f"CX-{datetime.utcnow().strftime('%Y%m%d')}-{uuid4().hex[:8].upper()}"
     payment.created_at = payment.created_at or datetime.utcnow()
     db.session.commit()
-    log_activity("Payment Success", f"Razorpay checkout initialized for booking #{booking.id}")
+    log_activity("Payment Success", f"UPI payment initialized for booking #{booking.id}")
     return render_template("payment_success.html", booking=booking, payment=payment)

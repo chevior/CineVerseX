@@ -27,7 +27,7 @@
         </div>
         <div>
             <span>Payment Mode</span>
-            <strong>{{ "Razorpay" if razorpay_enabled else "Demo" }}</strong>
+            <strong>{{ "UPI Pay" if upi_payment_enabled else "Demo" }}</strong>
         </div>
     </section>
     {% endif %}
@@ -56,20 +56,39 @@
         <article class="cx-plan-card is-pro">
             <span class="eyebrow">Pro</span>
             <h2>Rs. {{ pro_price|int }} <small>/ {{ pro_days }} days</small></h2>
-            <p>Best for a polished demo: premium account state, discovery shortcuts, and future Pro-only features.</p>
+            <p>Best for power users who want faster discovery, cleaner watch planning, and premium account controls.</p>
             <ul>
                 <li>Everything in Free</li>
                 <li>Pro account badge</li>
-                <li>Priority wishlist workflow</li>
-                <li>Payment history and subscription tracking</li>
+                <li>Priority wishlist and saved movie workflow</li>
+                <li>Premium movie discovery shortcuts</li>
+                <li>Early access to Pro-only features</li>
+                <li>Subscription and payment tracking</li>
+                <li>Cleaner booking-link history</li>
+                <li>Priority support for demo issues</li>
             </ul>
 
             {% if session.get("user_id") %}
+            {% if upi_payment_enabled %}
+            <a
+                class="btn btn-primary w-100 cx-upi-button"
+                href="{{ url_for('payment_bp.upi_pro_payment') }}">
+                <i class="fa-solid fa-qrcode"></i>
+                UPI Pay
+            </a>
+            <p class="cx-payment-note">
+                Pay securely with any UPI app.
+            </p>
+            {% else %}
+            <div class="cx-payment-note is-warning">
+                Add <strong>UPI_ID</strong> in your <strong>.env</strong> file to enable UPI Pay.
+            </div>
             <form method="POST" action="{{ url_for('payment_bp.subscribe_pro') }}">
                 <button class="btn btn-primary w-100">
-                    {{ "Pay with Razorpay" if razorpay_enabled else "Activate Pro Demo" }}
+                    Activate Pro Demo
                 </button>
             </form>
+            {% endif %}
             {% else %}
             <a class="btn btn-primary w-100" href="{{ url_for('google_auth_bp.google_login') }}">Login to Upgrade</a>
             {% endif %}

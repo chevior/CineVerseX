@@ -4,7 +4,7 @@
 
 <div class="cx-shell">
 
-    <section class="cx-hero-carousel" data-hero-carousel>
+    <section class="cx-hero-carousel cx-cinematic-hero" data-hero-carousel>
         {% for movie in hero_movies[:5] %}
         {% set fallback_poster = url_for('static', filename='images/no-poster.svg') %}
         {% set hero_backdrop = movie.backdrop_url if movie.backdrop_url and movie.backdrop_url.startswith('http') else (movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else fallback_poster) %}
@@ -17,33 +17,53 @@
             <div class="cx-hero-shade"></div>
 
             <div class="cx-hero-copy">
-                <span class="cx-chip">
-                    <i class="fas fa-clapperboard"></i> Movie discovery
-                </span>
-
                 <h1>{{ movie.title }}</h1>
 
                 <div class="cx-info-chips light">
-                    <span><i class="fas fa-star"></i> {{ movie.rating or "N/A" }}</span>
+                    <span><i class="fas fa-thumbs-up"></i> {{ ((movie.rating or 8.8)|float * 10)|round|int }}% Likes</span>
+                    {% if movie.release_date %}<span>{{ movie.release_date[:4] }}</span>{% endif %}
+                    <span>{{ movie.certificate or "UA" }}</span>
                     {% for genre in (movie.genre or "").split(",")[:2] %}
                     {% if genre.strip() %}<span>{{ genre.strip() }}</span>{% endif %}
                     {% endfor %}
                     <span>{{ movie.language.split(",")[0] if movie.language else "Movie" }}</span>
-                    {% if movie.runtime_minutes %}<span>{{ movie.runtime_minutes // 60 }}h {{ movie.runtime_minutes % 60 }}m</span>{% endif %}
-                    <span>{{ movie.certificate or "UA" }}</span>
+                </div>
+
+                <p>{{ movie.description or "Discover the trailer, story, cast, booking links, and movie details in a polished cinematic view." }}</p>
+
+                <div class="cx-hero-cast" aria-label="Starring">
+                    <strong>Starring:</strong>
+                    {% set cast_names = (movie.cast_names or "").split(",")[:6] %}
+                    {% for cast_name in cast_names %}
+                    {% if cast_name.strip() %}
+                    <span title="{{ cast_name.strip() }}">{{ cast_name.strip()[:1] }}</span>
+                    {% endif %}
+                    {% endfor %}
+                    {% if not movie.cast_names %}
+                    <span>A</span><span>C</span><span>T</span><span>R</span>
+                    {% endif %}
                 </div>
 
                 <div class="cx-hero-actions">
                     {% if movie.trailer_url %}
                     <a href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}#trailer" class="btn btn-primary btn-lg">
-                        <i class="fas fa-play"></i> Watch Trailer
+                        <i class="fas fa-play"></i> Play Now
                     </a>
                     {% else %}
                     <a href="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}" class="btn btn-primary btn-lg">
-                        <i class="fas fa-circle-info"></i> View Details
+                        <i class="fas fa-play"></i> Play Now
                     </a>
                     {% endif %}
-
+                    <button
+                        type="button"
+                        class="btn btn-outline-light btn-lg"
+                        data-watch-label="My Wishlist"
+                        data-watch-title="{{ movie.title }}"
+                        data-watch-url="{{ url_for('movie_bp.movie_details', movie_id=movie.id) }}"
+                        data-watch-poster="{{ movie.poster_url if movie.poster_url and movie.poster_url.startswith('http') else (url_for('static', filename=movie.poster_url) if movie.poster_url else fallback_poster) }}">
+                        <i class="fas fa-plus"></i>
+                        <span>My Wishlist</span>
+                    </button>
                 </div>
             </div>
         </article>

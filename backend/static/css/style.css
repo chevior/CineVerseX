@@ -7076,3 +7076,1442 @@ p {
         font-size: 16px !important;
     }
 }
+
+/* Cinematic UI/UX pass inspired by the reference mockup. Keep at EOF. */
+:root {
+    --page-bg: #050608;
+    --surface: rgba(13, 14, 18, .74);
+    --surface-2: rgba(255, 255, 255, .07);
+    --ink: #ffffff;
+    --muted: rgba(255, 255, 255, .68);
+    --line: rgba(255, 255, 255, .18);
+    --brand: #ff3158;
+    --brand-strong: #f01845;
+    --accent: #71f38b;
+    --warning: #ffd166;
+    --shadow: 0 34px 90px rgba(0, 0, 0, .58);
+}
+
+body,
+body[data-theme="dark"],
+body.theme-dark {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, .08), transparent 150px),
+        radial-gradient(circle at 78% 0%, rgba(255, 207, 150, .22), transparent 360px),
+        radial-gradient(circle at 12% 12%, rgba(58, 98, 107, .36), transparent 420px),
+        #050608 !important;
+    color: #ffffff !important;
+}
+
+.page-content {
+    width: min(100% - 52px, 1420px) !important;
+    padding-top: 28px !important;
+}
+
+.cx-shell,
+.cx-detail-page > .cx-shell {
+    width: min(100%, 1320px) !important;
+    max-width: 1320px !important;
+}
+
+.cine-navbar,
+.cine-navbar.sticky-top {
+    position: sticky !important;
+    top: 14px !important;
+    z-index: 1050 !important;
+    width: min(100% - 52px, 1320px) !important;
+    min-height: 72px !important;
+    margin: 18px auto -94px !important;
+    border: 1px solid rgba(255, 255, 255, .26) !important;
+    border-radius: 18px 18px 0 0 !important;
+    background: linear-gradient(90deg, rgba(4, 6, 8, .9), rgba(17, 13, 14, .74), rgba(255, 255, 255, .1)) !important;
+    box-shadow: none !important;
+    backdrop-filter: blur(24px) saturate(135%) !important;
+}
+
+.cine-navbar .container-fluid {
+    min-height: 72px !important;
+    padding-inline: 24px !important;
+}
+
+.cine-logo {
+    width: 28px !important;
+    min-width: 28px !important;
+    overflow: hidden !important;
+    color: transparent !important;
+    font-size: 0 !important;
+}
+
+.cine-logo i {
+    color: var(--brand) !important;
+    font-size: 21px !important;
+}
+
+.cx-primary-nav {
+    gap: 18px !important;
+    margin-left: 18px !important;
+}
+
+.cx-primary-nav .nav-link {
+    min-height: 38px !important;
+    padding: 9px 3px !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: rgba(255, 255, 255, .74) !important;
+    font-size: 13px !important;
+    font-weight: 650 !important;
+}
+
+.cx-primary-nav .nav-link i {
+    display: none !important;
+}
+
+.cx-primary-nav .nav-link:hover,
+.cx-primary-nav .nav-link.is-active {
+    color: #ffffff !important;
+    transform: none !important;
+}
+
+.cx-primary-nav .nav-link.is-active::after {
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: 2px !important;
+    background: var(--brand) !important;
+}
+
+.cine-navbar .cx-nav-search {
+    display: none !important;
+}
+
+.cx-icon-btn,
+.cx-profile-btn,
+.cx-login-btn {
+    min-height: 38px !important;
+    border-radius: 999px !important;
+}
+
+.cx-profile-btn,
+.cx-login-btn {
+    padding-inline: 18px !important;
+    background: rgba(255, 255, 255, .98) !important;
+    border-color: rgba(255, 255, 255, .98) !important;
+    color: #08090c !important;
+}
+
+.cx-notification-btn {
+    background: rgba(255, 255, 255, .12) !important;
+    color: #ffffff !important;
+}
+
+.cx-cinematic-hero {
+    min-height: min(78vh, 820px) !important;
+    padding: 74px 0 0 !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(255, 255, 255, .26) !important;
+    border-radius: 20px !important;
+    background: #050608 !important;
+    box-shadow: var(--shadow) !important;
+}
+
+.cx-cinematic-hero .cx-hero-slide {
+    min-height: min(78vh, 820px) !important;
+    padding: clamp(34px, 6vw, 84px) clamp(24px, 5vw, 84px) 150px !important;
+    align-items: center !important;
+}
+
+.cx-cinematic-hero .cx-hero-backdrop {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center top !important;
+    opacity: .92 !important;
+    filter: saturate(1.08) contrast(1.05) !important;
+}
+
+.cx-cinematic-hero .cx-hero-shade {
+    background:
+        linear-gradient(90deg, rgba(0, 0, 0, .98) 0%, rgba(0, 0, 0, .82) 31%, rgba(0, 0, 0, .18) 65%, rgba(0, 0, 0, .32) 100%),
+        linear-gradient(0deg, #050608 0%, rgba(5, 6, 8, .18) 38%, transparent 70%) !important;
+}
+
+.cx-cinematic-hero .cx-hero-copy {
+    position: relative !important;
+    z-index: 3 !important;
+    width: min(660px, 56vw) !important;
+    max-width: 660px !important;
+    padding: 0 !important;
+}
+
+.cx-cinematic-hero .cx-hero-copy h1 {
+    margin: 0 0 22px !important;
+    font-size: clamp(3.15rem, 6.6vw, 6.1rem) !important;
+    line-height: .88 !important;
+    font-weight: 950 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0 !important;
+    text-shadow: 0 22px 48px rgba(0, 0, 0, .68) !important;
+    overflow-wrap: normal !important;
+    text-wrap: balance !important;
+}
+
+.cx-cinematic-hero .cx-info-chips {
+    gap: 10px !important;
+    margin-bottom: 14px !important;
+}
+
+.cx-cinematic-hero .cx-info-chips span {
+    min-height: auto !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: rgba(255, 255, 255, .84) !important;
+    font-size: 13px !important;
+    font-weight: 750 !important;
+}
+
+.cx-cinematic-hero .cx-info-chips span:not(:last-child)::after {
+    content: "";
+    display: inline-block;
+    width: 3px;
+    height: 3px;
+    margin-left: 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .64);
+    vertical-align: middle;
+}
+
+.cx-cinematic-hero .cx-info-chips i {
+    color: var(--accent) !important;
+}
+
+.cx-cinematic-hero .cx-hero-copy p {
+    display: -webkit-box !important;
+    max-width: 520px !important;
+    margin: 0 0 20px !important;
+    overflow: hidden !important;
+    color: rgba(255, 255, 255, .74) !important;
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+    -webkit-line-clamp: 3 !important;
+    line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+}
+
+.cx-hero-cast {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin: 0 0 28px !important;
+}
+
+.cx-hero-cast strong {
+    margin-right: 4px !important;
+    color: #ffffff !important;
+    font-size: 13px !important;
+    text-transform: uppercase !important;
+}
+
+.cx-hero-cast span {
+    display: inline-grid !important;
+    place-items: center !important;
+    width: 34px !important;
+    height: 34px !important;
+    border: 2px solid rgba(255, 255, 255, .7) !important;
+    border-radius: 999px !important;
+    background: linear-gradient(135deg, #24313a, #f07b5c) !important;
+    color: #ffffff !important;
+    font-size: 12px !important;
+    font-weight: 900 !important;
+}
+
+.cx-cinematic-hero .cx-hero-actions {
+    justify-content: flex-start !important;
+    gap: 16px !important;
+}
+
+.cx-cinematic-hero .cx-hero-actions .btn {
+    min-width: 178px !important;
+    min-height: 54px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    border-radius: 999px !important;
+    font-size: 15px !important;
+    font-weight: 850 !important;
+}
+
+.cx-cinematic-hero .cx-hero-actions .btn-primary {
+    background: linear-gradient(135deg, #ff4264, #f01845) !important;
+    box-shadow: 0 18px 38px rgba(240, 24, 69, .36) !important;
+}
+
+.cx-cinematic-hero .cx-hero-actions .btn-outline-light {
+    background: rgba(0, 0, 0, .38) !important;
+    border-color: rgba(255, 255, 255, .38) !important;
+    color: #ffffff !important;
+}
+
+.cx-episode-panel {
+    position: absolute !important;
+    right: clamp(20px, 4vw, 56px) !important;
+    bottom: 148px !important;
+    z-index: 4 !important;
+    width: min(390px, 36vw) !important;
+}
+
+.cx-top-badge {
+    position: absolute !important;
+    right: -20px !important;
+    top: -120px !important;
+    display: grid !important;
+    place-items: center !important;
+    width: 58px !important;
+    height: 78px !important;
+    border-radius: 8px 8px 0 0 !important;
+    background: var(--brand) !important;
+    color: #ffffff !important;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, .34) !important;
+}
+
+.cx-top-badge span {
+    font-size: 12px !important;
+    font-style: italic !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+}
+
+.cx-top-badge strong {
+    margin-top: -16px !important;
+    color: #ffffff !important;
+    font-size: 27px !important;
+    line-height: 1 !important;
+}
+
+.cx-episode-label {
+    display: block !important;
+    margin-bottom: 10px !important;
+    color: #ffffff !important;
+    font-size: 13px !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+}
+
+.cx-episode-list {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+}
+
+.cx-episode-card {
+    position: relative !important;
+    min-width: 0 !important;
+    aspect-ratio: 16 / 10 !important;
+    overflow: hidden !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    background: #141414 !important;
+}
+
+.cx-episode-card img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+.cx-episode-card::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    background: linear-gradient(0deg, rgba(0, 0, 0, .84), transparent 62%) !important;
+}
+
+.cx-episode-card span,
+.cx-episode-card strong,
+.cx-episode-card i {
+    position: absolute !important;
+    z-index: 2 !important;
+}
+
+.cx-episode-card span {
+    left: 8px !important;
+    bottom: 8px !important;
+    color: rgba(255, 255, 255, .64) !important;
+    font-size: 11px !important;
+    font-weight: 900 !important;
+}
+
+.cx-episode-card strong {
+    right: 8px !important;
+    bottom: 8px !important;
+    left: 28px !important;
+    overflow: hidden !important;
+    color: #ffffff !important;
+    font-size: 10px !important;
+    font-weight: 850 !important;
+    text-overflow: ellipsis !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+}
+
+.cx-episode-card i {
+    left: 50% !important;
+    top: 50% !important;
+    display: grid !important;
+    place-items: center !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 999px !important;
+    background: rgba(255, 255, 255, .28) !important;
+    transform: translate(-50%, -50%) !important;
+    backdrop-filter: blur(8px) !important;
+}
+
+.cx-hero-shelf {
+    position: absolute !important;
+    left: clamp(24px, 5vw, 84px) !important;
+    right: clamp(24px, 5vw, 84px) !important;
+    bottom: 42px !important;
+    z-index: 5 !important;
+    display: grid !important;
+    grid-template-columns: repeat(6, minmax(110px, 1fr)) !important;
+    gap: 14px !important;
+}
+
+.cx-hero-shelf a {
+    position: relative !important;
+    min-width: 0 !important;
+    aspect-ratio: 16 / 7 !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(255, 255, 255, .18) !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    background: rgba(255, 255, 255, .08) !important;
+}
+
+.cx-hero-shelf a:first-child {
+    transform: translateY(-10px) !important;
+    border-color: rgba(255, 255, 255, .5) !important;
+}
+
+.cx-hero-shelf img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+.cx-hero-shelf span {
+    position: absolute !important;
+    inset: auto 8px 8px !important;
+    overflow: hidden !important;
+    color: #ffffff !important;
+    font-size: 11px !important;
+    font-weight: 850 !important;
+    text-overflow: ellipsis !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, .86) !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+}
+
+.cx-hero-dots {
+    z-index: 7 !important;
+    right: 36px !important;
+    bottom: 44px !important;
+    left: auto !important;
+}
+
+.cx-search-panel.cx-home-search,
+.cx-release-intro,
+.cx-trend-tabs,
+.cx-command-grid > a,
+.cx-command-grid > button,
+.cx-stat-strip > div,
+.cx-feature-strip > a,
+.cx-action-grid > a,
+.cx-filter-bar,
+.cx-movie-toolbar,
+.cx-page-head,
+.cx-movie-card,
+.cx-upcoming-card {
+    border: 1px solid rgba(255, 255, 255, .15) !important;
+    border-radius: 14px !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .035)), rgba(9, 10, 13, .78) !important;
+    box-shadow: 0 22px 60px rgba(0, 0, 0, .32) !important;
+    backdrop-filter: blur(18px) saturate(130%) !important;
+}
+
+.cx-section {
+    margin-top: 34px !important;
+}
+
+.cx-section-head h2,
+.cx-release-intro h2,
+.cx-page-head h1 {
+    font-weight: 920 !important;
+    letter-spacing: 0 !important;
+}
+
+.cx-poster-rail {
+    gap: 18px !important;
+    padding-bottom: 14px !important;
+}
+
+.cx-premiere-poster {
+    flex: 0 0 188px !important;
+    border-radius: 10px !important;
+}
+
+.cx-premiere-img {
+    border-radius: 10px !important;
+    box-shadow: 0 18px 36px rgba(0, 0, 0, .32) !important;
+}
+
+.cx-movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)) !important;
+    gap: 20px !important;
+}
+
+.cx-poster-link,
+.cx-poster-link img {
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.cx-card-actions {
+    gap: 8px !important;
+}
+
+.cx-card-actions a,
+.cx-quick-view,
+.cx-upcoming-actions a,
+.cx-upcoming-actions button {
+    min-height: 36px !important;
+    border-radius: 999px !important;
+}
+
+@media (max-width: 1100px) {
+    .cx-episode-panel {
+        width: min(380px, 42vw) !important;
+    }
+
+    .cx-hero-shelf {
+        grid-template-columns: repeat(4, minmax(100px, 1fr)) !important;
+    }
+
+    .cx-hero-shelf a:nth-child(n+5) {
+        display: none !important;
+    }
+}
+
+@media (max-width: 991px) {
+    .page-content {
+        width: min(100% - 22px, 1320px) !important;
+        padding-top: 22px !important;
+    }
+
+    .cine-navbar,
+    .cine-navbar.sticky-top {
+        width: min(100% - 22px, 1320px) !important;
+        margin: 10px auto 12px !important;
+        border-radius: 18px !important;
+    }
+
+    .cine-logo {
+        width: auto !important;
+        color: #ffffff !important;
+        font-size: 1rem !important;
+    }
+
+    .cx-primary-nav {
+        gap: 2px !important;
+        margin-left: 0 !important;
+    }
+
+    .cx-primary-nav .nav-link {
+        padding: 10px 12px !important;
+    }
+
+    .cx-cinematic-hero {
+        min-height: auto !important;
+        padding-top: 0 !important;
+    }
+
+    .cx-cinematic-hero .cx-hero-slide {
+        min-height: 720px !important;
+        padding: 54px 24px 170px !important;
+        align-items: end !important;
+    }
+
+    .cx-cinematic-hero .cx-hero-copy {
+        width: min(100%, 620px) !important;
+        max-width: none !important;
+    }
+
+    .cx-episode-panel {
+        left: 24px !important;
+        right: 24px !important;
+        bottom: 118px !important;
+        width: auto !important;
+    }
+
+    .cx-top-badge {
+        display: none !important;
+    }
+
+    .cx-hero-shelf {
+        left: 24px !important;
+        right: 24px !important;
+        bottom: 24px !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+
+    .cx-hero-shelf a:nth-child(n+4) {
+        display: none !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .cx-cinematic-hero .cx-hero-slide {
+        min-height: 760px !important;
+        padding: 34px 18px 172px !important;
+    }
+
+    .cx-cinematic-hero .cx-hero-copy h1 {
+        font-size: clamp(2.8rem, 16vw, 4.4rem) !important;
+    }
+
+    .cx-cinematic-hero .cx-hero-actions {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+    }
+
+    .cx-cinematic-hero .cx-hero-actions .btn {
+        width: 100% !important;
+    }
+
+    .cx-episode-panel {
+        bottom: 112px !important;
+    }
+
+    .cx-episode-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .cx-episode-card:nth-child(n+3) {
+        display: none !important;
+    }
+
+    .cx-hero-shelf {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .cx-hero-shelf a:nth-child(n+3) {
+        display: none !important;
+    }
+
+    .cx-hero-dots {
+        display: none !important;
+    }
+}
+
+/* UI/UX repair lock for navbar, forms, admin pages, and dropdown contrast. */
+.page-content {
+    padding-top: 32px !important;
+}
+
+.cine-navbar,
+.cine-navbar.sticky-top {
+    margin: 18px auto 16px !important;
+    border-radius: 18px !important;
+}
+
+.cine-navbar .navbar-collapse {
+    display: flex !important;
+    width: auto !important;
+    flex: 1 1 auto !important;
+    flex-basis: auto !important;
+}
+
+.cine-navbar .cx-nav-actions {
+    margin-left: auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    flex: 0 0 auto !important;
+}
+
+.cine-navbar .cx-profile-btn {
+    min-width: 110px !important;
+}
+
+.cine-navbar .cx-user-menu .cx-profile-btn {
+    background: var(--brand) !important;
+    border-color: var(--brand) !important;
+    color: #ffffff !important;
+}
+
+.cine-navbar .cx-user-menu .cx-profile-btn i,
+.cine-navbar .cx-user-menu .cx-profile-btn span {
+    color: #ffffff !important;
+}
+
+.cine-navbar .cx-user-menu {
+    margin-left: 0 !important;
+}
+
+.cine-navbar .dropdown-menu {
+    min-width: 220px !important;
+    padding: 8px !important;
+    border: 1px solid rgba(255, 255, 255, .18) !important;
+    border-radius: 12px !important;
+    background: rgba(12, 14, 19, .98) !important;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, .48) !important;
+}
+
+.cine-navbar .dropdown-item {
+    min-height: 38px !important;
+    display: flex !important;
+    align-items: center !important;
+    border-radius: 8px !important;
+    color: rgba(255, 255, 255, .86) !important;
+    font-weight: 750 !important;
+}
+
+.cine-navbar .dropdown-item:hover,
+.cine-navbar .dropdown-item:focus {
+    background: rgba(255, 49, 88, .16) !important;
+    color: #ffffff !important;
+}
+
+.cine-navbar .dropdown-divider {
+    border-color: rgba(255, 255, 255, .12) !important;
+}
+
+.cx-cinematic-hero {
+    margin-top: 0 !important;
+}
+
+.cx-auth-page {
+    min-height: calc(100vh - 138px) !important;
+    align-items: center !important;
+}
+
+.cx-auth-panel {
+    max-height: none !important;
+}
+
+.cx-auth-card,
+.cx-auth-copy {
+    min-height: 560px !important;
+}
+
+.cx-login-form label {
+    width: 100% !important;
+}
+
+input[type="checkbox"],
+input[type="radio"],
+.form-check-input,
+.cx-login-form input[type="checkbox"] {
+    width: 18px !important;
+    min-width: 18px !important;
+    max-width: 18px !important;
+    height: 18px !important;
+    min-height: 18px !important;
+    max-height: 18px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid rgba(255, 255, 255, .42) !important;
+    border-radius: 5px !important;
+    background-color: rgba(255, 255, 255, .08) !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    appearance: auto !important;
+}
+
+input[type="radio"] {
+    border-radius: 999px !important;
+}
+
+input[type="checkbox"]:checked,
+.form-check-input:checked {
+    background-color: var(--brand) !important;
+    border-color: var(--brand) !important;
+}
+
+.form-check {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    min-height: 34px !important;
+    padding-left: 0 !important;
+}
+
+.form-check .form-check-input {
+    float: none !important;
+    margin-left: 0 !important;
+}
+
+.form-check-label,
+.cx-login-form label.d-flex span {
+    margin: 0 !important;
+    color: rgba(255, 255, 255, .78) !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+}
+
+.container.mt-4,
+.cx-shell {
+    margin-top: 0 !important;
+}
+
+.cx-page-head {
+    margin-top: 0 !important;
+    overflow: hidden !important;
+}
+
+.cx-page-head h1,
+.cx-dashboard-hero h1,
+.cx-admin-hero h1 {
+    max-width: 100% !important;
+    overflow: visible !important;
+    line-height: 1.02 !important;
+}
+
+.cx-dashboard-grid {
+    align-items: stretch !important;
+}
+
+.cx-dashboard-card {
+    min-height: 188px !important;
+    overflow: hidden !important;
+}
+
+.cx-dashboard-card span {
+    display: -webkit-box !important;
+    overflow: hidden !important;
+    -webkit-line-clamp: 3 !important;
+    line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+}
+
+.cx-filter-bar {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(145px, 1fr)) auto auto !important;
+    align-items: end !important;
+    gap: 12px !important;
+}
+
+.cx-filter-bar label {
+    min-width: 0 !important;
+}
+
+.cx-filter-bar .btn {
+    min-height: 44px !important;
+    white-space: nowrap !important;
+}
+
+.cx-filter-bar .btn-outline-warning {
+    grid-column: auto !important;
+}
+
+.cx-theater-card,
+.theater-card {
+    overflow: hidden !important;
+}
+
+.cx-theater-card .btn,
+.theater-card .btn,
+.cx-theater-card a,
+.theater-card a {
+    min-width: 0 !important;
+    white-space: nowrap !important;
+}
+
+.cx-chart-card,
+.card:has(canvas) {
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+.cx-chart-card canvas,
+.card canvas {
+    width: 100% !important;
+    max-height: 340px !important;
+}
+
+.container .row .card canvas {
+    max-height: 320px !important;
+}
+
+.table-responsive,
+.cx-table-wrap {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+}
+
+.table {
+    margin-bottom: 0 !important;
+}
+
+.table th,
+.table td {
+    color: rgba(255, 255, 255, .92) !important;
+    vertical-align: middle !important;
+}
+
+.table thead th {
+    background: rgba(255, 255, 255, .08) !important;
+    color: #ffffff !important;
+}
+
+@media (min-width: 992px) {
+    body:has(.cx-cinematic-hero) .cine-navbar,
+    body:has(.cx-cinematic-hero) .cine-navbar.sticky-top {
+        margin-bottom: -90px !important;
+        border-radius: 18px 18px 0 0 !important;
+    }
+
+    body:has(.cx-cinematic-hero) .page-content {
+        padding-top: 28px !important;
+    }
+}
+
+@media (max-width: 1180px) {
+    .cx-filter-bar {
+        grid-template-columns: repeat(3, minmax(170px, 1fr)) !important;
+    }
+}
+
+@media (max-width: 991px) {
+    .cine-navbar .navbar-collapse {
+        display: none !important;
+    }
+
+    .cine-navbar .navbar-collapse.show,
+    .cine-navbar .navbar-collapse.collapsing {
+        display: block !important;
+    }
+
+    .cine-navbar .cx-nav-actions {
+        width: 100% !important;
+        margin-left: 0 !important;
+        display: flex !important;
+        justify-content: flex-start !important;
+    }
+
+    .cx-auth-panel {
+        grid-template-columns: 1fr !important;
+    }
+
+    .cx-auth-copy,
+    .cx-auth-card {
+        min-height: auto !important;
+    }
+}
+
+@media (max-width: 720px) {
+    .cx-filter-bar {
+        grid-template-columns: 1fr !important;
+    }
+
+    .cx-dashboard-card {
+        min-height: 160px !important;
+    }
+}
+
+
+/* ============================================================
+   Everything below this line is the new UI/UX polish layer
+   added on top of the original stylesheet above.
+   ============================================================ */
+
+/* ==========================================================================
+   CineVerse — UI/UX Polish Layer
+   Load this AFTER your existing stylesheet. It only adds/overrides —
+   nothing here removes rules from your base file.
+   ========================================================================== */
+
+/* ---- 1. Full dark-mode variable set, driven by the theme-toggle script ---- */
+/* Your base :root vars are the light theme. This block gives [data-theme="dark"]
+   a true dark surface set, so CineVerseTheme.toggle() has something real to switch to. */
+
+[data-theme="dark"] {
+    --page-bg: #0b0d12;
+    --surface: #12151c;
+    --surface-2: #171b24;
+    --ink: #eef1f7;
+    --muted: #9aa3b5;
+    --line: #262c3a;
+    --accent-soft: #1a2030;
+    --shadow: 0 22px 60px rgba(0, 0, 0, .55);
+}
+
+[data-theme="dark"] body {
+    background:
+        radial-gradient(circle at 10% -10%, rgba(248, 68, 100, .10), transparent 360px),
+        radial-gradient(circle at 90% 0%, rgba(50, 86, 255, .08), transparent 320px),
+        linear-gradient(180deg, #0d0f15, var(--page-bg) 360px);
+}
+
+[data-theme="dark"] .dropdown-menu {
+    background: var(--surface);
+    border-color: var(--line);
+}
+
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+    background: var(--surface-2);
+    border-color: var(--line);
+    color: var(--ink);
+}
+
+/* ---- 2. Theme toggle button (pairs with data-theme-toggle in theme-toggle.js) ---- */
+
+.cx-theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, .18);
+    background: rgba(255, 255, 255, .06);
+    color: #fff;
+    cursor: pointer;
+    transition: background .18s ease, transform .18s ease, border-color .18s ease;
+}
+
+.cx-theme-toggle:hover {
+    background: rgba(248, 68, 100, .22);
+    border-color: rgba(248, 68, 100, .45);
+}
+
+.cx-theme-toggle:active {
+    transform: scale(.92);
+}
+
+.cx-theme-toggle .icon-sun { display: none; }
+.cx-theme-toggle .icon-moon { display: inline-flex; }
+[data-theme="light"] .cx-theme-toggle .icon-sun { display: inline-flex; }
+[data-theme="light"] .cx-theme-toggle .icon-moon { display: none; }
+
+/* ---- 3. Motion & interaction polish ---- */
+
+*,
+*::before,
+*::after {
+    transition-property: background-color, border-color, color, box-shadow, transform, opacity;
+    transition-duration: .16s;
+    transition-timing-function: ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        transition-duration: .001s !important;
+        animation-duration: .001s !important;
+    }
+}
+
+/* Accessible focus ring everywhere — replaces browser default outline removal */
+a:focus-visible,
+button:focus-visible,
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible,
+[tabindex]:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+}
+
+/* Buttons get a touch of depth on hover/press instead of just a color swap */
+.btn,
+.cine-btn {
+    transition: background .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease;
+}
+
+.btn:hover,
+.cine-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, .18);
+}
+
+.btn:active,
+.cine-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Cards / feature tiles lift slightly on hover to read as interactive */
+.cx-mini-feature,
+.cx-drawer-item,
+.cx-dashboard-card,
+.cx-theater-card,
+.theater-card {
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.cx-mini-feature:hover,
+.cx-drawer-item:hover,
+.cx-dashboard-card:hover,
+.cx-theater-card:hover,
+.theater-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+    border-color: var(--brand);
+}
+
+/* ---- 4. Scrollbar styling (webkit + firefox) ---- */
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--brand) transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: var(--brand);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: var(--brand-strong);
+    background-clip: content-box;
+}
+
+/* ---- 5. Loading skeletons (for posters/cards while data streams in) ---- */
+
+.cx-skeleton {
+    position: relative;
+    overflow: hidden;
+    background: var(--accent-soft);
+}
+
+.cx-skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .18), transparent);
+    animation: cx-shimmer 1.3s infinite;
+}
+
+@keyframes cx-shimmer {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+}
+
+/* ---- 6. Toast polish (softer entrance) ---- */
+
+.toast-zone .toast {
+    animation: cx-toast-in .22s ease-out;
+}
+
+@keyframes cx-toast-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Final layout repair: home hero safe area + dashboard spacing. Keep at EOF. */
+@media (min-width: 992px) {
+    body:has(.cx-cinematic-hero) .cine-navbar,
+    body:has(.cx-cinematic-hero) .cine-navbar.sticky-top {
+        margin-bottom: -90px !important;
+    }
+
+    body:has(.cx-cinematic-hero) .cx-cinematic-hero {
+        min-height: 640px !important;
+    }
+
+    body:has(.cx-cinematic-hero) .cx-cinematic-hero .cx-hero-slide {
+        min-height: 640px !important;
+        align-items: flex-start !important;
+        padding-top: 132px !important;
+        padding-bottom: 138px !important;
+    }
+
+    body:has(.cx-cinematic-hero) .cx-cinematic-hero .cx-hero-copy {
+        width: min(600px, 52vw) !important;
+        max-width: 600px !important;
+    }
+
+    body:has(.cx-cinematic-hero) .cx-cinematic-hero .cx-hero-copy h1 {
+        max-width: 600px !important;
+        margin-bottom: 16px !important;
+        font-size: clamp(3rem, 5.2vw, 5.45rem) !important;
+        line-height: .9 !important;
+    }
+
+    body:has(.cx-cinematic-hero) .cx-cinematic-hero .cx-hero-copy p {
+        max-width: 540px !important;
+        margin-bottom: 16px !important;
+        -webkit-line-clamp: 2 !important;
+        line-clamp: 2 !important;
+    }
+
+    body:has(.cx-cinematic-hero) .cx-hero-cast {
+        margin-bottom: 18px !important;
+    }
+
+    body:has(.cx-cinematic-hero) .cx-cinematic-hero .cx-hero-actions {
+        position: relative !important;
+        z-index: 8 !important;
+        display: flex !important;
+    }
+
+    body:has(.cx-cinematic-hero) .cx-episode-panel {
+        bottom: 142px !important;
+    }
+
+    body:has(.cx-cinematic-hero) .cx-hero-shelf {
+        bottom: 34px !important;
+    }
+}
+
+.cx-dashboard-hero {
+    margin-bottom: 22px !important;
+}
+
+.cx-dashboard-strip {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    margin: 0 0 28px !important;
+}
+
+.cx-dashboard-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    gap: 20px !important;
+}
+
+.cx-dashboard-card {
+    min-height: 184px !important;
+}
+
+@media (max-width: 991px) {
+    .cx-cinematic-hero .cx-hero-slide {
+        padding-top: 72px !important;
+    }
+
+    .cx-dashboard-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 560px) {
+    .cx-dashboard-strip,
+    .cx-dashboard-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .cine-navbar .cx-user-menu .cx-profile-btn {
+        width: auto !important;
+        min-width: 132px !important;
+        max-width: none !important;
+        padding-inline: 18px !important;
+        gap: 8px !important;
+        font-size: 13px !important;
+    }
+
+    .cine-navbar .cx-user-menu .cx-profile-btn span {
+        display: inline-block !important;
+        visibility: visible !important;
+        max-width: 120px !important;
+        overflow: hidden !important;
+        color: #ffffff !important;
+        font-size: 13px !important;
+        font-weight: 900 !important;
+        line-height: 1 !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+}
+
+.cx-upi-button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+}
+
+.cx-upi-button i {
+    font-size: 1.35rem !important;
+}
+
+.cx-payment-note {
+    margin: 10px 0 0 !important;
+    color: rgba(255, 255, 255, .72) !important;
+    font-size: .9rem !important;
+    line-height: 1.45 !important;
+}
+
+.cx-payment-note.is-warning {
+    margin-bottom: 12px !important;
+    padding: 12px !important;
+    border: 1px solid rgba(255, 209, 102, .3) !important;
+    border-radius: 12px !important;
+    background: rgba(255, 209, 102, .09) !important;
+    color: #ffd166 !important;
+}
+
+.cx-upi-page {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 390px) !important;
+    gap: 24px !important;
+    align-items: stretch !important;
+    padding: clamp(22px, 4vw, 42px) !important;
+    border: 1px solid rgba(255, 255, 255, .15) !important;
+    border-radius: 18px !important;
+    background: linear-gradient(135deg, rgba(255, 49, 88, .12), rgba(255, 255, 255, .04)), rgba(9, 10, 13, .82) !important;
+    box-shadow: 0 24px 72px rgba(0, 0, 0, .34) !important;
+}
+
+.cx-upi-copy h1 {
+    margin: 8px 0 10px !important;
+    color: #ffffff !important;
+    font-size: clamp(2.3rem, 5vw, 4.8rem) !important;
+    line-height: .95 !important;
+}
+
+.cx-upi-copy p {
+    max-width: 560px !important;
+    color: rgba(255, 255, 255, .72) !important;
+}
+
+.cx-upi-details {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    margin: 24px 0 !important;
+}
+
+.cx-upi-details div {
+    padding: 14px !important;
+    border: 1px solid rgba(255, 255, 255, .12) !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, .06) !important;
+}
+
+.cx-upi-details span {
+    display: block !important;
+    margin-bottom: 5px !important;
+    color: rgba(255, 255, 255, .58) !important;
+    font-size: .78rem !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+}
+
+.cx-upi-details strong {
+    color: #ffffff !important;
+    overflow-wrap: anywhere !important;
+}
+
+.cx-upi-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+}
+
+.cx-upi-benefits {
+    display: grid !important;
+    gap: 10px !important;
+    margin: 0 0 24px !important;
+    padding: 0 !important;
+    list-style: none !important;
+}
+
+.cx-upi-benefits li {
+    position: relative !important;
+    padding-left: 24px !important;
+    color: rgba(255, 255, 255, .82) !important;
+    font-weight: 750 !important;
+}
+
+.cx-upi-benefits li::before {
+    content: "\f00c" !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 1px !important;
+    color: #71f38b !important;
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
+}
+
+.cx-upi-qr-card {
+    display: grid !important;
+    gap: 14px !important;
+    align-content: start !important;
+    padding: 18px !important;
+    border: 1px solid rgba(255, 255, 255, .14) !important;
+    border-radius: 16px !important;
+    background: rgba(255, 255, 255, .07) !important;
+}
+
+.cx-upi-qr-card img {
+    width: min(100%, 320px) !important;
+    justify-self: center !important;
+    border-radius: 12px !important;
+    background: #ffffff !important;
+}
+
+.cx-upi-qr-card p {
+    margin: 0 !important;
+    color: rgba(255, 255, 255, .72) !important;
+    text-align: center !important;
+}
+
+.cx-upi-qr-card textarea {
+    min-height: 96px !important;
+    resize: vertical !important;
+    border-radius: 10px !important;
+    font-size: .82rem !important;
+}
+
+@media (max-width: 850px) {
+    .cx-upi-page,
+    .cx-upi-details {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Home hero: remove the small boxed chip backgrounds from the meta row. */
+body:has(.cx-cinematic-hero) .cx-cinematic-hero .cx-info-chips.light span,
+body:has(.cx-cinematic-hero) .cx-cinematic-hero .cx-info-chips span {
+    min-height: auto !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Home hero: no movie preview boxes, so keep the hero compact and focused. */
+body:has(.cx-cinematic-hero) .cx-episode-panel,
+body:has(.cx-cinematic-hero) .cx-hero-shelf {
+    display: none !important;
+}
+
+@media (min-width: 992px) {
+    body:has(.cx-cinematic-hero) .cx-cinematic-hero,
+    body:has(.cx-cinematic-hero) .cx-cinematic-hero .cx-hero-slide {
+        min-height: 560px !important;
+    }
+
+    body:has(.cx-cinematic-hero) .cx-cinematic-hero .cx-hero-slide {
+        padding-bottom: 72px !important;
+    }
+}
