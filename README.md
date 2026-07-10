@@ -105,8 +105,8 @@ Open http://127.0.0.1:5000.
 The local startup seed creates or refreshes a default admin user for development:
 
 ```text
-Email: nchethan066@gmail.com
-Password: admin123
+Email: admin@example.com
+Password: ChangeMe123!
 ```
 
 Change these credentials before using the app beyond local development.
