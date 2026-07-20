@@ -40,7 +40,6 @@ CineVerseX/
     static/
     templates/
   scripts/
-  artifacts/
   requirements.txt
   vercel.json
   README.md
