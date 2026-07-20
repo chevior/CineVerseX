@@ -56,16 +56,12 @@
         <article class="cx-plan-card is-pro">
             <span class="eyebrow">Pro</span>
             <h2>Rs. {{ pro_price|int }} <small>/ {{ pro_days }} days</small></h2>
-            <p>Best for power users who want faster discovery, cleaner watch planning, and premium account controls.</p>
+            <p>Best for a polished demo: premium account state, discovery shortcuts, and future Pro-only features.</p>
             <ul>
                 <li>Everything in Free</li>
                 <li>Pro account badge</li>
-                <li>Priority wishlist and saved movie workflow</li>
-                <li>Premium movie discovery shortcuts</li>
-                <li>Early access to Pro-only features</li>
-                <li>Subscription and payment tracking</li>
-                <li>Cleaner booking-link history</li>
-                <li>Priority support for demo issues</li>
+                <li>Priority wishlist workflow</li>
+                <li>Payment history and subscription tracking</li>
             </ul>
 
             {% if session.get("user_id") %}
@@ -74,21 +70,20 @@
                 class="btn btn-primary w-100 cx-upi-button"
                 href="{{ url_for('payment_bp.upi_pro_payment') }}">
                 <i class="fa-solid fa-qrcode"></i>
-                Go Pro
+                UPI Pay
             </a>
             <p class="cx-payment-note">
-                Pay securely with any UPI app.
+                Opens a UPI QR/payment page for phone scanning or UPI app launch.
             </p>
             {% else %}
+            <div class="cx-payment-note is-warning">
+                Add <strong>UPI_ID</strong> in your <strong>.env</strong> file to enable UPI Pay.
+            </div>
             <form method="POST" action="{{ url_for('payment_bp.subscribe_pro') }}">
-                <button class="btn btn-primary w-100 cx-upi-button">
-                    <i class="fa-solid fa-crown"></i>
-                    Go Pro
+                <button class="btn btn-primary w-100">
+                    Activate Pro Demo
                 </button>
             </form>
-            <p class="cx-payment-note">
-                Demo Pro activation is available until UPI is configured.
-            </p>
             {% endif %}
             {% else %}
             <a class="btn btn-primary w-100" href="{{ url_for('google_auth_bp.google_login') }}">Login to Upgrade</a>

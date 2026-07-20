@@ -8515,3 +8515,163 @@ body:has(.cx-cinematic-hero) .cx-hero-shelf {
         padding-bottom: 72px !important;
     }
 }
+
+/* Theater page card repair: prevent clipped headers and crowded admin actions. */
+.cx-theater-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+    gap: 24px !important;
+    align-items: stretch !important;
+    margin-top: 28px !important;
+    overflow: visible !important;
+}
+
+.cx-theater-grid .cx-theater-card {
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    overflow: hidden !important;
+    border-radius: 16px !important;
+    background: rgba(24, 31, 45, .96) !important;
+}
+
+.cx-theater-grid .cx-theater-top {
+    flex: 0 0 auto !important;
+    min-height: 152px !important;
+    padding: 24px 24px 22px !important;
+    overflow: visible !important;
+    background: linear-gradient(135deg, #bb0f21, #ed001c) !important;
+}
+
+.cx-theater-grid .cx-theater-top span {
+    display: block !important;
+    margin-bottom: 8px !important;
+    color: rgba(255, 255, 255, .84) !important;
+    font-size: 12px !important;
+    font-weight: 900 !important;
+    letter-spacing: 0 !important;
+    text-transform: uppercase !important;
+}
+
+.cx-theater-grid .cx-theater-top h3 {
+    display: block !important;
+    margin: 0 0 10px !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+    color: #ffffff !important;
+    font-size: clamp(1.35rem, 1.7vw, 1.8rem) !important;
+    line-height: 1.12 !important;
+    letter-spacing: 0 !important;
+    text-wrap: balance !important;
+    overflow-wrap: anywhere !important;
+}
+
+.cx-theater-grid .cx-theater-top p {
+    display: -webkit-box !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    color: rgba(255, 255, 255, .76) !important;
+    font-size: .94rem !important;
+    font-weight: 800 !important;
+    line-height: 1.35 !important;
+    -webkit-line-clamp: 2 !important;
+    line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+}
+
+.cx-theater-grid .cx-theater-body {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+    padding: 20px 18px 18px !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+}
+
+.cx-theater-grid .cx-info-chips,
+.cx-theater-grid .amenity-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin: 0 !important;
+}
+
+.cx-theater-grid .cx-info-chips span,
+.cx-theater-grid .amenity-row span {
+    max-width: 100% !important;
+    min-height: 28px !important;
+    padding: 6px 10px !important;
+    overflow: hidden !important;
+    border-radius: 999px !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.cx-theater-grid .cx-theater-metrics {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    margin: 0 !important;
+}
+
+.cx-theater-grid .cx-theater-metrics div {
+    min-width: 0 !important;
+    padding: 14px 10px !important;
+}
+
+.cx-theater-grid .screen-list {
+    display: grid !important;
+    gap: 8px !important;
+    margin: 0 !important;
+}
+
+.cx-theater-grid .screen-list span {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    color: rgba(255, 255, 255, .72) !important;
+    font-size: .95rem !important;
+    font-weight: 800 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.cx-theater-grid .cx-release-actions {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin-top: auto !important;
+}
+
+.cx-theater-grid .cx-release-actions + .cx-release-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    margin-top: 0 !important;
+}
+
+.cx-theater-grid .cx-release-actions .btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 38px !important;
+    padding: 9px 10px !important;
+    overflow: hidden !important;
+    border-radius: 8px !important;
+    font-size: .82rem !important;
+    font-weight: 900 !important;
+    line-height: 1.1 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+@media (max-width: 680px) {
+    .cx-theater-grid {
+        grid-template-columns: 1fr !important;
+        gap: 18px !important;
+    }
+
+    .cx-theater-grid .cx-theater-top {
+        min-height: 132px !important;
+        padding: 20px !important;
+    }
+}
